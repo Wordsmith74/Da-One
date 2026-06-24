@@ -1,1 +1,74 @@
-{}
+{
+  "run_at": "2026-06-24T06:10:26.502456+00:00",
+  "use_live_data": false,
+  "n_errors": 0,
+  "n_warnings": 2,
+  "n_picks_generated": 0,
+  "entries": [
+    {
+      "level": "warn",
+      "stage": "preflight",
+      "message": "BALL_DONT_LIE_KEY is NOT set -- any live call needing it will raise RuntimeError"
+    },
+    {
+      "level": "warn",
+      "stage": "preflight",
+      "message": "THE_ODDS_API_KEY is NOT set -- any live call needing it will raise RuntimeError"
+    },
+    {
+      "level": "info",
+      "stage": "preflight",
+      "message": "package 'requests' importable"
+    },
+    {
+      "level": "info",
+      "stage": "preflight",
+      "message": "package 'pandas' importable"
+    },
+    {
+      "level": "info",
+      "stage": "preflight",
+      "message": "package 'pybaseball' importable"
+    },
+    {
+      "level": "info",
+      "stage": "preflight",
+      "message": "package 'lxml' importable"
+    },
+    {
+      "level": "info",
+      "stage": "MLB F5",
+      "message": "no edge cleared threshold -- skipped"
+    },
+    {
+      "level": "info",
+      "stage": "MLB K prop",
+      "message": "no edge cleared threshold -- skipped"
+    },
+    {
+      "level": "info",
+      "stage": "WNBA prop",
+      "message": "no edge cleared threshold -- skipped"
+    },
+    {
+      "level": "info",
+      "stage": "pipeline",
+      "message": "0 raw picks generated. Running contradiction check..."
+    },
+    {
+      "level": "info",
+      "stage": "pipeline",
+      "message": "0 picks after contradiction check. Running line movement check..."
+    },
+    {
+      "level": "info",
+      "stage": "pipeline",
+      "message": "0 picks after line movement check. Applying per-sport daily caps..."
+    },
+    {
+      "level": "info",
+      "stage": "pipeline",
+      "message": "0 picks after daily caps."
+    }
+  ]
+}

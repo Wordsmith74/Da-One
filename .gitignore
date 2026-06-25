@@ -1,0 +1,10 @@
+config/.env
+.env
+__pycache__/
+*.pyc
+.pybaseball_cache/
+.DS_Store
+
+# Generated each run -- keep the workflow's freshly-committed copy only,
+# don't track local dev runs.
+output/run_log.json

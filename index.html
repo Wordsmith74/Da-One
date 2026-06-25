@@ -1,0 +1,2032 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>DaPickSyndicate | Daily Expert Picks</title>
+  <meta name="description" content="Quantitative daily picks for WNBA, NBA, and MLB — powered by Bayesian simulation and sharp-money analysis. Free picks via Telegram." />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:type"        content="website" />
+  <meta property="og:site_name"   content="DaPickSyndicate" />
+  <meta property="og:title"       content="DaPickSyndicate | Daily Expert Picks" />
+  <meta property="og:description" content="Quantitative daily picks for WNBA, NBA, and MLB — powered by Bayesian simulation and sharp-money analysis." />
+  <meta property="og:image"       content="/opengraph.jpg" />
+  <meta name="theme-color" content="#0f1117" />
+  <link rel="icon" href="/opengraph.jpg" type="image/jpeg" />
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+  <style>
+    :root {
+      --bg:       #0f1117;
+      --surf:     #16181f;
+      --surf2:    #1e2130;
+      --border:   #252836;
+      --text:     #f0f2f5;
+      --sub:      #6b7280;
+      --yellow:   #f5c542;
+      --green:    #22c55e;
+      --red:      #ef4444;
+      --orange:   #f97316;
+      --amber:    #f59e0b;
+      --blue:     #3b82f6;
+      --purple:   #8b5cf6;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+    html,body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;font-size:14px;min-height:100dvh;overscroll-behavior:none;padding-bottom:68px}
+
+    /* ── Header ── */
+    .hdr{background:var(--surf);border-bottom:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:20}
+    .hdr-brand{display:flex;align-items:center;gap:6px;font-size:16px;font-weight:700;color:var(--yellow);letter-spacing:-.01em}
+    .stat-row{display:flex;align-items:center;gap:5px;font-size:12px}
+    .stat-dot{width:8px;height:8px;border-radius:50%;background:var(--orange);flex-shrink:0}
+    .stat-dot.live{background:var(--green)}
+    .stat-dot.err{background:var(--red)}
+    .stat-dot.loading{animation:pdot 1.5s infinite;background:var(--orange)}
+    @keyframes pdot{0%,100%{opacity:1}50%{opacity:.3}}
+    .stat-lbl{color:var(--orange)}
+    .stat-lbl.live{color:var(--green)}
+    .stat-lbl.err{color:var(--red)}
+
+    /* ── Disclaimer ── */
+    .disc{background:rgba(245,158,11,.07);border-bottom:1px solid rgba(245,158,11,.18);padding:8px 14px;display:flex;align-items:flex-start;gap:7px;font-size:11px;color:#b45309;line-height:1.45}
+    .disc strong{color:#d97706}
+
+    /* ── Record bar ── */
+    .rec-bar{background:var(--surf);border-bottom:1px solid var(--border);padding:9px 14px 8px;display:flex;align-items:center;justify-content:space-between;gap:6px;flex-wrap:wrap}
+    .rec-cells{display:flex;gap:12px;align-items:center;flex:1;min-width:0}
+    .rec-cell{text-align:center}
+    .rec-num{font-size:17px;font-weight:800;line-height:1}
+    .rec-num.win-num{color:var(--green)}
+    .rec-num.loss-num{color:var(--red)}
+    .rec-num.push-num{color:var(--amber)}
+    .rec-num.open-num{color:var(--sub)}
+    .rec-lbl{font-size:9px;font-weight:600;color:var(--sub);text-transform:uppercase;letter-spacing:.06em;margin-top:2px}
+    .rec-sep{width:1px;height:28px;background:var(--border)}
+    .rec-roi{font-size:11px;font-weight:700;padding:3px 8px;border-radius:20px;border:1px solid var(--border)}
+    .rec-roi.pos{color:var(--green);background:rgba(34,197,94,.1);border-color:rgba(34,197,94,.25)}
+    .rec-roi.neg{color:var(--red);background:rgba(239,68,68,.1);border-color:rgba(239,68,68,.25)}
+    .rec-roi.zero{color:var(--sub);background:var(--surf2)}
+    .hit-badge{font-size:11px;font-weight:800;padding:3px 8px;border-radius:20px;border:1px solid;white-space:nowrap}
+    .hit-badge.hi{color:#4ade80;background:rgba(74,222,128,.12);border-color:rgba(74,222,128,.35)}
+    .hit-badge.mid{color:#fbbf24;background:rgba(251,191,36,.1);border-color:rgba(251,191,36,.3)}
+    .hit-badge.lo{color:#f87171;background:rgba(248,113,113,.1);border-color:rgba(248,113,113,.3)}
+    .hit-badge.zero{color:var(--sub);background:var(--surf2);border-color:var(--border)}
+    .rec-badges{display:flex;gap:5px;align-items:center;flex-shrink:0}
+    .streak-badge{font-size:11px;font-weight:800;padding:3px 8px;border-radius:20px;border:1px solid;white-space:nowrap}
+    .streak-badge.w{color:#4ade80;background:rgba(74,222,128,.12);border-color:rgba(74,222,128,.35)}
+    .streak-badge.l{color:#f87171;background:rgba(248,113,113,.1);border-color:rgba(248,113,113,.3)}
+    .streak-badge.p{color:var(--sub);background:var(--surf2);border-color:var(--border)}
+    /* Date history */
+    .date-hist-hdr{font-size:10px;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:.08em;padding:14px 14px 6px}
+    .date-hist-row{background:var(--surf);border:1px solid var(--border);border-radius:10px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+    .date-hist-label{font-size:12px;font-weight:600;color:var(--text)}
+    .date-hist-record{font-size:12px;font-weight:700}
+    .date-hist-record .dw{color:var(--green)}
+    .date-hist-record .dl{color:var(--red)}
+    .date-hist-wrap{padding:0 12px 12px}
+    /* ── Stats card grid (ROI tab) ── */
+    .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 12px 8px}
+    .stat-card{background:var(--surf);border:1px solid var(--border);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:3px}
+    .stat-card.accent-green{border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.05)}
+    .stat-card.accent-blue{border-color:rgba(59,130,246,.3);background:rgba(59,130,246,.05)}
+    .stat-card.accent-amber{border-color:rgba(245,158,11,.3);background:rgba(245,158,11,.05)}
+    .stat-card.accent-red{border-color:rgba(239,68,68,.3);background:rgba(239,68,68,.05)}
+    .stat-card.full{grid-column:1/-1}
+    .stat-card-lbl{font-size:9px;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:.08em}
+    .stat-card-val{font-size:20px;font-weight:800;color:var(--text);line-height:1.15}
+    .stat-card-val.pos{color:var(--green)}
+    .stat-card-val.neg{color:var(--red)}
+    .stat-card-sub{font-size:10px;color:var(--sub);font-weight:500}
+    /* tier records table */
+    .tier-table{width:100%;border-collapse:collapse;font-size:11px}
+    .tier-table th{font-size:9px;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:.07em;padding:5px 8px;text-align:left;border-bottom:1px solid var(--border)}
+    .tier-table th:not(:first-child){text-align:right}
+    .tier-table td{padding:7px 8px;border-bottom:1px solid rgba(255,255,255,.04)}
+    .tier-table td:not(:first-child){text-align:right;font-weight:700}
+    .tier-table tr:last-child td{border-bottom:none}
+    .tier-lbl{display:flex;align-items:center;gap:5px;font-weight:700}
+    .tier-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+    .tier-dot.nuke{background:#f5c542}
+    .tier-dot.diamond{background:#60a5fa}
+    .tier-dot.gold{background:#f59e0b}
+
+    /* ── Section header ── */
+    .sec-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 14px 8px}
+    .sec-title{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:.08em}
+    .cnt-badge{font-size:10px;font-weight:600;background:var(--surf2);border:1px solid var(--border);color:var(--sub);border-radius:20px;padding:2px 8px}
+
+    /* ── Featured section ── */
+    .featured-wrap{padding:0 12px 6px}
+
+    /* ── Pick grid ── */
+    .pick-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;padding:0 12px 6px;align-items:stretch}
+    .pick-card{border-radius:12px;overflow:hidden;position:relative;border:1px solid var(--border);background:var(--surf);cursor:pointer;transition:box-shadow .15s;display:flex;flex-direction:column}
+    .pick-card.nuke{background:rgba(245,197,66,.08);border-color:rgba(245,197,66,.4)}
+    .pick-card.diamond{background:rgba(59,130,246,.07);border-color:rgba(59,130,246,.2)}
+    .pick-card.gold{background:rgba(245,158,11,.07);border-color:rgba(245,158,11,.35)}
+    .pick-card.win{border-color:rgba(34,197,94,.3);opacity:.85}
+    .pick-card.loss{border-color:rgba(239,68,68,.3);opacity:.85}
+    .pick-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;border-radius:12px 0 0 12px}
+    .pick-card.nuke::before{background:var(--yellow)}
+    .pick-card.diamond::before{background:var(--blue)}
+    .pick-card.gold::before{background:#f59e0b}
+    @keyframes nuke-glow{0%,100%{box-shadow:0 0 5px rgba(245,197,66,.4),0 0 0 0 rgba(245,197,66,.1)}50%{box-shadow:0 0 18px rgba(245,197,66,.8),0 0 36px rgba(245,197,66,.35)}}
+    .pick-card.nuke{animation:nuke-glow 2.4s ease-in-out infinite}
+    @keyframes badge-pulse{0%,100%{box-shadow:0 0 0 0 rgba(245,197,66,.0)}50%{box-shadow:0 0 6px 2px rgba(245,197,66,.55)}}
+    .tier-badge.nuke{animation:badge-pulse 2.4s ease-in-out infinite}
+    @keyframes nuke-symbol{
+      0%  {color:#ef4444;transform:scale(1)   ;filter:drop-shadow(0 0 3px rgba(239,68,68,.9))}
+      33% {color:#f97316;transform:scale(1.12);filter:drop-shadow(0 0 7px rgba(249,115,22,.9))}
+      66% {color:#f5c542;transform:scale(1.18);filter:drop-shadow(0 0 10px rgba(245,197,66,.9))}
+      100%{color:#ef4444;transform:scale(1)   ;filter:drop-shadow(0 0 3px rgba(239,68,68,.9))}
+    }
+    .nuke-symbol{font-size:22px;line-height:1;animation:nuke-symbol 2.4s ease-in-out infinite;display:block;margin:6px 0 2px;transform-origin:center}
+    .pick-inner{padding:10px 10px 10px 14px;flex:1;display:flex;flex-direction:column}
+    .pick-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px}
+    .tier-badge{font-size:9px;font-weight:700;border-radius:4px;padding:2px 6px;letter-spacing:.04em;text-transform:uppercase;border:1px solid transparent;display:inline-flex;align-items:center;gap:3px;white-space:nowrap}
+    .tier-badge.nuke{background:rgba(245,197,66,.2);border-color:rgba(245,197,66,.55);color:#f5c542}
+    .tier-badge.diamond{background:rgba(59,130,246,.18);border-color:rgba(59,130,246,.4);color:#93c5fd}
+    .tier-badge.gold{background:rgba(245,158,11,.18);border-color:rgba(245,158,11,.5);color:#fbbf24}
+    .tier-badge.value{background:rgba(107,114,128,.15);border-color:rgba(107,114,128,.3);color:var(--sub)}
+    .sport-badge{font-size:9px;font-weight:600;color:var(--sub);background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:4px;padding:2px 5px;white-space:nowrap}
+    .pick-name{font-size:14px;font-weight:700;color:var(--text);line-height:1.2;margin-bottom:4px;word-break:break-word}
+    .pick-sub{font-size:10px;color:var(--sub);margin-top:-2px;margin-bottom:2px;font-weight:500}
+    .pick-matchup{font-size:9px;color:var(--sub);margin-bottom:4px;font-weight:600;opacity:.75;letter-spacing:.02em}
+    .edge-pill{display:inline-flex;align-items:center;background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.28);color:var(--green);border-radius:20px;font-size:10px;font-weight:700;padding:2px 7px;margin-bottom:4px}
+    .edge-pill.loss{background:rgba(239,68,68,.13);border-color:rgba(239,68,68,.35);color:var(--red)}
+    .edge-pill.push{background:rgba(245,158,11,.12);border-color:rgba(245,158,11,.35);color:var(--amber)}
+    .pick-mkt{font-size:10px;color:var(--sub);line-height:1.4;margin-bottom:5px}
+    .odds-hi{color:var(--orange);font-weight:700}
+    .conf-badge{display:inline-block;font-size:9px;font-weight:700;color:var(--sub);background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:4px;padding:1px 5px;margin-left:5px;letter-spacing:.01em}
+    .outcome-stamp{display:block;font-size:9px;font-weight:600;padding:2px 7px;border-radius:4px;border:1px solid transparent;margin-bottom:4px;margin-top:auto;align-self:flex-start}
+    .outcome-stamp.open{color:var(--sub);background:rgba(255,255,255,.04);border-color:var(--border)}
+    .outcome-stamp.win{color:var(--green);background:rgba(34,197,94,.12);border-color:rgba(34,197,94,.3)}
+    .outcome-stamp.loss{color:var(--red);background:rgba(239,68,68,.1);border-color:rgba(239,68,68,.3)}
+    .outcome-stamp.push{color:var(--amber);background:rgba(245,158,11,.1);border-color:rgba(245,158,11,.3)}
+    .pick-cta{font-size:10px;color:var(--amber);display:flex;align-items:center;justify-content:space-between;opacity:.85;user-select:none;margin-top:auto}
+    .pick-cta .chev{transition:transform .2s;display:inline-block}
+    .pick-card.expanded .pick-cta .chev{transform:rotate(180deg)}
+    .pick-expand{display:none;border-top:1px solid var(--border);margin-top:6px;padding-top:7px}
+    .pick-card.expanded .pick-expand{display:block}
+    .exp-row{display:flex;justify-content:space-between;align-items:center;font-size:10px;padding:2px 0}
+    .exp-lbl{color:var(--sub)}
+    .exp-val{font-weight:600;color:var(--text);text-align:right;max-width:60%}
+
+    /* Player headshot */
+    .player-face{position:absolute;top:8px;right:8px;width:40px;height:40px;border-radius:50%;object-fit:cover;object-position:top center;border:2px solid var(--border);background:var(--surf2);display:none;z-index:2}
+    .player-face.loaded{display:block}
+    .has-face .pick-top{padding-right:48px}
+
+    /* Game time chip */
+    .game-time-chip{font-size:9px;color:var(--sub);display:flex;align-items:center;gap:3px;margin-bottom:3px;opacity:.85}
+
+    /* High-confidence alert */
+    @keyframes siren{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.25)}}
+    .alert-siren{font-size:14px;display:inline-block;animation:siren .7s ease-in-out infinite;margin-left:5px;vertical-align:middle}
+
+    /* ── Skeleton ── */
+    .skel{height:150px;background:linear-gradient(90deg,var(--surf) 25%,var(--surf2) 50%,var(--surf) 75%);background-size:200% 100%;animation:shim 1.4s infinite;border-radius:12px;border:1px solid var(--border)}
+    @keyframes shim{0%{background-position:200% 0}100%{background-position:-200% 0}}
+    .skel-feat{height:96px;border-radius:14px}
+    .skel-short{height:60px;border-radius:10px}
+
+    /* ── Empty / error ── */
+    .empty{grid-column:1/-1;padding:32px 16px;text-align:center;color:var(--sub)}
+    .empty .eicon{font-size:34px;margin-bottom:10px}
+    .empty p{font-size:13px;line-height:1.5}
+
+    /* ── Tab pages ── */
+    .tab-page{display:none}
+    .tab-page.active{display:block}
+
+    /* ── ROI tab ── */
+    .roi-wrap{padding:0 12px 12px;display:flex;flex-direction:column;gap:8px}
+    .roi-row{background:var(--surf);border:1px solid var(--border);border-radius:10px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between}
+    .roi-sport{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:600}
+    .roi-nums{display:flex;gap:12px;align-items:center}
+    .roi-stat{text-align:center}
+    .roi-stat-n{font-size:14px;font-weight:700;line-height:1}
+    .roi-stat-l{font-size:9px;color:var(--sub);text-transform:uppercase;letter-spacing:.05em;margin-top:2px}
+
+    /* ── Sport sections (slate + games tab) ── */
+    .slate-sections{padding:0 12px 12px;display:flex;flex-direction:column;gap:12px}
+    .sport-section{}
+    .sport-section-hdr{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;border-radius:10px 10px 0 0;cursor:pointer;user-select:none;border:2px solid;border-bottom:none}
+    .sport-section-hdr .sport-sec-left{display:flex;align-items:center;gap:8px}
+    .sport-section-hdr .sport-sec-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em}
+    .sport-section-hdr .sport-sec-count{font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px;border:1px solid rgba(255,255,255,.2)}
+    .sport-section-hdr .sec-chev{font-size:10px;transition:transform .2s;display:inline-block}
+    .sport-section-hdr.open .sec-chev{transform:rotate(180deg)}
+    .sport-section-hdr.mlb{border-color:rgba(249,115,22,.7);background:rgba(249,115,22,.09);color:#fb923c}
+    .sport-section-hdr.wnba{border-color:rgba(236,72,153,.7);background:rgba(236,72,153,.09);color:#f472b6}
+    .sport-section-hdr.nba{border-color:rgba(59,130,246,.75);background:rgba(59,130,246,.1);color:#60a5fa}
+    .sport-section-body{border:2px solid var(--border);border-top:none;border-radius:0 0 10px 10px;display:grid;grid-template-columns:1fr 1fr;gap:9px;padding:9px}
+    .sport-section-body.collapsed{display:none}
+    .sport-section.mlb  .sport-section-body{border-color:rgba(249,115,22,.35)}
+    .sport-section.wnba .sport-section-body{border-color:rgba(236,72,153,.35)}
+    .sport-section.nba  .sport-section-body{border-color:rgba(59,130,246,.35)}
+    .sport-section-body.props-body{display:flex;flex-direction:column;gap:0;padding:0}
+    .game-card-list.collapsed{display:none}
+    .sport-section.mlb  .game-card-list{border-color:rgba(249,115,22,.35)}
+    .sport-section.wnba .game-card-list{border-color:rgba(236,72,153,.35)}
+    .sport-section.nba  .game-card-list{border-color:rgba(59,130,246,.35)}
+
+    /* ── Game card v2 — full-width, always-visible odds ── */
+    .game-card-list{border:2px solid var(--border);border-top:none;border-radius:0 0 10px 10px;overflow:hidden;display:flex;flex-direction:column;gap:1px;background:var(--border)}
+    .gc2{background:var(--surf);position:relative;overflow:hidden}
+    .gc2::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px}
+    .sport-section.mlb  .gc2::before{background:var(--orange)}
+    .sport-section.wnba .gc2::before{background:#ec4899}
+    .sport-section.nba  .gc2::before{background:var(--blue)}
+    /* header row: teams + time */
+    .gc2-hdr{display:flex;align-items:center;justify-content:space-between;padding:9px 12px 7px 14px;gap:8px;border-bottom:1px solid rgba(255,255,255,.05)}
+    .gc2-teams{display:flex;align-items:center;gap:5px;flex:1;min-width:0}
+    .gc2-away{font-size:13px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .gc2-at{font-size:10px;color:var(--sub);font-weight:600;flex-shrink:0}
+    .gc2-home{font-size:13px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .gc2-time{font-size:11px;font-weight:700;color:var(--amber);white-space:nowrap;flex-shrink:0}
+    /* 3-column odds grid: Spread | ML | Total */
+    .gc2-odds{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:rgba(255,255,255,.04)}
+    .gc2-col{background:var(--surf);padding:7px 10px 8px}
+    .gc2-col-hdr{font-size:8px;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px;white-space:nowrap}
+    .gc2-line{display:flex;align-items:center;justify-content:space-between;gap:3px;padding:1px 0}
+    .gc2-lbl{font-size:10px;font-weight:600;color:var(--text);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .gc2-pts{font-size:9px;color:var(--sub);font-weight:600;white-space:nowrap;margin-right:1px}
+    .gc2-price{font-size:10px;font-weight:700;color:var(--amber);white-space:nowrap}
+    .gc2-na{font-size:10px;color:var(--sub);font-style:italic;padding:4px 0}
+
+    /* ── Props category sections ── */
+    .props-sections{padding:0 12px 12px;display:flex;flex-direction:column;gap:12px}
+    .cat-section{}
+    .cat-section-hdr{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;border-radius:10px 10px 0 0;cursor:pointer;user-select:none;border:2px solid rgba(139,92,246,.65);border-bottom:none;background:rgba(139,92,246,.09);color:#c4b5fd}
+    .cat-section-hdr .cat-sec-left{display:flex;align-items:center;gap:8px}
+    .cat-section-hdr .cat-sec-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em}
+    .cat-section-hdr .cat-sec-count{font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px;border:1px solid rgba(139,92,246,.4);color:#c4b5fd}
+    .cat-section-hdr .sec-chev{font-size:10px;transition:transform .2s;display:inline-block}
+    .cat-section-hdr.open .sec-chev{transform:rotate(180deg)}
+    .cat-section-body{border:2px solid var(--border);border-top:none;border-radius:0 0 10px 10px;overflow:hidden}
+    .cat-section-body.collapsed{display:none}
+    .cat-section-body .pick-grid{padding:8px;gap:8px}
+    /* pick-grid inside sport-section-body must span both columns of the parent grid */
+    .sport-section-body > .pick-grid{grid-column:1/-1;padding:8px;gap:8px}
+
+    /* ── Elite fallback banner ── */
+    .elite-fb-banner{display:none;background:rgba(107,114,128,.09);border:1px solid rgba(107,114,128,.22);border-radius:10px;padding:10px 14px;margin:0 12px 10px;font-size:11px;color:var(--sub);text-align:center;font-weight:600;line-height:1.55}
+    .elite-fb-banner.visible{display:block}
+    .elite-fb-banner strong{color:var(--text)}
+    /* Fallback slot label on featured card */
+    .fb-slot-lbl{font-size:9px;font-weight:700;padding:2px 7px;border-radius:4px;display:inline-flex;align-items:center;gap:3px;margin-bottom:5px;white-space:normal;background:rgba(107,114,128,.14);border:1px solid rgba(107,114,128,.28);color:var(--sub);line-height:1.4}
+    /* Rank badge for top-3 no-elite mode */
+    .fb-rank{font-size:20px;font-weight:800;color:var(--sub);opacity:.55;display:block;margin:4px 0 1px;line-height:1}
+
+    /* ── Pregame revalidation banner ── */
+    .reval-banner{background:rgba(239,68,68,.11);border-bottom:1px solid rgba(239,68,68,.28);padding:8px 14px;display:none;align-items:center;justify-content:space-between;gap:8px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+    .reval-banner.visible{display:flex}
+    .reval-banner-left{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:#f87171}
+    .reval-banner-cnt{font-size:10px;background:rgba(239,68,68,.18);border:1px solid rgba(239,68,68,.35);color:#f87171;border-radius:20px;padding:2px 8px;font-weight:700}
+    .reval-banner-more{font-size:10px;color:#f87171;opacity:.65;transition:opacity .15s}
+    .reval-panel{background:rgba(239,68,68,.06);border-bottom:1px solid rgba(239,68,68,.18);max-height:0;overflow:hidden;transition:max-height .35s ease}
+    .reval-panel.open{max-height:700px;overflow-y:auto}
+    .live-score-strip{font-size:10px;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);border-radius:6px;padding:3px 8px;margin-bottom:4px;color:#f87171;font-weight:700;display:flex;align-items:center;gap:5px}
+    .live-score-strip.final{background:rgba(107,114,128,.1);border-color:rgba(107,114,128,.3);color:var(--sub)}
+    .prop-tracker{margin:6px 0 2px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:6px 10px 8px;font-size:11px}
+    .prop-tracker.live{border-color:rgba(239,68,68,.35);background:rgba(239,68,68,.06)}
+    .prop-tracker.won{border-color:rgba(34,197,94,.35);background:rgba(34,197,94,.06)}
+    .prop-tracker.lost{border-color:rgba(248,113,113,.35);background:rgba(248,113,113,.06)}
+    .pt-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+    .pt-label{font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:.05em;font-size:10px}
+    .pt-live-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#ef4444;margin-right:3px;animation:pt-blink 1s infinite;vertical-align:middle}
+    @keyframes pt-blink{0%,100%{opacity:1}50%{opacity:.2}}
+    .pt-status{color:var(--sub);font-size:10px}
+    .pt-count{display:flex;align-items:baseline;gap:3px;margin-bottom:5px}
+    .pt-current{font-size:22px;font-weight:800;line-height:1}
+    .pt-current.winning{color:#22c55e}
+    .pt-current.losing{color:#f87171}
+    .pt-sep{color:var(--sub);font-size:13px}
+    .pt-line{color:var(--sub);font-size:13px}
+    .pt-bar-wrap{height:4px;background:rgba(255,255,255,.1);border-radius:2px;overflow:hidden}
+    .pt-bar{height:100%;border-radius:2px;transition:width .5s ease}
+    .pt-bar.on-track{background:#22c55e}
+    .pt-bar.close{background:#f59e0b}
+    .pt-bar.danger{background:#f87171}
+    .pt-pregame{color:var(--sub);font-size:10px;text-align:center;padding:2px 0}
+    /* Revalidation badge on pick card */
+    .reval-badge{font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;display:inline-flex;align-items:center;gap:3px;margin-bottom:4px;white-space:nowrap}
+    .reval-badge.voided{background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.4);color:#f87171}
+    .reval-badge.downgraded{background:rgba(249,115,22,.12);border:1px solid rgba(249,115,22,.3);color:#fb923c}
+    .reval-badge.upgraded{background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.28);color:#4ade80}
+    .reval-badge.edge-warning{background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.3);color:#fbbf24}
+    .reval-badge.edge-reversal{background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.4);color:#f87171}
+    /* Revalidation change log in pick expand */
+    .reval-log{margin-top:8px;padding-top:8px;border-top:1px solid var(--border)}
+    .reval-log-hdr{font-size:9px;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px}
+    .reval-reason{font-size:10px;color:var(--sub);line-height:1.5}
+    /* voided card dim + strikethrough */
+    .pick-card.reval-voided{opacity:.65;filter:grayscale(.35)}
+    .pick-card.reval-voided .pick-name{text-decoration:line-through;text-decoration-color:rgba(239,68,68,.6)}
+
+    /* ── V3.0 Pick Status Banner ── */
+    .pick-status-banner{font-size:10px;font-weight:700;padding:5px 10px;border-radius:6px;margin-bottom:5px;display:flex;align-items:center;gap:4px;letter-spacing:.02em}
+    .pick-status-banner.voided{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.35);color:#f87171}
+    .pick-status-banner.downgraded{background:rgba(249,115,22,.1);border:1px solid rgba(249,115,22,.3);color:#fb923c}
+    .pick-status-banner.upgraded{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);color:#4ade80}
+    .pick-status-banner.edge-warning{background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.3);color:#fbbf24}
+    .pick-status-banner.edge-reversal{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.35);color:#f87171}
+    /* LOCKED badge — shown on active published picks */
+    .locked-badge{font-size:9px;font-weight:700;padding:2px 7px;border-radius:4px;display:inline-flex;align-items:center;gap:3px;background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.28);color:#a5b4fc;letter-spacing:.03em;white-space:nowrap;margin-left:4px}
+
+    /* ── V3.0 Edge Row + Classification Chip ── */
+    .edge-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:3px}
+    .edge-class-chip{font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;border:1px solid;display:inline-flex;align-items:center;white-space:nowrap;letter-spacing:.03em}
+
+    /* ── Slate version bar ── */
+    .sv-bar{display:none;padding:0 12px 8px;margin-top:-2px}
+    .sv-tabs{display:flex;gap:6px;flex-wrap:wrap}
+    .sv-tab{font-size:9px;font-weight:700;padding:3px 9px;border-radius:20px;border:1px solid var(--border);color:var(--sub);background:var(--surf);white-space:nowrap;letter-spacing:.04em}
+    .sv-tab.active{background:rgba(139,92,246,.18);border-color:rgba(139,92,246,.55);color:#c4b5fd}
+    .sv-latest-dot{display:inline-block;margin-left:4px;font-size:7px;padding:1px 4px;border-radius:3px;background:rgba(139,92,246,.28);color:#ddd6fe;vertical-align:middle}
+    .sv-locked-icon{font-size:8px;margin-right:2px}
+
+    /* ── Changelog section ── */
+    .changelog-section{margin:0 12px 10px;border-radius:10px;border:1px solid rgba(239,68,68,.35);overflow:hidden;display:none}
+    .changelog-hdr{display:flex;align-items:center;gap:8px;padding:9px 12px;background:rgba(239,68,68,.08);cursor:pointer;-webkit-tap-highlight-color:transparent}
+    .changelog-hdr-title{font-size:11px;font-weight:700;color:#f87171;flex:1}
+    .changelog-chev{font-size:10px;color:#f87171;transition:transform .2s;display:inline-block}
+    .changelog-chev.open{transform:rotate(180deg)}
+    .changelog-body{padding:8px;display:flex;flex-direction:column;gap:6px;background:var(--card)}
+    .changelog-body.collapsed{display:none}
+    .changelog-entry{display:flex;gap:8px;align-items:flex-start;padding:8px 10px;border-radius:8px;border:1px solid var(--border);background:var(--surf)}
+    .changelog-entry.ch-added{border-color:rgba(34,197,94,.35);background:rgba(34,197,94,.06)}
+    .changelog-entry.ch-removed{border-color:rgba(239,68,68,.35);background:rgba(239,68,68,.06)}
+    .changelog-entry.ch-modified{border-color:rgba(251,191,36,.35);background:rgba(251,191,36,.05)}
+    .ch-icon{font-size:14px;line-height:1;margin-top:1px;flex-shrink:0}
+    .ch-body{flex:1;min-width:0}
+    .ch-name{font-size:11px;font-weight:700;color:var(--text);line-height:1.3;margin-bottom:2px}
+    .ch-detail{font-size:10px;color:var(--sub);margin-bottom:2px;line-height:1.4}
+    .ch-meta{font-size:9px;color:var(--sub);opacity:.7;font-weight:600;letter-spacing:.02em}
+
+    /* ── Bottom nav ── */
+    .bot-nav{position:fixed;bottom:0;left:0;right:0;background:var(--surf);border-top:1px solid var(--border);display:flex;z-index:20;padding-bottom:env(safe-area-inset-bottom,0px)}
+    .nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 2px 6px;gap:3px;cursor:pointer;color:var(--sub);font-size:8px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;border:none;background:none;-webkit-tap-highlight-color:transparent}
+    .nav-btn.active{color:var(--blue)}
+    .nav-icon{font-size:17px;line-height:1}
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="hdr">
+    <div class="hdr-brand">⚡ DaPickSyndicate</div>
+    <div class="stat-row">
+      <div class="stat-dot loading" id="dot"></div>
+      <span class="stat-lbl" id="stat-lbl">Loading…</span>
+    </div>
+  </div>
+
+  <!-- Disclaimer -->
+  <div class="disc">
+    <span>⚠</span>
+    <span><strong>Not financial advice.</strong> For entertainment only. Please gamble responsibly. 1-800-GAMBLER</span>
+  </div>
+
+  <!-- Pregame revalidation banner (hidden until updates arrive) -->
+  <div class="reval-banner" id="reval-banner" onclick="toggleRevalPanel()">
+    <div class="reval-banner-left">
+      <span>🚨</span>
+      <span id="reval-banner-text">PREGAME UPDATES</span>
+      <span class="reval-banner-cnt" id="reval-banner-cnt">0</span>
+    </div>
+    <span class="reval-banner-more" id="reval-banner-chev">▼ Show Picks</span>
+  </div>
+  <div class="reval-panel" id="reval-panel">
+    <div class="pick-grid" id="reval-panel-picks" style="padding:8px 4px"></div>
+  </div>
+
+  <!-- Record bar — cumulative lifetime stats -->
+  <div class="rec-bar">
+    <div class="rec-cells">
+      <div class="rec-cell"><div class="rec-num win-num"  id="r-w">—</div><div class="rec-lbl">Won</div></div>
+      <div class="rec-sep"></div>
+      <div class="rec-cell"><div class="rec-num loss-num" id="r-l">—</div><div class="rec-lbl">Lost</div></div>
+      <div class="rec-sep"></div>
+      <div class="rec-cell"><div class="rec-num open-num" id="r-o">—</div><div class="rec-lbl">Open</div></div>
+    </div>
+    <div class="rec-badges">
+      <span class="hit-badge zero" id="r-hit">— Hit</span>
+      <span class="streak-badge p" id="r-streak" style="display:none"></span>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════ HOME TAB ═══════════════════════════ -->
+  <div class="tab-page active" id="page-home">
+
+    <!-- Featured picks (Nuke + Diamond) -->
+    <div class="sec-hdr">
+      <div class="sec-title"><span>🔥</span> TODAY'S BROADCAST</div>
+      <span class="cnt-badge" id="picks-count">—</span>
+    </div>
+
+    <!-- Slate version pills — hidden until slate_versions data loads -->
+    <div class="sv-bar" id="sv-bar">
+      <div class="sv-tabs" id="sv-tabs"></div>
+    </div>
+
+    <div class="featured-wrap" id="featured-wrap">
+      <div class="pick-grid" style="padding:0"><div class="skel skel-feat"></div><div class="skel skel-feat"></div></div>
+    </div>
+    <!-- Elite fallback info banner (JS-controlled visibility) -->
+    <div class="elite-fb-banner" id="elite-fb-banner"></div>
+
+    <!-- Slate change log — only visible when reruns produced changes today -->
+    <div class="changelog-section" id="changelog-section">
+      <div class="changelog-hdr" id="changelog-hdr" onclick="toggleChangelog()">
+        <span style="font-size:14px">🚨</span>
+        <span class="changelog-hdr-title">SLATE CHANGE LOG</span>
+        <span class="cnt-badge" id="changelog-badge" style="background:rgba(239,68,68,.18);border-color:rgba(239,68,68,.5);color:#f87171">—</span>
+        <span class="changelog-chev" id="changelog-chev">▼</span>
+      </div>
+      <div class="changelog-body" id="changelog-body"></div>
+    </div>
+
+    <!-- Today's Slate — sport-grouped expandable game cards -->
+    <div class="sec-hdr" style="margin-top:6px">
+      <div class="sec-title"><span>📅</span> TODAY'S SLATE</div>
+      <span class="cnt-badge" id="slate-count">—</span>
+    </div>
+    <div class="slate-sections" id="slate-home">
+      <div class="skel skel-short"></div>
+      <div class="skel skel-short"></div>
+    </div>
+
+  </div>
+
+  <!-- ═══════════════════════════ PROPS TAB ═══════════════════════════ -->
+  <div class="tab-page" id="page-props">
+    <div class="sec-hdr">
+      <div class="sec-title"><span>👤</span> PLAYER PROPS</div>
+      <span class="cnt-badge" id="props-count">—</span>
+    </div>
+    <div class="props-sections" id="props-sections">
+      <div class="skel skel-short"></div>
+      <div class="skel skel-short"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════ GAMES TAB ═══════════════════════════ -->
+  <div class="tab-page" id="page-games">
+    <div class="sec-hdr">
+      <div class="sec-title"><span>🎮</span> TODAY'S GAME PICKS</div>
+      <span class="cnt-badge" id="games-count">—</span>
+    </div>
+    <div class="slate-sections" id="games-list">
+      <div class="skel skel-short"></div>
+      <div class="skel skel-short"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════ IN-GAME TAB ══════════════════════════ -->
+  <div class="tab-page" id="page-ingame">
+    <div class="sec-hdr">
+      <div class="sec-title"><span>⚡</span> IN-GAME</div>
+      <span class="cnt-badge" id="ingame-count">—</span>
+    </div>
+    <div class="slate-sections" id="ingame-list">
+      <div class="skel skel-short"></div>
+      <div class="skel skel-short"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════ LINEUPS TAB ══════════════════════════ -->
+  <div class="tab-page" id="page-lineups">
+    <div class="sec-hdr">
+      <div class="sec-title"><span>📋</span> LINEUPS</div>
+    </div>
+    <div class="slate-sections">
+      <div class="empty"><div class="eicon">📋</div><p>Confirmed starting lineups and injury reports<br>will appear here before first pitch / tip-off.</p></div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════ ROI TAB ═══════════════════════════ -->
+  <div class="tab-page" id="page-roi">
+    <div class="sec-hdr">
+      <div class="sec-title"><span>📈</span> LIFETIME PERFORMANCE</div>
+    </div>
+    <!-- Big KPI cards -->
+    <div class="stats-grid" id="kpi-grid">
+      <div class="skel skel-short"></div>
+      <div class="skel skel-short"></div>
+      <div class="skel skel-short"></div>
+      <div class="skel skel-short"></div>
+    </div>
+    <!-- Streak cards -->
+    <div class="date-hist-hdr">🔥 Streaks</div>
+    <div class="stats-grid" id="streak-grid">
+      <div class="skel skel-short"></div>
+      <div class="skel skel-short"></div>
+    </div>
+    <!-- Tier breakdown -->
+    <div class="date-hist-hdr">🏷️ By Tier</div>
+    <div style="padding:0 12px 8px" id="tier-wrap">
+      <div class="skel skel-short"></div>
+    </div>
+    <!-- Sport breakdown -->
+    <div class="date-hist-hdr">🏟️ By Sport</div>
+    <div class="roi-wrap" id="roi-wrap">
+      <div class="skel skel-short"></div>
+      <div class="skel skel-short"></div>
+    </div>
+    <!-- Market breakdown -->
+    <div class="date-hist-hdr">📈 By Market</div>
+    <div style="padding:0 12px 8px" id="market-wrap">
+      <div class="skel skel-short"></div>
+    </div>
+    <!-- Rolling windows -->
+    <div class="date-hist-hdr">📊 Rolling Windows</div>
+    <div class="stats-grid" id="window-grid">
+      <div class="skel skel-short"></div>
+      <div class="skel skel-short"></div>
+    </div>
+    <!-- Daily history -->
+    <div class="date-hist-hdr">📅 Daily History</div>
+    <div class="date-hist-wrap" id="date-hist-wrap">
+      <div class="skel skel-short"></div>
+      <div class="skel skel-short"></div>
+    </div>
+  </div>
+
+  <!-- Bottom Nav -->
+  <nav class="bot-nav">
+    <button class="nav-btn active" data-tab="home"><span class="nav-icon">🏠</span>HOME</button>
+    <button class="nav-btn" data-tab="props"><span class="nav-icon">👤</span>PROPS</button>
+    <button class="nav-btn" data-tab="games"><span class="nav-icon">🎮</span>GAMES</button>
+    <button class="nav-btn" data-tab="ingame"><span class="nav-icon">⚡</span>IN-GAME</button>
+    <button class="nav-btn" data-tab="lineups"><span class="nav-icon">📋</span>LINEUPS</button>
+    <button class="nav-btn" data-tab="roi"><span class="nav-icon">📈</span>ROI</button>
+  </nav>
+
+  <script>
+    const API_BASE = '';
+
+    if (window.Telegram?.WebApp) {
+      Telegram.WebApp.ready();
+      Telegram.WebApp.expand();
+    }
+
+    // ── Tab switching ────────────────────────────────────────────────
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tab = btn.dataset.tab;
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-page').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('page-' + tab).classList.add('active');
+      });
+    });
+
+    // ── Card tap → expand / collapse (pick cards) ────────────────────
+    document.addEventListener('click', e => {
+      // Pick card expand
+      const card = e.target.closest('.pick-card');
+      if (card) {
+        if (card.classList.contains('win') || card.classList.contains('loss') || card.classList.contains('push')) return;
+        card.classList.toggle('expanded');
+        return;
+      }
+      // Game card expand
+      const gc = e.target.closest('.game-card');
+      if (gc) {
+        gc.classList.toggle('expanded');
+        return;
+      }
+      // Sport section toggle
+      const sh = e.target.closest('.sport-section-hdr');
+      if (sh) {
+        sh.classList.toggle('open');
+        const body = sh.nextElementSibling;
+        if (body) body.classList.toggle('collapsed');
+        return;
+      }
+      // Props category section toggle
+      const ch = e.target.closest('.cat-section-hdr');
+      if (ch) {
+        ch.classList.toggle('open');
+        const body = ch.nextElementSibling;
+        if (body) body.classList.toggle('collapsed');
+        return;
+      }
+    });
+
+    // ── Sport-aware team name lookup ─────────────────────────────────
+    const TEAMS = {
+      MLB: {
+        TB:'Tampa Bay Rays',   DET:'Detroit Tigers',    SEA:'Seattle Mariners',
+        MIN:'Minnesota Twins', MIL:'Milwaukee Brewers', ARI:'Arizona Diamondbacks',
+        LAA:'Los Angeles Angels', CIN:'Cincinnati Reds', STL:'St. Louis Cardinals',
+        KC:'Kansas City Royals',  NYY:'New York Yankees', BOS:'Boston Red Sox',
+        LAD:'Los Angeles Dodgers',HOU:'Houston Astros',   ATL:'Atlanta Braves',
+        PHI:'Philadelphia Phillies',SD:'San Diego Padres',SF:'San Francisco Giants',
+        CHC:'Chicago Cubs',  CHW:'Chicago White Sox', COL:'Colorado Rockies',
+        MIA:'Miami Marlins', OAK:'Oakland Athletics', PIT:'Pittsburgh Pirates',
+        TEX:'Texas Rangers', TOR:'Toronto Blue Jays', WSH:'Washington Nationals',
+        NYM:'New York Mets', CLE:'Cleveland Guardians',BAL:'Baltimore Orioles',
+      },
+      WNBA: {
+        PHX:'Phoenix Mercury', SEA:'Seattle Storm',   MIN:'Minnesota Lynx',
+        DAL:'Dallas Wings',    LVA:'Las Vegas Aces',  LAS:'Los Angeles Sparks',
+        NYL:'New York Liberty',CHI:'Chicago Sky',     CON:'Connecticut Sun',
+        ATL:'Atlanta Dream',   ATD:'Atlanta Dream',   IND:'Indiana Fever',
+        WAS:'Washington Mystics', LA:'Los Angeles Sparks',
+        GOL:'Golden State Valkyries', POR:'Portland Fire',
+      },
+      NBA: {
+        GSW:'Golden State Warriors', LAL:'Los Angeles Lakers',
+        BOS:'Boston Celtics',        NYK:'New York Knicks',
+        MIA:'Miami Heat',            CHI:'Chicago Bulls',
+        BKN:'Brooklyn Nets',         SAS:'San Antonio Spurs',
+        DAL:'Dallas Mavericks',      DEN:'Denver Nuggets',
+        PHX:'Phoenix Suns',          MIL:'Milwaukee Bucks',
+      },
+    };
+    function teamName(abbr, sport) {
+      const map = TEAMS[sport] || {};
+      return map[abbr] || TEAMS.MLB[abbr] || abbr;
+    }
+
+    // ── Helpers ──────────────────────────────────────────────────────
+    function sportEmoji(s) {
+      const u = (s||'').toUpperCase();
+      if (u==='MLB')  return '⚾';
+      if (u==='WNBA'||u==='NBA') return '🏀';
+      return '🏅';
+    }
+    function fmtOdds(n) {
+      if (n==null) return '';
+      return n>0 ? '+'+n : ''+n;
+    }
+    function fmtMarket(market) {
+      if (!market) return '';
+      const norm = String(market).toLowerCase().replace(/[\s-]+/g,'_');
+      if (norm === 'team_total' || norm === 'totals') return 'Game Total';
+      if (norm === 'team_spread' || norm === 'spread') return 'Spread';
+      if (norm === 'points' || norm === 'player_points') return 'Points';
+      if (norm === 'rebounds' || norm === 'player_rebounds') return 'Rebounds';
+      if (norm === 'assists' || norm === 'player_assists') return 'Assists';
+      if (norm === 'player_threes' || norm === 'player_3s') return '3-Pointers';
+      if (norm === 'strikeouts' || norm === 'player_strikeouts') return 'Strikeouts';
+      if (norm === 'pitcher_strikeouts' || norm === 'player_pitcher_strikeouts') return 'Pitcher Ks';
+      if (norm === 'hits' || norm === 'player_hits') return 'Hits';
+      if (norm === 'bases' || norm === 'player_bases') return 'Total Bases';
+      if (norm === 'home_runs' || norm === 'player_home_runs') return 'Home Runs';
+      if (norm === 'blocks' || norm === 'player_blocks') return 'Blocks';
+      if (norm === 'steals' || norm === 'player_steals') return 'Steals';
+      if (norm === 'nrfi') return 'NRFI';
+      if (norm === 'yrfi') return 'YRFI';
+      if (norm === 'first_5' || norm === 'f5') return 'F5 Innings';
+      if (norm === 'first_half' || norm === 'h1') return '1st Half';
+      if (norm === 'first_quarter' || norm === 'q1') return '1st Quarter';
+      if (norm === 'team_total_over' || norm === 'tt') return 'Team Total';
+      return market.split(/[_\s]/).map(w=>w.charAt(0).toUpperCase()+w.slice(1)).join(' ');
+    }
+    function tierLabel(t) {
+      const v = (t||'').toLowerCase();
+      if (v==='nuke')                         return '☢ NUKE';
+      if (v==='diamond')                      return '💎 DIAMOND';
+      if (v==='gold standard' || v==='gold')  return '🥇 GOLD STANDARD';
+      // legacy backward-compat
+      if (v==='edge')                         return '🥇 GOLD STANDARD';
+      return '📋 PICK';
+    }
+    function tierCls(t) {
+      const v=(t||'').toLowerCase();
+      if (v==='nuke')                         return 'nuke';
+      if (v==='diamond')                      return 'diamond';
+      if (v==='gold standard' || v==='gold')  return 'gold';
+      // legacy backward-compat
+      if (v==='edge')                         return 'gold';
+      return '';
+    }
+    function outcomeInfo(status, outcome) {
+      const o = ((outcome||status)||'open').toLowerCase();
+      if (o==='win')  return {cls:'win',  lbl:'✅ Win'};
+      if (o==='loss') return {cls:'loss', lbl:'❌ Loss'};
+      if (o==='push') return {cls:'push', lbl:'🔄 Push'};
+      return {cls:'open', lbl:'⏳ Open'};
+    }
+
+    // V3.0 edge classification (calibrated scale 1–10%)
+    function classifyEdge(e) {
+      if (e >= 8.0) return {lbl:'Exceptional Edge', col:'#a78bfa'};
+      if (e >= 6.0) return {lbl:'Rare Edge',        col:'#818cf8'};
+      if (e >= 4.0) return {lbl:'Elite Edge',       col:'#22c55e'};
+      if (e >= 2.0) return {lbl:'Strong Edge',      col:'#4ade80'};
+      if (e >= 1.0) return {lbl:'Small Edge',       col:'var(--sub)'};
+      return              {lbl:'Marginal',           col:'var(--sub)'};
+    }
+
+    function fmtAgreement(score) {
+      if (score >= 80) return {lbl:'Strong Agreement',   col:'#22c55e'};
+      if (score >= 60) return {lbl:'Moderate Agreement', col:'#4ade80'};
+      if (score >= 40) return {lbl:'Mixed Signals',      col:'#f59e0b'};
+      return                  {lbl:'Market Disagreement',col:'#f87171'};
+    }
+
+    // ── Build headline for team-total bets ───────────────────────────
+    function pickHeadline(p) {
+      const mkt = fmtMarket(p.market);
+      const dir = p.direction==='over'?'OVER':p.direction==='under'?'UNDER':(p.direction||'').toUpperCase();
+      const line = p.line!=null?' '+p.line:'';
+      return mkt+' '+dir+line;
+    }
+
+    // ── Game-time lookup map (populated when slate loads) ────────────
+    let _gameTimeMap    = {};
+    let _gameMatchupMap = {};
+
+    // ── Composite score for ranking all picks (fallback logic) ───────
+    function compositeScore(p) {
+      const edge = parseFloat(p.edge) || 0;
+      const conf = parseFloat(p.model_probability) || 50;
+      // 60% edge + 40% confidence above 50% baseline
+      return edge * 0.6 + Math.max(0, conf - 50) * 0.4;
+    }
+
+    // ── Build a pick card (used for all picks including featured) ────
+    // opts.fallbackLabel  — slot label string (e.g. "Top Rated Play (No Nuke Qualified)")
+    // opts.rankSymbol     — large rank symbol like "#1" for no-elite mode
+    function buildCard(p, opts = {}) {
+      const tc = tierCls(p.tier);
+      const {cls:outCls,lbl:outLbl} = outcomeInfo(p.status, p.outcome);
+      const graded = outCls !== 'open';
+      const book   = p.bookmaker_source || 'DraftKings';
+      const edge   = parseFloat(p.edge)||0;
+      const name   = p.player || pickHeadline(p);
+
+      // ── Fallback slot label (does not change recorded tier) ──────
+      const fbSlotHtml = opts.fallbackLabel
+        ? `<div class="fb-slot-lbl">📊 ${opts.fallbackLabel}</div>`
+        : '';
+      const fbRankHtml = opts.rankSymbol
+        ? `<span class="fb-rank">${opts.rankSymbol}</span>`
+        : '';
+
+      // ── Revalidation badge + edge alert classification ────────────
+      const revalStatus = p.reval_status || null;
+      // Determine edge alert type from opening vs current edge data
+      const _openEd  = p.reval_opening_edge ?? p.opening_edge;
+      const _currEd  = p.reval_edge;
+      const edgeAlertType = (() => {
+        if (_openEd == null || _currEd == null || _openEd <= 0) return null;
+        if (_currEd < 0)                    return 'edge-reversal';
+        if (_currEd < _openEd * 0.50)       return 'edge-warning';
+        return null;
+      })();
+      const revalBadge = ((revalStatus && revalStatus !== 'confirmed') || edgeAlertType) ? (() => {
+        const cls    = edgeAlertType || revalStatus;
+        const icons  = {voided:'❌', downgraded:'📉', upgraded:'📈', 'edge-warning':'⚠️', 'edge-reversal':'🚨'};
+        const labels = {voided:'VOIDED', downgraded:'EDGE WEAKENED', upgraded:'EDGE STRENGTHENED', 'edge-warning':'EDGE WARNING', 'edge-reversal':'EDGE REVERSAL'};
+        return `<div class="reval-badge ${cls}">${icons[cls]||'🔄'} ${labels[cls]||'UPDATED'}</div>`;
+      })() : '';
+      // Edge decay row (shown in expand section when opening + current edge known)
+      const edgeDecayHtml = (_openEd != null && _currEd != null) ? (() => {
+        const delta = _currEd - _openEd;
+        const sign  = delta >= 0 ? '+' : '';
+        const col   = _currEd < 0 ? '#f87171'
+                    : delta < -_openEd * 0.30 ? '#fb923c'
+                    : delta > 0 ? 'var(--green)' : 'var(--sub)';
+        return `<div class="exp-row"><span class="exp-lbl">Edge Track</span><span class="exp-val" style="color:${col}">+${_openEd.toFixed(1)}% → ${_currEd < 0 ? '' : '+'}${_currEd.toFixed(1)}% (${sign}${delta.toFixed(1)}%)</span></div>`;
+      })() : '';
+      const revalLog = (revalStatus && revalStatus !== 'confirmed' && p.reval_reason) ? `
+<div class="reval-log">
+  <div class="reval-log-hdr">⚡ Pregame Update</div>
+  <div class="reval-reason">${p.reval_reason}</div>
+  ${edgeDecayHtml}
+  ${p.reval_at ? `<div class="exp-row"><span class="exp-lbl">Checked At</span><span class="exp-val">${p.reval_at}</span></div>` : ''}
+</div>` : (edgeAlertType && !revalStatus) ? `
+<div class="reval-log">
+  <div class="reval-log-hdr">${edgeAlertType === 'edge-reversal' ? '🚨 Edge Reversal' : '⚠️ Edge Warning'}</div>
+  ${edgeDecayHtml}
+</div>` : '';
+      const revalCardCls = (revalStatus === 'voided' || edgeAlertType === 'edge-reversal') ? ' reval-voided' : '';
+
+      const betId   = String(p.bet_id || '');
+      const hexHash = /[0-9a-f]{8}$/.test(betId) ? betId.slice(-8) : null;
+      const gameTime  = hexHash ? (_gameTimeMap[hexHash]    || null) : null;
+      const matchup   = hexHash ? (_gameMatchupMap[hexHash] || null) : null;
+
+      // For player props: team field may incorrectly store the player name.
+      // Prefer slate-derived matchup; fall back to team only if it differs from player name.
+      const rawTeam    = String(p.team || '');
+      const isTeamBad  = p.player && rawTeam.toLowerCase() === String(p.player).toLowerCase();
+      const teamDisplay = isTeamBad
+        ? (matchup || p.sport || '')
+        : (p.player ? teamName(rawTeam, p.sport) : teamName(rawTeam, p.sport));
+
+      const sub = p.player
+        ? fmtMarket(p.market)+' '+((p.direction||'').toUpperCase())+(p.line!=null?' '+p.line:'')
+        : teamName(rawTeam, p.sport)+' · '+p.sport;
+
+      const timeHtml = gameTime
+        ? `<div class="game-time-chip">🕐 ${gameTime}</div>`
+        : '';
+
+      // Live score strip — matches this pick's game to ESPN live scores
+      const liveHtml = (() => {
+        const sport = (p.sport || '').toUpperCase();
+        const games = (_liveScores[sport] || []);
+        if (!games.length) return '';
+        const rawTeam = String(p.team || '');
+        const abbrs = new Set();
+        rawTeam.toUpperCase().split(/[V@\s]+/).filter(a => a.length >= 2 && a.length <= 4).forEach(a => abbrs.add(a));
+        if (matchup) matchup.toUpperCase().split(/[\s@]+/).filter(a => a.length >= 2 && a.length <= 4).forEach(a => abbrs.add(a));
+        if (!abbrs.size) return '';
+        const match = games.find(g => {
+          const ha = (g.home?.abbr || '').toUpperCase();
+          const aa = (g.away?.abbr || '').toUpperCase();
+          return abbrs.has(ha) || abbrs.has(aa);
+        });
+        if (!match || (!match.isLive && !match.isFinal)) return '';
+        const aw = match.away; const hm = match.home;
+        const scoreStr = (aw && hm && aw.score != null)
+          ? `${aw.abbr} ${aw.score} – ${hm.score} ${hm.abbr}`
+          : (match.shortName || '');
+        const detail = match.detail || '';
+        return `<div class="live-score-strip${match.isFinal?' final':''}">
+  ${match.isFinal?'🏁 FINAL':'🔴 LIVE'} ${scoreStr}${detail?' · '+detail:''}
+</div>`;
+      })();
+
+      const safePlayer = (p.player||'').replace(/"/g,'&quot;');
+      const safeSport  = (p.sport||'').replace(/"/g,'&quot;');
+      const faceHtml   = p.player
+        ? `<img class="player-face" data-name="${safePlayer}" data-sport="${safeSport}" alt="${safePlayer}" />`
+        : '';
+
+      // Line movement — compares opening_line (at publication) to current_line
+      // (refreshed from Odds API on each engine run). Only shown when ≥0.1 moved.
+      const movementHtml = (() => {
+        const op  = p.opening_line  != null ? Number(p.opening_line)  : null;
+        const cur = p.current_line  != null ? Number(p.current_line)  : null;
+        if (op == null || cur == null || Math.abs(op - cur) < 0.1) return '';
+        const delta = cur - op;
+        const sign = delta >= 0 ? '+' : '';
+        const arrow = delta > 0 ? '▲' : '▼';
+        const color = Math.abs(delta) >= 0.5 ? 'var(--amber,#f59e0b)' : 'var(--sub)';
+        return `<div class="exp-row"><span class="exp-lbl">📊 Line Moved</span><span class="exp-val" style="color:${color}">${op} → ${cur} ${arrow} (${sign}${delta.toFixed(1)})</span></div>`;
+      })();
+
+      // MIS badge html
+      const misHtml = (() => {
+        const ms = p.mis_score != null ? Number(p.mis_score) : null;
+        if (ms == null) return '';
+        const misLbl = ms >= 80 ? 'Strong' : ms >= 60 ? 'Moderate' : 'Weak';
+        const misCol = ms >= 80 ? 'var(--green,#22c55e)' : ms >= 60 ? 'var(--amber,#f59e0b)' : 'var(--text-sub)';
+        return `<div class="exp-row"><span class="exp-lbl">📡 Market Signal</span><span class="exp-val" style="color:${misCol}">${ms}/100 (${misLbl})</span></div>`;
+      })();
+
+      // V3.0 market agreement score
+      const masHtml = (() => {
+        const mas = p.market_agreement_score != null ? Number(p.market_agreement_score) : null;
+        if (mas == null) return '';
+        const {lbl: maLbl, col: maCol} = fmtAgreement(mas);
+        return `<div class="exp-row"><span class="exp-lbl">🤝 Market Agreement</span><span class="exp-val" style="color:${maCol}">${mas}/100 · ${maLbl}</span></div>`;
+      })();
+
+      const drsHtml = (() => {
+        const drs = p.data_reliability_score != null ? Number(p.data_reliability_score) : null;
+        if (drs == null) return '';
+        const drsIcon = drs >= 75 ? '✅' : drs >= 40 ? '⚠️' : '❌';
+        const drsLbl  = drs >= 75 ? 'Verified' : drs >= 40 ? 'Limited data' : 'Insufficient';
+        const drsCol  = drs >= 75 ? 'var(--green,#22c55e)' : drs >= 40 ? 'var(--amber,#f59e0b)' : '#f87171';
+        return `<div class="exp-row"><span class="exp-lbl">${drsIcon} Data Quality</span><span class="exp-val" style="color:${drsCol}">${drs}/100 (${drsLbl})</span></div>`;
+      })();
+
+      const projHtml = (() => {
+        if (!p.player) return '';
+        const parts = [];
+        if (p.l5_avg != null)  parts.push(`L5: ${Number(p.l5_avg).toFixed(1)}`);
+        if (p.l10_avg != null) parts.push(`L10: ${Number(p.l10_avg).toFixed(1)}`);
+        if (p.weighted_projection != null) parts.push(`Proj: ${Number(p.weighted_projection).toFixed(1)}`);
+        if (!parts.length) return '';
+        return `<div class="exp-row"><span class="exp-lbl">📊 Projection</span><span class="exp-val">${parts.join(' · ')}</span></div>`;
+      })();
+
+      // Effective edge badge
+      const effEdgeHtml = (() => {
+        const ee = p.effective_edge != null ? Number(p.effective_edge) : null;
+        if (ee == null) return '';
+        const delta = ee - edge;
+        if (Math.abs(delta) < 0.05) return ''; // no meaningful difference
+        const sign = delta >= 0 ? '+' : '';
+        const col  = delta >= 0 ? 'var(--green,#22c55e)' : '#f87171';
+        return `<div class="exp-row"><span class="exp-lbl">⚡ Eff Edge</span><span class="exp-val" style="color:${col}">+${ee.toFixed(1)}% <span style="font-size:11px;color:var(--text-sub)">(${sign}${delta.toFixed(1)}% from signals)</span></span></div>`;
+      })();
+
+      // Sharp / steam / RLM signal badges
+      const sharpHtml = (() => {
+        const sig = p.sharp_signal;
+        const rlm = p.rlm_detected;
+        const stm = p.steam_detected;
+        const badges = [];
+        if (sig === 'sharp_confirm')  badges.push(`<span style="color:var(--green,#22c55e);font-weight:600">⚡ Sharp Confirm</span>`);
+        if (sig === 'sharp_contrary') badges.push(`<span style="color:#f87171;font-weight:600">📉 Sharp Contrary</span>`);
+        if (sig === 'no_sharp')       badges.push(`<span style="color:var(--text-sub)">No sharp data</span>`);
+        if (rlm)  badges.push(`<span style="color:var(--amber,#f59e0b)">↩️ RLM</span>`);
+        if (stm)  badges.push(`<span style="color:var(--green,#22c55e)">🔄 Steam</span>`);
+        if (!badges.length) return '';
+        return `<div class="exp-row"><span class="exp-lbl">🔍 Sharp Signal</span><span class="exp-val">${badges.join(' · ')}</span></div>`;
+      })();
+
+      // V3.0 edge classification chip
+      const {lbl: edgeLbl, col: edgeCol} = classifyEdge(edge);
+      const edgeClassHtml = edge >= 1.0
+        ? `<span class="edge-class-chip" style="color:${edgeCol};border-color:${edgeCol}40">${edgeLbl}</span>`
+        : '';
+
+      const expandRows = [
+        `<div class="exp-row"><span class="exp-lbl">Model Edge</span><span class="exp-val" style="color:var(--green)">+${edge.toFixed(1)}% <span style="font-size:10px;color:${edgeCol}">${edgeLbl}</span></span></div>`,
+        effEdgeHtml,
+        sharpHtml,
+        masHtml,
+        p.odds!=null ? `<div class="exp-row"><span class="exp-lbl">Line</span><span class="exp-val">${fmtOdds(p.odds)} @ ${book}</span></div>` : '',
+        movementHtml,
+        misHtml,
+        drsHtml,
+        projHtml,
+        `<div class="exp-row"><span class="exp-lbl">Market</span><span class="exp-val">${fmtMarket(String(p.market||''))} ${(p.direction||'').toUpperCase()}</span></div>`,
+        p.line!=null ? `<div class="exp-row"><span class="exp-lbl">Total</span><span class="exp-val">${p.line}</span></div>` : '',
+        p.player ? `<div class="exp-row"><span class="exp-lbl">Matchup</span><span class="exp-val">${matchup || teamDisplay}</span></div>` : '',
+        gameTime ? `<div class="exp-row"><span class="exp-lbl">Game Time</span><span class="exp-val">${gameTime}</span></div>` : '',
+        p.verified_at ? `<div class="exp-row"><span class="exp-lbl">✓ Verified</span><span class="exp-val" style="color:var(--green);font-size:11px">${p.verified_at}</span></div>` : '',
+      ].filter(Boolean).join('');
+
+      const sirenHtml = (Number(p.model_probability) >= 88)
+        ? `<span class="alert-siren">🚨</span>` : '';
+      const nukeSymbol = tc === 'nuke' ? `<span class="nuke-symbol">☢</span>` : '';
+
+      // V3.0 pick status banner — spec: LOCKED is default active state;
+      // only Edge Warning / Edge Reversal / Voided shown as banners.
+      const lockedBadge = (p.is_locked && !graded && revalStatus !== 'voided' && edgeAlertType !== 'edge-reversal')
+        ? `<span class="locked-badge">🔒 LOCKED</span>` : '';
+      const pickStatusHtml = (() => {
+        if (edgeAlertType === 'edge-reversal' || revalStatus === 'voided')
+          return `<div class="pick-status-banner edge-reversal">🚨 EDGE REVERSAL — Original thesis invalidated</div>`;
+        if (edgeAlertType === 'edge-warning')
+          return `<div class="pick-status-banner edge-warning">⚠️ EDGE WARNING — Significant decay detected</div>`;
+        if (revalStatus === 'downgraded')
+          return `<div class="pick-status-banner downgraded">📉 EDGE WEAKENED — Monitor conditions</div>`;
+        if (revalStatus === 'upgraded')
+          return `<div class="pick-status-banner upgraded">📈 EDGE STRENGTHENED — Conditions improved</div>`;
+        return '';
+      })();
+
+      // Prop tracker placeholder — filled in-place by updatePropTrackers() after fetch
+      const propTrackerHtml = (!graded && p.player && p.bet_id)
+        ? `<div class="prop-tracker" data-tracker-id="${String(p.bet_id)}"></div>`
+        : '';
+
+      return `<div class="pick-card ${tc}${graded?' '+outCls:''}${p.player?' has-face':''}${revalCardCls}">
+  ${faceHtml}
+  <div class="pick-inner">
+    <div class="pick-top">
+      <span class="tier-badge ${tc}">${tierLabel(p.tier)}</span>${lockedBadge}
+      <span class="sport-badge">${sportEmoji(p.sport)} ${p.sport||''}</span>
+    </div>
+    ${fbRankHtml}
+    ${nukeSymbol}
+    ${liveHtml}
+    ${timeHtml}
+    ${fbSlotHtml}
+    ${pickStatusHtml}
+    ${revalBadge}
+    <div class="pick-name">${name}${sirenHtml}</div>
+    <div class="pick-sub">${sub}</div>
+    ${propTrackerHtml}
+    ${p.player && teamDisplay ? `<div class="pick-matchup">${teamDisplay}</div>` : ''}
+    <div class="edge-row">
+      <div class="edge-pill${graded ? ' '+outCls : ''}">+${edge.toFixed(1)}%</div>
+      ${edgeClassHtml}
+    </div>
+    <div class="pick-mkt"><span class="odds-hi">${fmtOdds(p.odds)}</span> @ ${book}${(() => {
+      const cc = p.current_confidence != null ? Number(p.current_confidence) : null;
+      const oc = p.opening_confidence != null ? Number(p.opening_confidence) : null;
+      if (cc == null) return '';
+      if (oc != null && Math.abs(cc - oc) < 0.5) return '';
+      return `<span class="conf-badge">${cc.toFixed(0)}% conf</span>`;
+    })()}</div>
+    ${graded
+      ? `<div class="outcome-stamp ${outCls}">${outLbl}</div>`
+      : `<div class="pick-cta"><span>▶ Analysis</span><span class="chev">▼</span></div>`}
+    <div class="pick-expand">${expandRows}${revalLog}</div>
+  </div>
+</div>`;
+    }
+
+    // ── Lazy-load player headshots after cards are in the DOM ────────
+    async function loadHeadshots() {
+      const imgs = document.querySelectorAll('img.player-face[data-name]');
+      if (!imgs.length) return;
+      const pending = new Map();
+      imgs.forEach(img => {
+        const key = img.dataset.name + '|' + img.dataset.sport;
+        if (!pending.has(key)) {
+          pending.set(key,
+            fetch(`${API_BASE}/api/player-image?name=${encodeURIComponent(img.dataset.name)}&sport=${encodeURIComponent(img.dataset.sport)}`)
+              .then(r => r.ok ? r.json() : null)
+              .then(d => d?.url || null)
+              .catch(() => null)
+          );
+        }
+        pending.get(key).then(url => {
+          if (url) { img.src = url; img.classList.add('loaded'); }
+        });
+      });
+    }
+
+    // ── Format spread point with sign ────────────────────────────────
+    function fmtPt(pt) {
+      if (pt == null) return '';
+      return (pt > 0 ? '+' : '') + pt;
+    }
+
+    // ── Reverse lookup: full team name → abbreviation ────────────────
+    function teamAbbr(name, sport) {
+      const map = TEAMS[(sport||'').toUpperCase()] || {};
+      const needle = (name||'').toLowerCase();
+      for (const [abbr, full] of Object.entries(map)) {
+        if (full.toLowerCase() === needle) return abbr.toUpperCase();
+      }
+      // Already an abbreviation (≤4 chars) or no match — return as-is
+      return (name||'').toUpperCase();
+    }
+
+    // ── Build a compact slate game card (pick-card sized, 2-col grid) ─
+    function buildSlateCard(g, sport) {
+      const sportUp = (sport||'').toUpperCase();
+      const isMLB   = sportUp === 'MLB';
+
+      // Live score lookup — convert full names to abbrs before matching ESPN
+      const awayAbbr = teamAbbr(g.away, sport);
+      const homeAbbr = teamAbbr(g.home, sport);
+      const liveGames = _liveScores[sportUp] || [];
+      const match = liveGames.find(lg => {
+        const ha = (lg.home?.abbr||'').toUpperCase();
+        const aa = (lg.away?.abbr||'').toUpperCase();
+        return ha === homeAbbr || aa === awayAbbr || ha === awayAbbr || aa === homeAbbr;
+      });
+
+      let liveHtml = '';
+      if (match && (match.isLive || match.isFinal)) {
+        const aw = match.away; const hm = match.home;
+        const scoreStr = (aw && hm && aw.score != null)
+          ? `${aw.abbr} ${aw.score} – ${hm.score} ${hm.abbr}` : '';
+        const detail = match.detail || '';
+        liveHtml = `<div class="live-score-strip${match.isFinal?' final':''}">
+  ${match.isFinal?'✅ FINAL':'🔴 LIVE'} ${scoreStr}${detail?' · '+detail:''}
+</div>`;
+      }
+
+      // Compact odds rows
+      const mlAway  = g.ml?.away?.price;
+      const mlHome  = g.ml?.home?.price;
+      const total   = g.total?.point;
+      const spAway  = g.spread?.away?.point;
+
+      const oddsRows = [
+        mlAway != null
+          ? `<div class="exp-row"><span class="exp-lbl">ML</span><span class="exp-val" style="display:flex;flex-direction:column;gap:1px;text-align:right"><span>${awayAbbr} <span class="odds-hi">${fmtOdds(mlAway)}</span></span><span>${homeAbbr} <span class="odds-hi">${fmtOdds(mlHome)}</span></span></span></div>`
+          : '',
+        total != null
+          ? `<div class="exp-row"><span class="exp-lbl">${isMLB?'Total':'O/U'}</span><span class="exp-val">${total}</span></div>`
+          : '',
+        spAway != null
+          ? `<div class="exp-row"><span class="exp-lbl">${isMLB?'Run Line':'Spread'}</span><span class="exp-val">${awayAbbr} ${fmtPt(spAway)}</span></div>`
+          : '',
+      ].filter(Boolean).join('');
+
+      return `<div class="pick-card">
+  <div class="pick-inner">
+    <div class="game-time-chip">🕐 ${g.time_et||'TBD'}</div>
+    ${liveHtml}
+    <div class="pick-name" style="margin-top:4px">${g.away} <span style="color:var(--sub);font-size:11px;font-weight:400">@</span> ${g.home}</div>
+    <div class="pick-sub">${sportEmoji(sport)} ${sport}</div>
+    <div class="pick-expand" style="display:block;border-top:1px solid var(--border);margin-top:8px;padding-top:6px">${oddsRows||'<span style="color:var(--sub);font-size:10px">No odds available</span>'}</div>
+  </div>
+</div>`;
+    }
+
+    // ── Build a collapsible sport section (home slate) ────────────────
+    function buildSportSection(sport, games) {
+      const cls   = sport.toLowerCase();
+      const emoji = sportEmoji(sport);
+      const cards = games.map(g => buildSlateCard(g, sport)).join('');
+      return `<div class="sport-section ${cls}">
+  <div class="sport-section-hdr ${cls} open">
+    <div class="sport-sec-left">
+      <span class="sport-sec-title">${emoji} ${sport}</span>
+      <span class="sport-sec-count">${games.length} game${games.length===1?'':'s'}</span>
+    </div>
+    <span class="sec-chev">▼</span>
+  </div>
+  <div class="sport-section-body">
+    <div class="pick-grid" style="padding:0">${cards}</div>
+  </div>
+</div>`;
+    }
+
+    // ── Render picks (home featured + props tab categories) ──────────
+    function renderPicks(picks) {
+      const featWrap  = document.getElementById('featured-wrap');
+      const badge     = document.getElementById('picks-count');
+      const propsSect = document.getElementById('props-sections');
+      const propsBadge = document.getElementById('props-count');
+
+      if (!picks || picks.length === 0) {
+        badge.textContent = '0 picks';
+        featWrap.innerHTML = `<div class="empty" style="grid-column:1/-1">
+  <div class="eicon">📭</div>
+  <p>No elite picks broadcast today yet.<br>Check back after the morning release.</p>
+</div>`;
+        propsBadge.textContent = '0 props';
+        propsSect.innerHTML = `<div class="empty"><div class="eicon">👤</div><p>No player props broadcast today.</p></div>`;
+        return;
+      }
+
+      badge.textContent = picks.length + (picks.length === 1 ? ' pick' : ' picks');
+
+      // ── Featured section: 4-case Elite Fallback logic ────────────
+      const nuke    = picks.find(p => (p.tier||'').toLowerCase() === 'nuke');
+      const diamond = picks.find(p => (p.tier||'').toLowerCase() === 'diamond');
+      const fbb     = document.getElementById('elite-fb-banner');
+
+      // All picks ranked by composite score (used when fallbacks needed)
+      const ranked = [...picks].sort((a, b) => compositeScore(b) - compositeScore(a));
+
+      let featCards = '';
+      let bannerHtml = '';
+
+      if (nuke && diamond) {
+        // ── Case 1: Both elite picks qualified — normal display ────
+        fbb.classList.remove('visible');
+        featCards = buildCard(nuke) + buildCard(diamond);
+
+      } else if (nuke && !diamond) {
+        // ── Case 2: Nuke present, Diamond absent ──────────────────
+        const fb = ranked.find(p => (p.tier||'').toLowerCase() !== 'nuke');
+        featCards = buildCard(nuke)
+          + (fb ? buildCard(fb, {fallbackLabel: 'Top Rated Play #2 (No Diamond Qualified)'}) : '');
+        bannerHtml = '💎 <strong>No Diamond Pick qualified today.</strong> Showing next highest-rated engine selection in the Diamond slot.';
+
+      } else if (!nuke && diamond) {
+        // ── Case 3: Diamond present, Nuke absent ──────────────────
+        const fb = ranked.find(p => (p.tier||'').toLowerCase() !== 'diamond');
+        featCards = (fb ? buildCard(fb, {fallbackLabel: 'Top Rated Play (No Nuke Qualified)'}) : '')
+          + buildCard(diamond);
+        bannerHtml = '☢️ <strong>No Nuke Pick qualified today.</strong> Showing highest-rated engine selection in the Nuke slot.';
+
+      } else {
+        // ── Case 4: Neither Nuke nor Diamond — Top 3 fallbacks ────
+        const top3  = ranked.slice(0, 3);
+        const lbls  = [
+          'Top Rated Play (No Nuke Qualified)',
+          'Top Rated Play #2 (No Diamond Qualified)',
+          'Top Rated Play #3',
+        ];
+        const syms  = ['#1', '#2', '#3'];
+        featCards   = top3.map((p, i) => buildCard(p, {
+          fallbackLabel: lbls[i],
+          rankSymbol:    syms[i],
+        })).join('');
+        bannerHtml  = '📊 <strong>No Elite Plays Qualified Today</strong> — Displaying Highest Rated Engine Selections. These are <em>not</em> official Nuke or Diamond picks.';
+      }
+
+      if (bannerHtml) {
+        fbb.innerHTML = bannerHtml;
+        fbb.classList.add('visible');
+      } else {
+        fbb.classList.remove('visible');
+      }
+
+      featCards
+        ? (featWrap.innerHTML = `<div class="pick-grid" style="padding:0">${featCards}</div>`)
+        : (featWrap.innerHTML = `<div class="empty"><p>No picks available today.</p></div>`);
+
+      // Props tab — grouped by sport (outer), then by market category (inner)
+      const props = picks.filter(p => !!p.player);
+      propsBadge.textContent = props.length + (props.length === 1 ? ' prop' : ' props');
+
+      if (props.length === 0) {
+        propsSect.innerHTML = `<div class="empty"><div class="eicon">👤</div><p>No player props today.</p></div>`;
+      } else {
+        const propSportOrder = ['MLB','WNBA','NBA'];
+        const propsBySport = {};
+        for (const p of props) {
+          const s = p.sport || 'Other';
+          if (!propsBySport[s]) propsBySport[s] = [];
+          propsBySport[s].push(p);
+        }
+        const allPropSports = [...propSportOrder, ...Object.keys(propsBySport).filter(s => !propSportOrder.includes(s))];
+        propsSect.innerHTML = allPropSports.filter(s => propsBySport[s]?.length).map(s => {
+          const sLow = s.toLowerCase();
+          const sProps = propsBySport[s];
+          const byMarket = {};
+          for (const p of sProps) {
+            const key = fmtMarket(String(p.market || '')) || 'Other';
+            if (!byMarket[key]) byMarket[key] = [];
+            byMarket[key].push(p);
+          }
+          const catHtml = Object.entries(byMarket).map(([cat, catPicks]) => {
+            const emoji = catEmoji(cat);
+            const cards = catPicks.map(buildCard).join('');
+            return `<div class="cat-section">
+  <div class="cat-section-hdr open">
+    <div class="cat-sec-left">
+      <span class="cat-sec-title">${emoji} ${cat}</span>
+      <span class="cat-sec-count">${catPicks.length}</span>
+    </div>
+    <span class="sec-chev">▼</span>
+  </div>
+  <div class="cat-section-body">
+    <div class="pick-grid">${cards}</div>
+  </div>
+</div>`;
+          }).join('');
+          return `<div class="sport-section ${sLow}">
+<div class="sport-section-hdr ${sLow} open">
+  <div class="sport-sec-left">
+    <span>${sportEmoji(s)}</span>
+    <span class="sport-sec-title">${s}</span>
+    <span class="sport-sec-count">${sProps.length} prop${sProps.length===1?'':'s'}</span>
+  </div>
+  <span class="sec-chev">▼</span>
+</div>
+<div class="sport-section-body props-body">
+${catHtml}
+</div>
+</div>`;
+        }).join('');
+      }
+    }
+
+    // ── Prop category emoji helper ────────────────────────────────────
+    function catEmoji(cat) {
+      const c = (cat||'').toLowerCase();
+      if (c.includes('point'))  return '🏀';
+      if (c.includes('rebound')) return '💪';
+      if (c.includes('assist')) return '🎯';
+      if (c.includes('3-point')||c.includes('three')) return '🎯';
+      if (c.includes('strikeout')||c.includes('pitcher')) return '⚾';
+      if (c.includes('hit'))    return '🏏';
+      if (c.includes('home run')) return '💥';
+      if (c.includes('base'))   return '🏃';
+      if (c.includes('block'))  return '🛡';
+      if (c.includes('steal'))  return '⚡';
+      return '📊';
+    }
+
+    // ── Render slate — Home tab "Today's Slate" only ─────────────────
+    function renderSlate(games) {
+      const homeEl     = document.getElementById('slate-home');
+      const slateBadge = document.getElementById('slate-count');
+
+      if (!games || games.length === 0) {
+        homeEl.innerHTML = `<div class="empty"><div class="eicon">📅</div><p>No games on today's slate.</p></div>`;
+        slateBadge.textContent = '0 games';
+        return;
+      }
+
+      slateBadge.textContent = games.length + (games.length === 1 ? ' game' : ' games');
+
+      const sportOrder = ['MLB', 'WNBA', 'NBA'];
+      const bySport = {};
+      for (const g of games) {
+        if (!bySport[g.sport]) bySport[g.sport] = [];
+        bySport[g.sport].push(g);
+      }
+
+      const allSports = [...sportOrder, ...Object.keys(bySport).filter(s => !sportOrder.includes(s))];
+      homeEl.innerHTML = allSports
+        .filter(s => bySport[s]?.length > 0)
+        .map(s => buildSportSection(s, bySport[s]))
+        .join('');
+    }
+
+    // ── Game-market check — spread, ML, totals only ────────────────────
+    const GAME_MARKETS = new Set([
+      'h2h','moneyline','ml','team_spread','spread','totals','game_total',
+      'totals_over','totals_under','spreads',
+    ]);
+    function isGameMarket(p) {
+      const norm = String(p.market||'').toLowerCase().replace(/[\s-]+/g,'_');
+      return GAME_MARKETS.has(norm);
+    }
+
+    // ── Render Games tab — spread/ML/total picks from DB ─────────────
+    function renderGamesPicks(picks) {
+      const el    = document.getElementById('games-list');
+      const badge = document.getElementById('games-count');
+
+      const gamePicks = (picks || []).filter(isGameMarket);
+
+      if (gamePicks.length === 0) {
+        if (badge) badge.textContent = '0 picks';
+        el.innerHTML = `<div class="empty"><div class="eicon">🎮</div><p>Bets coming soon.<br><span style="font-size:10px;color:var(--sub)">Spread · Moneyline · Game Total</span></p></div>`;
+        return;
+      }
+
+      if (badge) badge.textContent = gamePicks.length + (gamePicks.length === 1 ? ' pick' : ' picks');
+
+      const sportOrder = ['MLB','WNBA','NBA'];
+      const bySport = {};
+      for (const p of gamePicks) {
+        const s = p.sport || 'Other';
+        if (!bySport[s]) bySport[s] = [];
+        bySport[s].push(p);
+      }
+      const allSports = [...sportOrder, ...Object.keys(bySport).filter(s=>!sportOrder.includes(s))];
+
+      let html = '';
+      for (const s of allSports) {
+        if (!bySport[s]?.length) continue;
+        const sLow  = s.toLowerCase();
+        const cards = bySport[s].map(buildCard).join('');
+        html += `<div class="sport-section ${sLow}">
+  <div class="sport-section-hdr ${sLow} open">
+    <div class="sport-sec-left">
+      <span>${sportEmoji(s)}</span>
+      <span class="sport-sec-title">${s}</span>
+      <span class="sport-sec-count">${bySport[s].length}</span>
+    </div>
+    <span class="sec-chev">▼</span>
+  </div>
+  <div class="sport-section-body">
+    <div class="pick-grid">${cards}</div>
+  </div>
+</div>`;
+      }
+      el.innerHTML = html;
+    }
+
+    // ── Derivative market check — TT, NRFI/YRFI, F5, Q1, H1 only ───────
+    // NOTE: 'totals' and 'alternate_totals' are full-game totals (Nuke/Diamond),
+    // NOT segment/derivative bets — they must NOT appear in the in-game tab.
+    const DERIVATIVE_MARKETS = new Set([
+      'team_total','team_total_over','team_total_under','tt',
+      'nrfi','yrfi','first_5','f5','first_half','h1','first_quarter','q1',
+      'alternate_team_totals',
+    ]);
+    function isDerivativeMarket(p) {
+      const norm = String(p.market||'').toLowerCase().replace(/[\s-]+/g,'_');
+      return DERIVATIVE_MARKETS.has(norm);
+    }
+
+    // ── Render in-game tab (derivative markets: TT, NRFI/YRFI, F5, Q1, H1) ─
+    function renderInGame(picks) {
+      const el    = document.getElementById('ingame-list');
+      const badge = document.getElementById('ingame-count');
+
+      // Filter to derivative/game-level markets only
+      const derived = (picks || []).filter(isDerivativeMarket);
+      const shown   = derived.length > 0 ? derived : [];
+
+      if (shown.length === 0) {
+        if (badge) badge.textContent = '0 picks';
+        el.innerHTML = `<div class="empty"><div class="eicon">⚡</div><p>No game-total or derivative picks today yet.<br>TT · NRFI/YRFI · F5 · 1st Half · 1st Quarter</p></div>`;
+        return;
+      }
+
+      if (badge) badge.textContent = shown.length + (shown.length===1?' pick':' picks');
+
+      const sportOrder = ['MLB','WNBA','NBA'];
+      const bySport = {};
+      for (const p of shown) {
+        const s = p.sport || 'Other';
+        if (!bySport[s]) bySport[s] = [];
+        bySport[s].push(p);
+      }
+      const allSports = [...sportOrder, ...Object.keys(bySport).filter(s=>!sportOrder.includes(s))];
+
+      let html = '';
+      for (const s of allSports) {
+        if (!bySport[s]?.length) continue;
+        const sLow  = s.toLowerCase();
+        const cards = bySport[s].map(buildCard).join('');
+        html += `<div class="sport-section ${sLow}">
+  <div class="sport-section-hdr ${sLow} open">
+    <div class="sport-sec-left">
+      <span>${sportEmoji(s)}</span>
+      <span class="sport-sec-title">${s}</span>
+      <span class="sport-sec-count">${bySport[s].length}</span>
+    </div>
+    <span class="sec-chev">▼</span>
+  </div>
+  <div class="sport-section-body">
+    <div class="pick-grid">${cards}</div>
+  </div>
+</div>`;
+      }
+      el.innerHTML = html;
+    }
+
+    // ── Shared helpers ────────────────────────────────────────────────
+    function hitCls(h)      { return h>=60?'hi':h>=50?'mid':h>0?'lo':'zero'; }
+    function unitSign(u)    { return u>0?'+':''; }
+    function fmtDate(s) {
+      const [y,m,d] = s.split('-');
+      const names = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      return `${names[parseInt(m,10)-1]} ${parseInt(d,10)}, ${y}`;
+    }
+
+    // ── Render comprehensive ROI tab ─────────────────────────────────
+    function renderROI(data) {
+      const lt  = data.lifetime || data.all || {};
+      const bySp = data.by_sport || {};
+      const byTi = data.by_tier  || {};
+
+      const w   = lt.wins   || 0;
+      const l   = lt.losses || 0;
+      const p   = lt.pushes || 0;
+      const o   = lt.open   || lt.total_open || 0;
+      const wr  = lt.win_rate  || lt.hit_rate || 0;
+      const roi = lt.roi_pct   || 0;
+      const nu  = lt.net_units != null ? lt.net_units : (lt.roi || 0);
+      const cs  = lt.current_streak      || 0;
+      const cst = lt.current_streak_type || '';
+      const lws = lt.longest_win_streak  || 0;
+      const lls = lt.longest_loss_streak || 0;
+
+      // ── KPI grid ──────────────────────────────────────────────────
+      const kpiGrid = document.getElementById('kpi-grid');
+      const roiCls  = roi>0?'pos':roi<0?'neg':'';
+      kpiGrid.innerHTML = `
+<div class="stat-card accent-green">
+  <div class="stat-card-lbl">Record</div>
+  <div class="stat-card-val"><span style="color:var(--green)">${w}</span><span style="color:var(--sub);font-size:14px;font-weight:600">–</span><span style="color:var(--red)">${l}</span>${p?`<span style="color:var(--amber);font-size:12px">–${p}P</span>`:''}
+  </div>
+  <div class="stat-card-sub">${o} open · ${w+l+p} graded</div>
+</div>
+<div class="stat-card accent-blue">
+  <div class="stat-card-lbl">Win Rate</div>
+  <div class="stat-card-val ${hitCls(wr)}">${(w+l)?wr.toFixed(1)+'%':'—'}</div>
+  <div class="stat-card-sub">Closed picks only</div>
+</div>
+<div class="stat-card ${roi>=0?'accent-green':'accent-red'}">
+  <div class="stat-card-lbl">Net Units</div>
+  <div class="stat-card-val ${roi>=0?'pos':'neg'}">${unitSign(nu)}${nu.toFixed(2)}u</div>
+  <div class="stat-card-sub">$100 flat stake</div>
+</div>
+<div class="stat-card accent-amber">
+  <div class="stat-card-lbl">Lifetime ROI</div>
+  <div class="stat-card-val ${roiCls}">${unitSign(roi)}${roi.toFixed(1)}%</div>
+  <div class="stat-card-sub">Return on staked</div>
+</div>`;
+
+      // ── Streak grid ───────────────────────────────────────────────
+      const streakGrid = document.getElementById('streak-grid');
+      const curLabel = cs>0 && cst ? `${cs}${cst} Streak` : 'No streak';
+      const curCls   = cst==='W'?'accent-green':cst==='L'?'accent-red':'';
+      streakGrid.innerHTML = `
+<div class="stat-card ${curCls}">
+  <div class="stat-card-lbl">Current Streak</div>
+  <div class="stat-card-val ${cst==='W'?'pos':cst==='L'?'neg':''}">${cs>0?curLabel:'—'}</div>
+  <div class="stat-card-sub">${cst==='W'?'Consecutive wins':cst==='L'?'Consecutive losses':'No active streak'}</div>
+</div>
+<div class="stat-card">
+  <div class="stat-card-lbl">Best / Worst Run</div>
+  <div class="stat-card-val"><span style="color:var(--green)">${lws}W</span> <span style="font-size:13px;color:var(--sub)">/ </span><span style="color:var(--red)">${lls}L</span></div>
+  <div class="stat-card-sub">Longest streaks ever</div>
+</div>`;
+
+      // ── Tier breakdown ────────────────────────────────────────────
+      const tierWrap = document.getElementById('tier-wrap');
+      const tiers = [
+        { key:'nuke',          label:'☢️ Nuke',          dotCls:'nuke'    },
+        { key:'diamond',       label:'💎 Diamond',       dotCls:'diamond' },
+        { key:'gold standard', label:'🥇 Gold Standard', dotCls:'gold'    },
+      ];
+      const tierRows = tiers.map(({key,label,dotCls}) => {
+        const td = byTi[key] || {};
+        const tw = td.wins||0, tl = td.losses||0, tp = td.pushes||0;
+        const twr = td.win_rate || (tw+tl>0?Math.round(tw/(tw+tl)*1000)/10:0);
+        const tnu = td.net_units != null ? td.net_units : 0;
+        return `<tr>
+  <td><span class="tier-lbl"><span class="tier-dot ${dotCls}"></span>${label}</span></td>
+  <td style="color:var(--green)">${tw}</td>
+  <td style="color:var(--red)">${tl}</td>
+  <td style="color:${twr>=55?'var(--green)':twr>=50?'var(--amber)':'var(--red)'}">${tw+tl?twr.toFixed(1)+'%':'—'}</td>
+  <td style="color:${tnu>=0?'var(--green)':'var(--red)'};">${unitSign(tnu)}${tnu.toFixed(1)}u</td>
+</tr>`;
+      }).join('');
+      tierWrap.innerHTML = `
+<div class="stat-card full" style="padding:0;overflow:hidden">
+  <table class="tier-table">
+    <thead><tr><th>Tier</th><th>W</th><th>L</th><th>Hit%</th><th>Units</th></tr></thead>
+    <tbody>${tierRows||'<tr><td colspan="5" style="text-align:center;color:var(--sub)">No data yet</td></tr>'}</tbody>
+  </table>
+</div>`;
+
+      // ── Sport breakdown ───────────────────────────────────────────
+      const sportWrap = document.getElementById('roi-wrap');
+      const spEmoji = {MLB:'⚾',WNBA:'🏀',NBA:'🏀'};
+      const spRows = Object.entries(bySp).map(([sp,sd]) => {
+        const sh = sd.win_rate || (sd.wins+sd.losses>0?Math.round(sd.wins/(sd.wins+sd.losses)*1000)/10:0);
+        const snu = sd.net_units != null ? sd.net_units : 0;
+        return `<div class="roi-row">
+  <div class="roi-sport">${spEmoji[sp]||'🏟️'} ${sp}</div>
+  <div class="roi-nums">
+    <div class="roi-stat"><div class="roi-stat-n" style="color:var(--green)">${sd.wins}</div><div class="roi-stat-l">W</div></div>
+    <div class="roi-stat"><div class="roi-stat-n" style="color:var(--red)">${sd.losses}</div><div class="roi-stat-l">L</div></div>
+    <span class="hit-badge ${hitCls(sh)}">${sd.wins+sd.losses?sh.toFixed(1)+'%':'—'}</span>
+    <span style="font-size:11px;font-weight:700;color:${snu>=0?'var(--green)':'var(--red)'}">${unitSign(snu)}${snu.toFixed(1)}u</span>
+  </div>
+</div>`;
+      });
+      sportWrap.innerHTML = spRows.length ? spRows.join('') : `<div class="empty"><p>No graded results yet.</p></div>`;
+
+      // ── Rolling windows ───────────────────────────────────────────
+      const windowGrid = document.getElementById('window-grid');
+      const w7  = data.last_7d  || {};
+      const w30 = data.last_30d || {};
+      function windowCard(label, wd) {
+        const ww=wd.wins||0, wl=wd.losses||0, wwr=wd.win_rate||0, wnu=wd.net_units||0;
+        const cls = wwr>=55?'accent-green':wwr>=50?'accent-amber':'';
+        return `<div class="stat-card ${cls}">
+  <div class="stat-card-lbl">${label}</div>
+  <div class="stat-card-val">${ww+wl>0?`<span style="color:var(--green)">${ww}</span><span style="color:var(--sub);font-size:13px">–</span><span style="color:var(--red)">${wl}</span>`:'—'}</div>
+  <div class="stat-card-sub">${ww+wl>0?`${wwr.toFixed(1)}% · ${unitSign(wnu)}${wnu.toFixed(1)}u`:'No data'}</div>
+</div>`;
+      }
+      windowGrid.innerHTML = windowCard('Last 7 Days',w7)+windowCard('Last 30 Days',w30);
+
+      // ── Per-market breakdown ──────────────────────────────────────
+      const marketWrap = document.getElementById('market-wrap');
+      const byMkt = data.by_market || {};
+      const mktEntries = Object.entries(byMkt)
+        .filter(([,md]) => (md.wins||0)+(md.losses||0) > 0)
+        .sort((a,b) => ((b[1].net_units||0) - (a[1].net_units||0)));
+      if (mktEntries.length) {
+        const mktRows = mktEntries.map(([mkt, md]) => {
+          const mw = md.wins||0, ml = md.losses||0;
+          const mwr = md.win_rate || (mw+ml>0 ? Math.round(mw/(mw+ml)*1000)/10 : 0);
+          const mnu = md.net_units != null ? md.net_units : 0;
+          const label = mkt.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+          return `<tr>
+  <td style="color:var(--text);font-size:11px">${label}</td>
+  <td style="color:var(--green)">${mw}</td>
+  <td style="color:var(--red)">${ml}</td>
+  <td style="color:${mwr>=55?'var(--green)':mwr>=50?'var(--amber)':'var(--red)'}">${mw+ml?mwr.toFixed(1)+'%':'—'}</td>
+  <td style="color:${mnu>=0?'var(--green)':'var(--red)'};">${unitSign(mnu)}${mnu.toFixed(1)}u</td>
+</tr>`;
+        }).join('');
+        marketWrap.innerHTML = `
+<div class="stat-card full" style="padding:0;overflow:hidden">
+  <table class="tier-table">
+    <thead><tr><th>Market</th><th>W</th><th>L</th><th>Hit%</th><th>Units</th></tr></thead>
+    <tbody>${mktRows}</tbody>
+  </table>
+</div>`;
+      } else {
+        marketWrap.innerHTML = `<div style="color:var(--sub);font-size:12px;padding:8px 0">No graded market data yet.</div>`;
+      }
+
+      // ── Daily history ─────────────────────────────────────────────
+      const histWrap = document.getElementById('date-hist-wrap');
+      const byDate   = data.by_date || [];
+      if (!byDate.length) {
+        histWrap.innerHTML = `<div class="empty"><p>No closed picks yet.</p></div>`;
+        return;
+      }
+      histWrap.innerHTML = byDate.map(d => {
+        const h   = d.win_rate || d.hit_rate || 0;
+        const nu  = d.net_units != null ? d.net_units : (d.roi||0);
+        const sign = nu>0?'+':'';
+        return `<div class="date-hist-row">
+  <div>
+    <div class="date-hist-label">${fmtDate(d.date||d.date_et||'')}</div>
+    <div style="font-size:10px;color:var(--sub);margin-top:2px">${sign}${nu.toFixed(1)}u · ${d.bets||d.wins+d.losses} picks graded</div>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px">
+    <div class="date-hist-record"><span class="dw">${d.wins}W</span> – <span class="dl">${d.losses}L</span>${d.pushes?` – <span style="color:var(--amber)">${d.pushes}P</span>`:''}</div>
+    <span class="hit-badge ${hitCls(h)}">${d.wins+d.losses?h.toFixed(1)+'%':'—'}</span>
+  </div>
+</div>`;
+      }).join('');
+    }
+
+    // ── Record bar (header strip) ─────────────────────────────────────
+    function renderRecBar(data) {
+      const all = data.all || {};
+      const lt  = data.lifetime || {};
+      const w   = lt.wins   != null ? lt.wins   : (all.wins   || 0);
+      const l   = lt.losses != null ? lt.losses : (all.losses || 0);
+      const o   = lt.open   != null ? lt.open   : (all.open   || 0);
+      const h   = lt.win_rate != null ? lt.win_rate : (all.hit_rate || 0);
+      const cs  = lt.current_streak      || 0;
+      const cst = lt.current_streak_type || '';
+
+      document.getElementById('r-w').textContent = w;
+      document.getElementById('r-l').textContent = l;
+      document.getElementById('r-o').textContent = o;
+
+      const hEl = document.getElementById('r-hit');
+      const closed = w + l;
+      hEl.textContent = closed ? h.toFixed(1)+'% Hit' : '— Hit';
+      hEl.className   = 'hit-badge '+(h>=60?'hi':h>=50?'mid':h>0?'lo':'zero');
+
+      const sEl = document.getElementById('r-streak');
+      if (cs > 0 && cst) {
+        sEl.textContent = cs+cst;
+        sEl.className   = 'streak-badge '+(cst==='W'?'w':cst==='L'?'l':'p');
+        sEl.style.display = '';
+      } else {
+        sEl.style.display = 'none';
+      }
+    }
+
+    // ── Status dot ────────────────────────────────────────────────────
+    function setStatus(s) {
+      const dot = document.getElementById('dot');
+      const lbl = document.getElementById('stat-lbl');
+      dot.className = 'stat-dot '+s;
+      lbl.className = 'stat-lbl '+s;
+      lbl.textContent = s==='live'?'Live':s==='err'?'Offline':'Loading…';
+    }
+
+    // ── Fetch helper ──────────────────────────────────────────────────
+    function fetchT(url, ms) {
+      const ctrl = new AbortController();
+      const t = setTimeout(()=>ctrl.abort(), ms);
+      return fetch(url, {signal:ctrl.signal})
+        .then(r=>{ clearTimeout(t); if(!r.ok) throw new Error(r.status); return r.json(); })
+        .catch(e=>{ clearTimeout(t); throw e; });
+    }
+
+    // ── Slate cross-reference filter ──────────────────────────────────
+    const HEX8 = /^[0-9a-f]{8}$/;
+    function slateFilter(picks, games) {
+      if (!games || games.length === 0) return picks;
+      const validHashes = new Set(games.map(g => g.id.slice(0, 8)));
+      const slateNames = new Set();
+      for (const g of games) {
+        slateNames.add(g.sport + '_' + g.away.toLowerCase());
+        slateNames.add(g.sport + '_' + g.home.toLowerCase());
+      }
+      return picks.filter(p => {
+        const betId = String(p.bet_id || '');
+        if (betId.length > 9 && betId[betId.length - 9] === '_') {
+          const suffix = betId.slice(-8);
+          if (HEX8.test(suffix)) return validHashes.has(suffix);
+        }
+        const sport = p.sport || '';
+        const abbr  = String(p.team || '');
+        if (abbr.includes('v')) {
+          const [a, h] = abbr.split('v');
+          const aFull = teamName(a, sport).toLowerCase();
+          const hFull = teamName(h, sport).toLowerCase();
+          return slateNames.has(sport+'_'+aFull) || slateNames.has(sport+'_'+hFull);
+        }
+        if (p.player) return true;  // props always pass the slate filter
+        const full = teamName(abbr, sport).toLowerCase();
+        return slateNames.has(sport + '_' + full);
+      });
+    }
+
+    // Cached slate games used by auto-refresh
+    let _cachedSlate = [];
+    // Cached filtered picks — used by reval panel + auto-refresh
+    let _cachedPicks = [];
+    // Cached revalidation map: bet_id → reval data
+    let _revalMap = {};
+    // Live scores from ESPN scoreboard APIs
+    let _liveScores = {};
+    // Live prop tracker — bet_id → { current, line, stat_label, pct, winning, isLive, isFinal, gameStatus }
+    let _propTracker = {};
+    // Reval panel open state
+    let _revalPanelOpen = false;
+
+    // ── Merge revalidation data into picks array ──────────────────────
+    function mergeReval(picks) {
+      if (!Object.keys(_revalMap).length) return picks;
+      return picks.map(p => {
+        const rv = _revalMap[p.bet_id];
+        if (!rv) return p;
+        return {
+          ...p,
+          reval_status:        rv.revalidation_status,
+          reval_reason:        rv.revalidation_reason,
+          reval_edge:          rv.current_edge,
+          reval_opening_edge:  rv.opening_edge,
+          reval_at:            rv.revalidation_at,
+        };
+      });
+    }
+
+    // ── Update revalidation banner ────────────────────────────────────
+    function updateRevalBanner(data) {
+      if (!data || !data.has_updates) {
+        document.getElementById('reval-banner').classList.remove('visible');
+        document.getElementById('reval-panel').classList.remove('open');
+        _revalPanelOpen = false;
+        return;
+      }
+      const total   = data.update_count || 0;
+      const voided  = data.voided_count || 0;
+      const parts   = [];
+      if (voided > 0) parts.push(`${voided} voided`);
+      if ((data.downgraded_count||0) > 0) parts.push(`${data.downgraded_count} downgraded`);
+      if ((data.upgraded_count||0) > 0)   parts.push(`${data.upgraded_count} upgraded`);
+      document.getElementById('reval-banner-text').textContent =
+        parts.length ? 'PICKS UPDATED: '+parts.join(', ').toUpperCase() : 'PREGAME UPDATES';
+      document.getElementById('reval-banner-cnt').textContent = total;
+      document.getElementById('reval-banner').classList.add('visible');
+      // Populate reval panel with the affected pick cards
+      const panelEl = document.getElementById('reval-panel-picks');
+      if (panelEl && _cachedPicks.length) {
+        const revalPicks = mergeReval(_cachedPicks.filter(p => _revalMap[p.bet_id]));
+        panelEl.innerHTML = revalPicks.length
+          ? revalPicks.map(p => buildCard(p)).join('')
+          : '<div class="empty" style="padding:16px"><p>Updated picks listed above.</p></div>';
+      }
+    }
+
+    // ── Fetch + cache revalidation updates ───────────────────────────
+    async function fetchAndApplyReval() {
+      try {
+        const rv = await fetchT(API_BASE+'/api/revalidation-updates', 4000);
+        if (rv && rv.updates && rv.updates.length) {
+          _revalMap = {};
+          for (const u of rv.updates) _revalMap[u.bet_id] = u;
+        }
+        updateRevalBanner(rv);
+      } catch { /* silent — reval is non-critical */ }
+    }
+
+    // ── Fetch live scores from ESPN scoreboards ───────────────────────
+    async function fetchLiveScores() {
+      try {
+        const data = await fetchT(API_BASE+'/api/live-scores', 6000);
+        if (data && data.scores) _liveScores = data.scores;
+      } catch { /* non-critical */ }
+    }
+
+    // ── Fetch live prop tracker data and update cards in-place ────────
+    async function fetchPropTracker() {
+      try {
+        const data = await fetchT(API_BASE+'/api/prop-tracker', 8000);
+        if (data && data.trackers) {
+          _propTracker = data.trackers;
+          updatePropTrackers();
+        }
+      } catch { /* non-critical */ }
+    }
+
+    function updatePropTrackers() {
+      document.querySelectorAll('.prop-tracker[data-tracker-id]').forEach(div => {
+        const betId = div.getAttribute('data-tracker-id');
+        const t = _propTracker[betId];
+        if (!t) {
+          div.innerHTML = '';
+          return;
+        }
+        const { current, line, direction, stat_label, pct, winning, isLive, isFinal, gameStatus } = t;
+        if (!isLive && !isFinal) {
+          div.innerHTML = `<div class="pt-pregame">⏳ ${gameStatus || 'Pre-game'}</div>`;
+          div.className = 'prop-tracker';
+          return;
+        }
+        const stateCls = isLive ? ' live' : winning === true ? ' won' : winning === false ? ' lost' : '';
+        div.className = 'prop-tracker' + stateCls;
+        const barColor = winning === true ? 'on-track' : winning === false ? 'danger' : 'close';
+        const winCls   = winning === true ? 'winning'  : winning === false ? 'losing'  : '';
+        const statusTxt = isFinal
+          ? '🏁 FINAL'
+          : `<span class="pt-live-dot"></span>${gameStatus || 'LIVE'}`;
+        const currentDisp = current != null
+          ? (current === Math.floor(current) ? String(current) : current.toFixed(1))
+          : '—';
+        const barW = current != null ? Math.min(pct, 100).toFixed(1) : '0';
+        div.innerHTML =
+          `<div class="pt-header"><span class="pt-label">📊 Tracker</span><span class="pt-status">${statusTxt}</span></div>` +
+          `<div class="pt-count"><span class="pt-current ${winCls}">${currentDisp}</span><span class="pt-sep"> / </span><span class="pt-line">${line} ${stat_label}</span></div>` +
+          `<div class="pt-bar-wrap"><div class="pt-bar ${barColor}" style="width:${barW}%"></div></div>`;
+      });
+    }
+
+    // ── Toggle reval panel expand/collapse ────────────────────────────
+    function toggleRevalPanel() {
+      _revalPanelOpen = !_revalPanelOpen;
+      const panel = document.getElementById('reval-panel');
+      const chev  = document.getElementById('reval-banner-chev');
+      if (panel) panel.classList.toggle('open', _revalPanelOpen);
+      if (chev)  chev.textContent = _revalPanelOpen ? '▲ Hide Picks' : '▼ Show Picks';
+    }
+
+    // ── Slate versioning ─────────────────────────────────────────────
+    let _svVersions = [];
+    let _svChanges  = [];
+    let _clOpen     = false;   // changelog collapsed by default
+
+    function fmtOdds(o) {
+      if (o == null) return '—';
+      return o > 0 ? '+'+o : String(o);
+    }
+
+    function fmtTimeET(iso) {
+      try {
+        return new Date(iso).toLocaleTimeString('en-US',{
+          timeZone:'America/New_York', hour:'2-digit', minute:'2-digit'
+        }) + ' ET';
+      } catch { return ''; }
+    }
+
+    function renderSlateVersionBadge(versions) {
+      const bar = document.getElementById('sv-bar');
+      if (!versions || versions.length === 0) { bar.style.display = 'none'; return; }
+      bar.style.display = 'block';
+      const tabs = document.getElementById('sv-tabs');
+      tabs.innerHTML = versions.map((v, i) => {
+        const isLatest = i === versions.length - 1;
+        const locked   = v.is_locked ? '🔒 ' : '';
+        const label    = v.is_locked
+          ? `${locked}Opening Slate v${v.version}`
+          : `Slate v${v.version}`;
+        const latestPill = isLatest && versions.length > 1
+          ? `<span class="sv-latest-dot">LATEST</span>` : '';
+        return `<span class="sv-tab${isLatest ? ' active' : ''}">${label}${latestPill}</span>`;
+      }).join('');
+    }
+
+    function renderChangelog(changes) {
+      const section = document.getElementById('changelog-section');
+      const badge   = document.getElementById('changelog-badge');
+      const body    = document.getElementById('changelog-body');
+      if (!changes || changes.length === 0) { section.style.display = 'none'; return; }
+      section.style.display = 'block';
+      badge.textContent = changes.length + (changes.length === 1 ? ' change' : ' changes');
+
+      const icons  = { added:'➕', removed:'➖', modified:'🔄' };
+      const labels = { added:'ADDED', removed:'REMOVED', modified:'CHANGED' };
+
+      body.innerHTML = changes.map(ch => {
+        const snap  = ch.change_type === 'removed' ? ch.old_snapshot : ch.new_snapshot;
+        const name  = snap ? (snap.player || snap.team || snap.sport || '?') : ch.bet_id.slice(0,8);
+        const mkt   = snap ? (snap.market || '').replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase()) : '';
+        const tier  = snap ? (snap.tier || '') : '';
+        const tPfx  = tier === 'S+' ? '☢️' : tier === 'S' ? '💎' : '⚡';
+
+        let detail = '';
+        if (ch.change_type === 'modified' && ch.changed_fields) {
+          const parts = [];
+          const cf = ch.changed_fields;
+          if (cf.tier)       parts.push(`Tier: ${cf.tier.old} → ${cf.tier.new}`);
+          if (cf.nuke)       parts.push(cf.nuke.new ? 'Gained ☢️ Nuke' : 'Lost ☢️ Nuke');
+          if (cf.diamond)    parts.push(cf.diamond.new ? 'Gained 💎 Diamond' : 'Lost 💎 Diamond');
+          if (cf.odds)       parts.push(`Odds: ${fmtOdds(cf.odds.old)} → ${fmtOdds(cf.odds.new)}`);
+          if (cf.confidence) {
+            const sign = cf.confidence.delta >= 0 ? '+' : '';
+            parts.push(`Conf: ${cf.confidence.old}% → ${cf.confidence.new}% (${sign}${cf.confidence.delta}pp)`);
+          }
+          if (cf.edge) {
+            const sign = cf.edge.delta >= 0 ? '+' : '';
+            parts.push(`Edge: ${cf.edge.old}% → ${cf.edge.new}% (${sign}${cf.edge.delta}pp)`);
+          }
+          detail = parts.join(' · ');
+        }
+
+        const timeStr   = fmtTimeET(ch.created_at);
+        const vLabel    = `v${ch.from_version} → v${ch.to_version}`;
+        const reasonLbl = (ch.trigger_reason || 'manual').replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+
+        return `<div class="changelog-entry ch-${ch.change_type}">
+          <div class="ch-icon">${icons[ch.change_type]||'•'}</div>
+          <div class="ch-body">
+            <div class="ch-name">${tPfx} ${name}${mkt ? ' · '+mkt : ''}</div>
+            ${detail ? `<div class="ch-detail">${detail}</div>` : ''}
+            <div class="ch-meta">${labels[ch.change_type]||ch.change_type} · ${vLabel} · ${reasonLbl} · ${timeStr}</div>
+          </div>
+        </div>`;
+      }).join('');
+
+      // Respect open/closed state
+      body.classList.toggle('collapsed', !_clOpen);
+      document.getElementById('changelog-chev').classList.toggle('open', _clOpen);
+    }
+
+    function toggleChangelog() {
+      _clOpen = !_clOpen;
+      document.getElementById('changelog-body').classList.toggle('collapsed', !_clOpen);
+      document.getElementById('changelog-chev').classList.toggle('open', _clOpen);
+    }
+
+    async function fetchSlateVersions() {
+      try {
+        const [sv, sc] = await Promise.all([
+          fetchT(API_BASE+'/api/slate-versions',  4000),
+          fetchT(API_BASE+'/api/slate-changelog', 4000),
+        ]);
+        _svVersions = sv.versions || [];
+        _svChanges  = sc.changes  || [];
+        renderSlateVersionBadge(_svVersions);
+        renderChangelog(_svChanges);
+      } catch { /* non-critical */ }
+    }
+
+    // ── Bootstrap ─────────────────────────────────────────────────────
+    async function init() {
+      setStatus('loading');
+
+      // Fetch live scores in the first wave so they're ready before renderSlate()
+      const [picksRes, recRes, slateRes] = await Promise.allSettled([
+        fetchT(API_BASE+'/api/picks',   4000),
+        fetchT(API_BASE+'/api/records', 4000),
+        fetchT(API_BASE+'/api/slate',   8000),
+        fetchLiveScores(),
+      ]);
+
+      // Slate — Home tab only (game-time lookup + Today's Slate section)
+      if (slateRes.status === 'fulfilled') {
+        _cachedSlate = slateRes.value.games || [];
+        _gameTimeMap    = {};
+        _gameMatchupMap = {};
+        for (const g of _cachedSlate) {
+          if (g.id) {
+            const h = g.id.slice(0, 8);
+            _gameTimeMap[h]    = g.time_et;
+            _gameMatchupMap[h] = (g.away || '') + ' @ ' + (g.home || '');
+          }
+        }
+        renderSlate(_cachedSlate);  // _liveScores now populated before this call
+      } else {
+        document.getElementById('slate-home').innerHTML =
+          `<div class="empty"><div class="eicon">📅</div><p>Schedule unavailable.</p></div>`;
+      }
+
+      // Fetch revalidation + slate versions in parallel (live scores already done above)
+      await Promise.all([fetchAndApplyReval(), fetchSlateVersions()]);
+
+      if (picksRes.status === 'fulfilled') {
+        const filtered = mergeReval(slateFilter(picksRes.value.picks || [], _cachedSlate));
+        _cachedPicks = filtered;
+        renderPicks(filtered);
+        renderGamesPicks(filtered);
+        renderInGame(filtered);
+        loadHeadshots();
+        fetchPropTracker();
+        setStatus('live');
+      } else {
+        document.getElementById('featured-wrap').innerHTML =
+          `<div class="empty"><div class="eicon">⚠️</div><p>Could not load picks — data may be stale.</p></div>`;
+        renderGamesPicks([]);
+        setStatus('err');
+      }
+
+      if (recRes.status === 'fulfilled') {
+        renderRecBar(recRes.value);
+        renderROI(recRes.value);
+      }
+    }
+
+    // Auto-refresh — 30 s always so new picks appear immediately after broadcast
+    function _pollInterval() { return 30 * 1000; }
+    // Refresh revalidation updates every 5 min regardless of game hours
+    let _revalRefreshCount = 0;
+    (function _scheduleRefresh() {
+      setTimeout(async () => {
+        try {
+          const [p,r] = await Promise.all([
+            fetchT(API_BASE+'/api/picks',   4000),
+            fetchT(API_BASE+'/api/records', 4000),
+          ]);
+          // Refresh reval + slate versions every 5 min
+          _revalRefreshCount++;
+          if (_revalRefreshCount % 2 === 0) {
+            await fetchAndApplyReval();
+            await fetchSlateVersions();
+          }
+          const filtered = mergeReval(slateFilter(p.picks||[], _cachedSlate));
+          _cachedPicks = filtered;
+          renderPicks(filtered);
+          renderGamesPicks(filtered);
+          renderInGame(filtered);
+          loadHeadshots();
+          renderRecBar(r);
+          renderROI(r);
+          // Refresh live scores + prop tracker during game hours (6 PM – 2 AM ET)
+          const _lsHr = parseInt(new Date().toLocaleString('en-US',{timeZone:'America/New_York',hour:'numeric',hour12:false}),10);
+          if (_lsHr >= 18 || _lsHr < 2) {
+            await fetchLiveScores();
+            await fetchPropTracker();
+            if (_cachedSlate.length) renderSlate(_cachedSlate);
+          } else {
+            // Outside game hours: just re-apply cached tracker data to freshly rendered cards
+            updatePropTrackers();
+          }
+          setStatus('live');
+        } catch { /* silent */ }
+        _scheduleRefresh();
+      }, _pollInterval());
+    })();
+
+    init();
+  </script>
+</body>
+</html>

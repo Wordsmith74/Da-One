@@ -13,11 +13,13 @@ import requests
 BDL_BASE = "https://api.balldontlie.io"
 ODDS_BASE = "https://api.the-odds-api.com/v4"
 
-# Gap between balldontlie calls -- the free tier's limit is tight enough
-# that a sub-second gap isn't sufficient once a run fires off dozens of
-# player searches back to back.
-BDL_REQUEST_DELAY_SECONDS = 2.0
-BDL_MAX_RETRIES = 3
+# Gap between balldontlie calls -- the earlier 0.5s/2s gaps weren't enough;
+# your tier's quota appears tight enough that back-to-back calls during
+# player/roster discovery (dozens in a row) still get rate limited even
+# with a few seconds between them and a short backoff. This is more
+# conservative on purpose.
+BDL_REQUEST_DELAY_SECONDS = 4.0
+BDL_MAX_RETRIES = 4
 
 
 def _bdl_headers():
@@ -37,11 +39,11 @@ def _bdl_get(path, params=None, timeout=15):
 
     - Waits BDL_REQUEST_DELAY_SECONDS before each call so a run with many
       lookups doesn't hammer the API back-to-back.
-    - On a 429, respects the API's own Retry-After header (defaults to a
-      growing backoff if the header is missing) and retries up to
-      BDL_MAX_RETRIES times. If it still fails after that, it raises --
-      this is meant to ride out real bursts, not to loop indefinitely
-      against a service that's telling us to slow down or stop.
+    - On a 429, respects the API's own Retry-After header if present,
+      otherwise backs off on an increasing schedule (15s, 30s, 45s, 60s)
+      and retries up to BDL_MAX_RETRIES times. If it still fails after
+      that, it raises -- this rides out a real per-minute quota window
+      rather than looping indefinitely.
     """
     last_exc = None
     for attempt in range(BDL_MAX_RETRIES + 1):
@@ -49,7 +51,7 @@ def _bdl_get(path, params=None, timeout=15):
         r = requests.get(f"{BDL_BASE}{path}", headers=_bdl_headers(), params=params, timeout=timeout)
 
         if r.status_code == 429:
-            wait_s = float(r.headers.get("Retry-After", 5 * (attempt + 1)))
+            wait_s = float(r.headers.get("Retry-After", 15 * (attempt + 1)))
             print(f"  [warn] balldontlie rate limit hit on {path} (attempt {attempt + 1}/"
                   f"{BDL_MAX_RETRIES + 1}) -- waiting {wait_s}s")
             time.sleep(wait_s)
@@ -362,6 +364,49 @@ def get_event_player_props(sport_key, event_id, markets, regions="us"):
     return r.json()
 
 
+# ---------- PropLine (alternative odds/props source, being trialed alongside the-odds-api) ----------
+# Response format is advertised as drop-in compatible with the-odds-api, so these mirror
+# get_odds() / get_event_player_props() above. Set PROPLINE_API_KEY in env -- never hardcode it.
+PROPLINE_BASE = "https://api.prop-line.com/v1"
+
+
+def _propline_key():
+    key = os.environ.get("PROPLINE_API_KEY")
+    if not key:
+        raise RuntimeError("PROPLINE_API_KEY not set in environment")
+    return key
+
+
+def get_propline_sports():
+    """Lists available sport keys -- useful for a one-off check that your key/account covers
+    the sports you need (confirmed live: baseball_mlb, basketball_wnba, among many others)."""
+    r = requests.get(f"{PROPLINE_BASE}/sports", params={"apiKey": _propline_key()}, timeout=15)
+    r.raise_for_status()
+    return r.json()
+
+
+def get_propline_odds(sport_key, markets, regions="us"):
+    """PropLine equivalent of get_odds() -- same call shape, different provider."""
+    r = requests.get(
+        f"{PROPLINE_BASE}/sports/{sport_key}/odds",
+        params={"apiKey": _propline_key(), "regions": regions, "markets": markets, "oddsFormat": "american"},
+        timeout=15,
+    )
+    r.raise_for_status()
+    return r.json()
+
+
+def get_propline_event_player_props(sport_key, event_id, markets, regions="us"):
+    """PropLine equivalent of get_event_player_props() -- same call shape, different provider."""
+    r = requests.get(
+        f"{PROPLINE_BASE}/sports/{sport_key}/events/{event_id}/odds",
+        params={"apiKey": _propline_key(), "regions": regions, "markets": markets, "oddsFormat": "american"},
+        timeout=15,
+    )
+    r.raise_for_status()
+    return r.json()
+
+
 if __name__ == "__main__":
     # Smoke test — requires env vars set locally.
     import json
@@ -372,4 +417,3 @@ if __name__ == "__main__":
         print(json.dumps(games[:1], indent=2))
     except Exception as e:
         print("MLB fetch failed:", e)
-      

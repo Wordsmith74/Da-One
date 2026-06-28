@@ -13,9 +13,11 @@ import requests
 BDL_BASE = "https://api.balldontlie.io"
 ODDS_BASE = "https://api.the-odds-api.com/v4"
 
-# Small fixed gap between balldontlie calls -- a courtesy delay to avoid
-# hammering the API back-to-back across a run with many lookups.
-BDL_REQUEST_DELAY_SECONDS = 0.5
+# Gap between balldontlie calls -- the free tier's limit is tight enough
+# that a sub-second gap isn't sufficient once a run fires off dozens of
+# player searches back to back.
+BDL_REQUEST_DELAY_SECONDS = 2.0
+BDL_MAX_RETRIES = 3
 
 
 def _bdl_headers():
@@ -29,28 +31,35 @@ def _bdl_headers():
     return {"Authorization": key}
 
 
-def _bdl_get(path, params=None, timeout=15, _retried=False):
+def _bdl_get(path, params=None, timeout=15):
     """
     Shared GET wrapper for all balldontlie endpoints.
 
-    - Adds a small fixed delay before each call so a run with many lookups
-      doesn't hammer the API back-to-back.
-    - On a 429, respects the API's own Retry-After header (defaults to 5s
-      if the header is missing) and retries ONCE. If it still fails after
-      that, it raises -- this handles an occasional bump, not an infinite
-      loop against a service telling us to slow down.
+    - Waits BDL_REQUEST_DELAY_SECONDS before each call so a run with many
+      lookups doesn't hammer the API back-to-back.
+    - On a 429, respects the API's own Retry-After header (defaults to a
+      growing backoff if the header is missing) and retries up to
+      BDL_MAX_RETRIES times. If it still fails after that, it raises --
+      this is meant to ride out real bursts, not to loop indefinitely
+      against a service that's telling us to slow down or stop.
     """
-    time.sleep(BDL_REQUEST_DELAY_SECONDS)
-    r = requests.get(f"{BDL_BASE}{path}", headers=_bdl_headers(), params=params, timeout=timeout)
+    last_exc = None
+    for attempt in range(BDL_MAX_RETRIES + 1):
+        time.sleep(BDL_REQUEST_DELAY_SECONDS)
+        r = requests.get(f"{BDL_BASE}{path}", headers=_bdl_headers(), params=params, timeout=timeout)
 
-    if r.status_code == 429 and not _retried:
-        wait_s = float(r.headers.get("Retry-After", 5))
-        print(f"  [warn] balldontlie rate limit hit on {path} -- waiting {wait_s}s per Retry-After header")
-        time.sleep(wait_s)
-        return _bdl_get(path, params=params, timeout=timeout, _retried=True)
+        if r.status_code == 429:
+            wait_s = float(r.headers.get("Retry-After", 5 * (attempt + 1)))
+            print(f"  [warn] balldontlie rate limit hit on {path} (attempt {attempt + 1}/"
+                  f"{BDL_MAX_RETRIES + 1}) -- waiting {wait_s}s")
+            time.sleep(wait_s)
+            last_exc = requests.exceptions.HTTPError(f"429 from {path} after {attempt + 1} attempt(s)")
+            continue
 
-    r.raise_for_status()
-    return r.json()
+        r.raise_for_status()
+        return r.json()
+
+    raise last_exc
 
 
 # ---------- MLB ----------
@@ -363,4 +372,4 @@ if __name__ == "__main__":
         print(json.dumps(games[:1], indent=2))
     except Exception as e:
         print("MLB fetch failed:", e)
-  
+      

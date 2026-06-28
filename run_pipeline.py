@@ -1,3 +1,8 @@
+import time  # 1. Add this at the top of the file
+
+def get_request(url):
+    time.sleep(1)  # 2. Add this delay to throttle requests and avoid HTTP 429 errors
+    return requests.get(url).json()
 """
 Glue script: chains every layer into one pipeline and writes output/picks.json.
 

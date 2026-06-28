@@ -5,7 +5,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # --- Data Dictionaries ---
-# (Ensure your existing NBA_TEAM and WNBA_TEAM dictionaries are defined here as they were in 1000006787.png)
+# (Ensure your existing NBA_TEAM and WNBA_TEAM dictionaries are defined here)
 
 def get_team(team_name):
     """
@@ -27,5 +27,11 @@ def get_team(team_name):
     # If the loop finishes, the alias is missing
     logger.warning(f"DEBUG: Missing alias found for team: {team_name}")
     return None
+
+def canonical_team(team_name):
+    """
+    Wrapper function to maintain compatibility with existing pipeline imports.
+    """
+    return get_team(team_name)
 
 # --- Rest of your existing functions (e.g., get_park, etc.) ---

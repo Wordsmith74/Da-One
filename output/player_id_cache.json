@@ -1,4 +1,9 @@
 {
+  "aaron civale": {
+    "last_seen": "2026-06-28",
+    "name": "Aaron Civale",
+    "player_id": "40934"
+  },
   "alan rangel": {
     "last_seen": "2026-06-28",
     "name": "Alan Rangel",
@@ -8,6 +13,21 @@
     "last_seen": "2026-06-28",
     "name": "Andre Pallante",
     "player_id": "4109034"
+  },
+  "anthony kay": {
+    "last_seen": "2026-06-28",
+    "name": "Anthony Kay",
+    "player_id": "40947"
+  },
+  "brady singer": {
+    "last_seen": "2026-06-28",
+    "name": "Brady Singer",
+    "player_id": "41172"
+  },
+  "brandon woodruff": {
+    "last_seen": "2026-06-28",
+    "name": "Brandon Woodruff",
+    "player_id": "37515"
   },
   "brandon young": {
     "last_seen": "2026-06-28",
@@ -24,20 +44,40 @@
     "name": "Cal Quantrill",
     "player_id": "39875"
   },
+  "carlos rodon": {
+    "last_seen": "2026-06-28",
+    "name": "Carlos Rodon",
+    "player_id": "33696"
+  },
   "chase burns": {
     "last_seen": "2026-06-28",
     "name": "Chase Burns",
     "player_id": "4927516"
+  },
+  "chris sale": {
+    "last_seen": "2026-06-28",
+    "name": "Chris Sale",
+    "player_id": "30948"
   },
   "christian scott": {
     "last_seen": "2026-06-28",
     "name": "Christian Scott",
     "player_id": "4414215"
   },
+  "cionel perez": {
+    "last_seen": "2026-06-28",
+    "name": "Cionel Perez",
+    "player_id": "36089"
+  },
   "cole sulser": {
     "last_seen": "2026-06-28",
     "name": "Cole Sulser",
     "player_id": "37825"
+  },
+  "connor prielipp": {
+    "last_seen": "2026-06-28",
+    "name": "Connor Prielipp",
+    "player_id": "4620001"
   },
   "david peterson": {
     "last_seen": "2026-06-28",
@@ -49,10 +89,25 @@
     "name": "Davis Martin",
     "player_id": "42823"
   },
+  "drew rasmussen": {
+    "last_seen": "2026-06-28",
+    "name": "Drew Rasmussen",
+    "player_id": "42584"
+  },
   "dylan cease": {
     "last_seen": "2026-06-28",
     "name": "Dylan Cease",
     "player_id": "34943"
+  },
+  "emerson hancock": {
+    "last_seen": "2026-06-28",
+    "name": "Emerson Hancock",
+    "player_id": "4297897"
+  },
+  "emmet sheehan": {
+    "last_seen": "2026-06-28",
+    "name": "Emmet Sheehan",
+    "player_id": "4417806"
   },
   "foster griffin": {
     "last_seen": "2026-06-28",
@@ -64,10 +119,25 @@
     "name": "Framber Valdez",
     "player_id": "36581"
   },
+  "gavin williams": {
+    "last_seen": "2026-06-28",
+    "name": "Gavin Williams",
+    "player_id": "4345076"
+  },
   "gerrit cole": {
     "last_seen": "2026-06-28",
     "name": "Gerrit Cole",
     "player_id": "32081"
+  },
+  "hunter brown": {
+    "last_seen": "2026-06-28",
+    "name": "Hunter Brown",
+    "player_id": "4717803"
+  },
+  "jack flaherty": {
+    "last_seen": "2026-06-28",
+    "name": "Jack Flaherty",
+    "player_id": "33837"
   },
   "jack perkins": {
     "last_seen": "2026-06-28",
@@ -84,6 +154,11 @@
     "name": "Jared Jones",
     "player_id": "4918156"
   },
+  "jesus luzardo": {
+    "last_seen": "2026-06-28",
+    "name": "Jesus Luzardo",
+    "player_id": "39667"
+  },
   "jose cabrera": {
     "last_seen": "2026-06-28",
     "name": "Jose Cabrera",
@@ -93,6 +168,16 @@
     "last_seen": "2026-06-28",
     "name": "Kai-Wei Teng",
     "player_id": "42242"
+  },
+  "kumar rocker": {
+    "last_seen": "2026-06-28",
+    "name": "Kumar Rocker",
+    "player_id": "4414525"
+  },
+  "kyle bradish": {
+    "last_seen": "2026-06-28",
+    "name": "Kyle Bradish",
+    "player_id": "4311625"
   },
   "kyle harrison": {
     "last_seen": "2026-06-28",
@@ -104,6 +189,11 @@
     "name": "Kyle Hart",
     "player_id": "39936"
   },
+  "kyle leahy": {
+    "last_seen": "2026-06-28",
+    "name": "Kyle Leahy",
+    "player_id": "5006093"
+  },
   "logan gilbert": {
     "last_seen": "2026-06-28",
     "name": "Logan Gilbert",
@@ -113,6 +203,21 @@
     "last_seen": "2026-06-28",
     "name": "Logan Webb",
     "player_id": "41216"
+  },
+  "luinder avila": {
+    "last_seen": "2026-06-28",
+    "name": "Luinder Avila",
+    "player_id": "5201985"
+  },
+  "merrill kelly": {
+    "last_seen": "2026-06-28",
+    "name": "Merrill Kelly",
+    "player_id": "32968"
+  },
+  "michael king": {
+    "last_seen": "2026-06-28",
+    "name": "Michael King",
+    "player_id": "40429"
   },
   "michael lorenzen": {
     "last_seen": "2026-06-28",
@@ -129,24 +234,69 @@
     "name": "Mike Paredes",
     "player_id": "5337593"
   },
+  "mitch keller": {
+    "last_seen": "2026-06-28",
+    "name": "Mitch Keller",
+    "player_id": "33722"
+  },
   "reid detmers": {
     "last_seen": "2026-06-28",
     "name": "Reid Detmers",
     "player_id": "4326697"
+  },
+  "robbie ray": {
+    "last_seen": "2026-06-28",
+    "name": "Robbie Ray",
+    "player_id": "32175"
+  },
+  "ryan feltner": {
+    "last_seen": "2026-06-28",
+    "name": "Ryan Feltner",
+    "player_id": "4019484"
   },
   "ryan gusto": {
     "last_seen": "2026-06-28",
     "name": "Ryan Gusto",
     "player_id": "5131986"
   },
+  "ryan rolison": {
+    "last_seen": "2026-06-28",
+    "name": "Ryan Rolison",
+    "player_id": "41220"
+  },
+  "sam aldegheri": {
+    "last_seen": "2026-06-28",
+    "name": "Sam Aldegheri",
+    "player_id": "5221123"
+  },
+  "shane bieber": {
+    "last_seen": "2026-06-28",
+    "name": "Shane Bieber",
+    "player_id": "40912"
+  },
   "slade cecconi": {
     "last_seen": "2026-06-28",
     "name": "Slade Cecconi",
     "player_id": "41462"
   },
+  "sonny gray": {
+    "last_seen": "2026-06-28",
+    "name": "Sonny Gray",
+    "player_id": "32082"
+  },
+  "tyler phillips": {
+    "last_seen": "2026-06-28",
+    "name": "Tyler Phillips",
+    "player_id": "41247"
+  },
   "yoshinobu yamamoto": {
     "last_seen": "2026-06-28",
     "name": "Yoshinobu Yamamoto",
     "player_id": "4872587"
+  },
+  "zack littell": {
+    "last_seen": "2026-06-28",
+    "name": "Zack Littell",
+    "player_id": "36052"
   }
 }

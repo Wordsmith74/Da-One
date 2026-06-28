@@ -29,28 +29,75 @@ import unicodedata
 
 # canonical_key -> {full, abbr, aliases (list), park}
 MLB_TEAMS = {
-    "dodgers":  {"full": "Los Angeles Dodgers", "abbr": "LAD", "park": "Dodger Stadium",
-                 "aliases": ["la dodgers", "lad", "los angeles dodgers"]},
-    "padres":   {"full": "San Diego Padres", "abbr": "SD", "park": "Petco Park",
-                 "aliases": ["san diego", "sd", "sdp"]},
-    "astros":   {"full": "Houston Astros", "abbr": "HOU", "park": "Daikin Park",
-                 "aliases": ["houston", "hou"]},  # renamed from Minute Maid Park in 2025
-    "mariners": {"full": "Seattle Mariners", "abbr": "SEA", "park": "T-Mobile Park",
-                 "aliases": ["seattle", "sea"]},
-    "yankees":  {"full": "New York Yankees", "abbr": "NYY", "park": "Yankee Stadium",
-                 "aliases": ["ny yankees", "nyy", "new york yankees"]},
-    "mets":     {"full": "New York Mets", "abbr": "NYM", "park": "Citi Field",
-                 "aliases": ["ny mets", "nym", "new york mets"]},
-    "red_sox":  {"full": "Boston Red Sox", "abbr": "BOS", "park": "Fenway Park",
-                 "aliases": ["boston", "bos", "redsox"]},
-    "braves":   {"full": "Atlanta Braves", "abbr": "ATL", "park": "Truist Park",
-                 "aliases": ["atlanta", "atl"]},
-    "phillies": {"full": "Philadelphia Phillies", "abbr": "PHI", "park": "Citizens Bank Park",
-                 "aliases": ["philadelphia", "phi", "phillies"]},
-    "orioles":  {"full": "Baltimore Orioles", "abbr": "BAL", "park": "Oriole Park at Camden Yards",
-                 "aliases": ["baltimore", "bal"]},
-    # NOTE: starter set covering teams referenced in this codebase's examples --
-    # extend with the rest of the 30 MLB teams before relying on this for every game.
+    "dodgers":      {"full": "Los Angeles Dodgers", "abbr": "LAD", "park": "Dodger Stadium",
+                      "aliases": ["la dodgers", "lad", "los angeles dodgers"]},
+    "padres":       {"full": "San Diego Padres", "abbr": "SD", "park": "Petco Park",
+                      "aliases": ["san diego", "sd", "sdp"]},
+    "astros":       {"full": "Houston Astros", "abbr": "HOU", "park": "Daikin Park",
+                      "aliases": ["houston", "hou"]},  # renamed from Minute Maid Park in 2025
+    "mariners":     {"full": "Seattle Mariners", "abbr": "SEA", "park": "T-Mobile Park",
+                      "aliases": ["seattle", "sea"]},
+    "yankees":      {"full": "New York Yankees", "abbr": "NYY", "park": "Yankee Stadium",
+                      "aliases": ["ny yankees", "nyy", "new york yankees"]},
+    "mets":         {"full": "New York Mets", "abbr": "NYM", "park": "Citi Field",
+                      "aliases": ["ny mets", "nym", "new york mets"]},
+    "red_sox":      {"full": "Boston Red Sox", "abbr": "BOS", "park": "Fenway Park",
+                      "aliases": ["boston", "bos", "redsox"]},
+    "braves":       {"full": "Atlanta Braves", "abbr": "ATL", "park": "Truist Park",
+                      "aliases": ["atlanta", "atl"]},
+    "phillies":     {"full": "Philadelphia Phillies", "abbr": "PHI", "park": "Citizens Bank Park",
+                      "aliases": ["philadelphia", "phi", "phillies"]},
+    "orioles":      {"full": "Baltimore Orioles", "abbr": "BAL", "park": "Oriole Park at Camden Yards",
+                      "aliases": ["baltimore", "bal"]},
+    "blue_jays":    {"full": "Toronto Blue Jays", "abbr": "TOR", "park": "Rogers Centre",
+                      "aliases": ["toronto", "tor", "toronto blue jays", "jays"]},
+    "rays":         {"full": "Tampa Bay Rays", "abbr": "TB", "park": "George M. Steinbrenner Field",
+                      "aliases": ["tampa bay", "tb", "tampa bay rays"]},
+                      # NOTE: Rays' "home park" has been in flux since Tropicana Field's 2024
+                      # storm damage -- confirm current park before trusting park-factor lookups for TB.
+    "guardians":    {"full": "Cleveland Guardians", "abbr": "CLE", "park": "Progressive Field",
+                      "aliases": ["cleveland", "cle", "cleveland guardians"]},
+    "tigers":       {"full": "Detroit Tigers", "abbr": "DET", "park": "Comerica Park",
+                      "aliases": ["detroit", "det", "detroit tigers"]},
+    "royals":       {"full": "Kansas City Royals", "abbr": "KC", "park": "Kauffman Stadium",
+                      "aliases": ["kansas city", "kc", "kansas city royals"]},
+    "twins":        {"full": "Minnesota Twins", "abbr": "MIN", "park": "Target Field",
+                      "aliases": ["minnesota", "min", "minnesota twins"]},
+    "white_sox":    {"full": "Chicago White Sox", "abbr": "CWS", "park": "Rate Field",
+                      "aliases": ["chicago white sox", "cws", "chisox", "whitesox"]},
+                      # park renamed from Guaranteed Rate Field -- double-check if a FanGraphs
+                      # table still uses the old name.
+    "rangers":      {"full": "Texas Rangers", "abbr": "TEX", "park": "Globe Life Field",
+                      "aliases": ["texas", "tex", "texas rangers"]},
+    "angels":       {"full": "Los Angeles Angels", "abbr": "LAA", "park": "Angel Stadium",
+                      "aliases": ["la angels", "laa", "los angeles angels", "anaheim"]},
+    "athletics":    {"full": "Athletics", "abbr": "ATH", "park": "Sutter Health Park",
+                      "aliases": ["oakland athletics", "oakland", "athletics", "ath", "a's", "as"]},
+                      # team dropped the city name from its branding after leaving Oakland;
+                      # "Oakland Athletics" alias kept since older odds/box-score feeds may still use it.
+    "marlins":      {"full": "Miami Marlins", "abbr": "MIA", "park": "loanDepot park",
+                      "aliases": ["miami", "mia", "miami marlins"]},
+    "nationals":    {"full": "Washington Nationals", "abbr": "WSH", "park": "Nationals Park",
+                      "aliases": ["washington", "wsh", "washington nationals", "nats"]},
+    "cubs":         {"full": "Chicago Cubs", "abbr": "CHC", "park": "Wrigley Field",
+                      "aliases": ["chicago cubs", "chc", "cubs"]},
+    "brewers":      {"full": "Milwaukee Brewers", "abbr": "MIL", "park": "American Family Field",
+                      "aliases": ["milwaukee", "mil", "milwaukee brewers"]},
+    "cardinals":    {"full": "St. Louis Cardinals", "abbr": "STL", "park": "Busch Stadium",
+                      "aliases": ["st louis", "stl", "st. louis cardinals", "st louis cardinals"]},
+    "reds":         {"full": "Cincinnati Reds", "abbr": "CIN", "park": "Great American Ball Park",
+                      "aliases": ["cincinnati", "cin", "cincinnati reds"]},
+    "pirates":      {"full": "Pittsburgh Pirates", "abbr": "PIT", "park": "PNC Park",
+                      "aliases": ["pittsburgh", "pit", "pittsburgh pirates"]},
+    "giants":       {"full": "San Francisco Giants", "abbr": "SF", "park": "Oracle Park",
+                      "aliases": ["san francisco", "sf", "san francisco giants", "sfg"]},
+    "diamondbacks": {"full": "Arizona Diamondbacks", "abbr": "ARI", "park": "Chase Field",
+                      "aliases": ["arizona", "ari", "arizona diamondbacks", "dbacks"]},
+    "rockies":      {"full": "Colorado Rockies", "abbr": "COL", "park": "Coors Field",
+                      "aliases": ["colorado", "col", "colorado rockies"]},
+    # Full 30-team set as of this update -- if a new mismatch shows up in
+    # get_unresolved_log(), it's a missing alias for an existing team below,
+    # not a missing team.
 }
 
 WNBA_TEAMS = {
@@ -148,4 +195,3 @@ def get_unresolved_log():
     these are exactly the silent-breakage points the rest of the system is
     designed to avoid. Surface this in run output, don't bury it."""
     return list(_UNRESOLVED_LOG)
-    

@@ -39,6 +39,9 @@ def _bdl_get(path, params=None, timeout=15):
 
     - Waits BDL_REQUEST_DELAY_SECONDS before each call so a run with many
       lookups doesn't hammer the API back-to-back.
+    - On a 401, fails immediately -- retrying will never fix an auth error,
+      and the old behaviour (retrying anyway) caused 40+ minute runs when
+      the key lacked access to an endpoint (e.g. MLB stats on a free tier).
     - On a 429, respects the API's own Retry-After header if present,
       otherwise backs off on an increasing schedule (15s, 30s, 45s, 60s)
       and retries up to BDL_MAX_RETRIES times. If it still fails after
@@ -49,6 +52,14 @@ def _bdl_get(path, params=None, timeout=15):
     for attempt in range(BDL_MAX_RETRIES + 1):
         time.sleep(BDL_REQUEST_DELAY_SECONDS)
         r = requests.get(f"{BDL_BASE}{path}", headers=_bdl_headers(), params=params, timeout=timeout)
+
+        if r.status_code == 401:
+            # Auth failure -- retrying will never help, fail immediately.
+            # Most likely cause: your balldontlie plan doesn't cover this
+            # endpoint (e.g. MLB stats requires a paid tier).
+            raise requests.exceptions.HTTPError(
+                f"401 Unauthorized on {path} -- check BALL_DONT_LIE_KEY has access to this endpoint"
+            )
 
         if r.status_code == 429:
             wait_s = float(r.headers.get("Retry-After", 15 * (attempt + 1)))
@@ -420,3 +431,4 @@ if __name__ == "__main__":
         print(json.dumps(games[:1], indent=2))
     except Exception as e:
         print("MLB fetch failed:", e)
+      

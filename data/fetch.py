@@ -90,11 +90,47 @@ def get_mlb_player_season_stats(player_id, season):
 
 
 def get_mlb_player_game_logs(player_id, season, limit=10):
-    """Recent game-by-game stats for trend / sample-size weighted projections."""
-    return _bdl_get(
-        "/mlb/v1/stats",
-        params={"player_ids[]": player_id, "seasons[]": season, "per_page": limit},
-    ).get("data", [])
+    """
+    Recent game-by-game pitching stats for trend / sample-size weighted projections.
+
+    Switched from balldontlie (/mlb/v1/stats) to the official MLB Stats API
+    (statsapi.mlb.com) -- free, no API key, no rate-limit issues, and covers
+    pitching game logs directly. player_id here is the MLB Stats API person ID,
+    which ESPN's scoreboard already returns via probables[0]['athlete']['id']
+    (same ID space). balldontlie player IDs are a different namespace and are
+    no longer used for this call.
+
+    Returns a list of dicts with keys matching what run_pipeline.py expects:
+      strikeouts, batters_faced, innings_pitched, player (dict with full_name)
+    so the rest of the pipeline is unchanged.
+    """
+    url = (
+        f"https://statsapi.mlb.com/api/v1/people/{player_id}/stats"
+        f"?stats=gameLog&group=pitching&season={season}&gameType=R"
+    )
+    r = requests.get(url, timeout=15)
+    r.raise_for_status()
+    splits = (
+        r.json()
+        .get("stats", [{}])[0]
+        .get("splits", [])
+    )
+    # Most recent games first
+    splits = list(reversed(splits))[:limit]
+
+    out = []
+    for s in splits:
+        stat = s.get("stat", {})
+        player_info = s.get("player", {})
+        out.append({
+            "strikeouts": stat.get("strikeOuts", 0),
+            "batters_faced": stat.get("battersFaced", 0),
+            "innings_pitched": float(stat.get("inningsPitched", 0) or 0),
+            "player": {
+                "full_name": player_info.get("fullName", ""),
+            },
+        })
+    return out
 
 
 # ---------- WNBA ----------
@@ -431,4 +467,4 @@ if __name__ == "__main__":
         print(json.dumps(games[:1], indent=2))
     except Exception as e:
         print("MLB fetch failed:", e)
-      
+  

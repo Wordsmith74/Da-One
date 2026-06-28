@@ -743,7 +743,7 @@ def process_mlb_k_prop(raw):
 
     shrunk_k_pct = shrink_mlb_k_pct(raw["recent_ks"], raw["recent_batters_faced"])
     adv_k_pct = project_k_pct_advanced(csw_pct=raw["csw_pct"], swstr_pct=raw["swstr_pct"], raw_k_pct=shrunk_k_pct)
-
+print(f"  [debug] adv_k_pct={adv_k_pct:.4f} shrunk={shrunk_k_pct:.4f} csw={raw.get('csw_pct')} swstr={raw.get('swstr_pct')}")
     workload = auto_adjust_workload_input(
         recent_values=raw["recent_innings"], baseline_values=raw["baseline_innings"],
         sport="mlb_pitcher", status_history=raw["status_history"],

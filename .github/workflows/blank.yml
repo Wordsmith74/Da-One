@@ -5,7 +5,7 @@ on:
     # Runs at 10:00 UTC daily (~6am ET / 3am PT) -- adjust to whenever you want
     # the slate refreshed. Cron is always UTC regardless of your local timezone.
     - cron: '0 10 * * *'
-  workflow_dispatch: {}  # lets you trigger it manually from the Actions tab too
+  workflow_dispatch: {}   # lets you trigger it manually from the Actions tab too
 
 permissions:
   contents: write
@@ -26,6 +26,9 @@ jobs:
 
       - name: Install dependencies
         run: pip install requests pandas lxml pybaseball
+
+      - name: Clear Python cache
+        run: find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
 
       - name: Run pipeline
         env:
@@ -49,10 +52,8 @@ jobs:
         run: |
           git config user.name "picks-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add output/picks.json || true
-          git add output/run_log.json 2>/dev/null || true
-          git add output/player_id_cache.json 2>/dev/null || true
-          git diff --cached --quiet || git commit -m "Update picks $(date -u +%Y-%m-%d)"
+          git add output/picks.json output/player_id_cache.json output/pick_history.jsonl
+          git diff --quiet --cached || git commit -m "Update picks $(date -u +%Y-%m-%d)"
           git push
 
   deploy-pages:
@@ -74,3 +75,4 @@ jobs:
 
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v4
+        

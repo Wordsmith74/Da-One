@@ -700,6 +700,28 @@ def mock_fetch_wnba_player_prop():
 
 # ---------- Pipeline stages per market ----------
 
+def _pick_confidence(model_prob):
+    """
+    Confidence shown to the user = the model's own estimated probability
+    that the picked side wins (model_prob), not side_agreement_frac.
+
+    Why this changed: side_agreement_frac measures something different --
+    what fraction of the *_edge_with_uncertainty() outer Monte Carlo
+    redraws agreed on DIRECTION (over vs under). That number clusters near
+    100% any time the edge is merely stable in sign relative to projection
+    noise, even when the actual win probability is something modest like
+    55-60%. It was being labeled "confidence" and shown to users, which
+    is how a coin-flip-ish pick could display as 90%+ confident -- the
+    field was answering "how sure am I about which side?" not "how likely
+    is this side to actually win?". model_prob answers the second question
+    directly, since it IS the simulated win probability for the picked
+    side. side_agreement_frac is still recorded separately on each pick
+    (it's a legitimate, differently-named robustness signal -- keep an eye
+    on picks where it's low even if confidence/model_prob looks fine).
+    """
+    return round(float(model_prob) * 100, 1)
+
+
 def process_mlb_f5(raw):
     phase = detect_phase(TODAY, "mlb")
 
@@ -746,7 +768,9 @@ def process_mlb_f5(raw):
             "market_implied_prob": market_implied_over if side == "over" else 1 - market_implied_over,
             "edge_pct": round(edge_pct, 2),
             "side_agreement_frac": round(robust["agreement_frac"], 2),
-            "confidence": round(robust["agreement_frac"] * 100),
+            "confidence": _pick_confidence(
+                total_summary["over_prob"] if side == "over" else total_summary["under_prob"]
+            ),
             "season_phase": phase,
             "market_type": "total", "side": side,
             "pick_time_line": raw["market_f5_total_line"], "current_line": raw["market_f5_total_line"],
@@ -815,7 +839,9 @@ def process_mlb_k_prop(raw):
             "market_implied_prob": market_implied_over if side == "over" else 1 - market_implied_over,
             "edge_pct": round(edge_pct, 2),
             "side_agreement_frac": round(robust["agreement_frac"], 2),
-            "confidence": round(robust["agreement_frac"] * 100),
+            "confidence": _pick_confidence(
+                summary["over_prob"] if side == "over" else summary["under_prob"]
+            ),
             "season_phase": phase,
             "ramp_flag": workload["ramp_flag"],
             "market_type": "total", "side": side,
@@ -890,7 +916,9 @@ def process_wnba_prop(raw):
             "market_implied_prob": market_implied_over if side == "over" else 1 - market_implied_over,
             "edge_pct": round(edge_pct, 2),
             "side_agreement_frac": round(robust["agreement_frac"], 2),
-            "confidence": round(robust["agreement_frac"] * 100),
+            "confidence": _pick_confidence(
+                summary["over_prob"] if side == "over" else summary["under_prob"]
+            ),
             "season_phase": phase,
             "ramp_flag": workload["ramp_flag"],
             "injury_adjustment_pct": injury["edge_adjustment"],

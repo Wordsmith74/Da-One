@@ -52,8 +52,9 @@ jobs:
         run: |
           git config user.name "picks-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add output/picks.json output/player_id_cache.json output/pick_history.jsonl
+          git add -f output/picks.json output/player_id_cache.json output/pick_history.jsonl output/run_log.json
           git diff --quiet --cached || git commit -m "Update picks $(date -u +%Y-%m-%d)"
+          git pull --rebase origin main
           git push
 
   deploy-pages:

@@ -1,5 +1,5 @@
 {
-  "run_at": "2026-06-30T10:18:41.128967+00:00",
+  "run_at": "2026-06-30T10:33:48.073077+00:00",
   "use_live_data": true,
   "n_errors": 0,
   "n_warnings": 3,
@@ -78,12 +78,12 @@
     {
       "level": "info",
       "stage": "MLB K prop",
-      "message": "Texas Rangers @ Cleveland Guardians (Tanner Bibee): Tanner Bibee Over 5.5 (edge 31.08%)"
+      "message": "Texas Rangers @ Cleveland Guardians (Tanner Bibee): Tanner Bibee Over 5.5 (edge 31.62%)"
     },
     {
       "level": "info",
       "stage": "MLB K prop",
-      "message": "Texas Rangers @ Cleveland Guardians (Jacob deGrom): Jacob deGrom Over 6.5 (edge 23.14%)"
+      "message": "Jacob deGrom: no edge cleared threshold -- skipped"
     },
     {
       "level": "info",
@@ -133,22 +133,17 @@
     {
       "level": "info",
       "stage": "MLB K prop",
-      "message": "Rhett Lowder: no market strikeout line available -- skipped"
-    },
-    {
-      "level": "info",
-      "stage": "MLB K prop",
       "message": "Rhett Lowder: no edge cleared threshold -- skipped"
     },
     {
       "level": "info",
       "stage": "MLB K prop",
-      "message": "Tampa Bay Rays @ Kansas City Royals (Noah Cameron): Noah Cameron Over 4.5 (edge 24.55%)"
+      "message": "Tampa Bay Rays @ Kansas City Royals (Noah Cameron): Noah Cameron Over 4.5 (edge 24.75%)"
     },
     {
       "level": "info",
       "stage": "MLB K prop",
-      "message": "Griffin Jax: no edge cleared threshold -- skipped"
+      "message": "Tampa Bay Rays @ Kansas City Royals (Griffin Jax): Griffin Jax Over 4.5 (edge 15.37%)"
     },
     {
       "level": "info",
@@ -178,7 +173,17 @@
     {
       "level": "info",
       "stage": "MLB K prop",
+      "message": "Joe Ryan: no market strikeout line available -- skipped"
+    },
+    {
+      "level": "info",
+      "stage": "MLB K prop",
       "message": "Joe Ryan: no edge cleared threshold -- skipped"
+    },
+    {
+      "level": "info",
+      "stage": "MLB K prop",
+      "message": "Tanner Gordon: no market strikeout line available -- skipped"
     },
     {
       "level": "info",
@@ -188,7 +193,12 @@
     {
       "level": "info",
       "stage": "MLB K prop",
-      "message": "Miami Marlins @ Colorado Rockies (Eury P\u00e9rez): Eury P\u00e9rez Under 8.5 (edge -30.9%)"
+      "message": "Eury P\u00e9rez: no market strikeout line available -- skipped"
+    },
+    {
+      "level": "info",
+      "stage": "MLB K prop",
+      "message": "Eury Perez: no edge cleared threshold -- skipped"
     },
     {
       "level": "info",
@@ -203,6 +213,11 @@
     {
       "level": "info",
       "stage": "MLB K prop",
+      "message": "Jeffrey Springs: no market strikeout line available -- skipped"
+    },
+    {
+      "level": "info",
+      "stage": "MLB K prop",
       "message": "Jeffrey Springs: no edge cleared threshold -- skipped"
     },
     {
@@ -213,12 +228,12 @@
     {
       "level": "info",
       "stage": "MLB K prop",
-      "message": "Brandon Pfaadt: no market strikeout line available -- skipped"
+      "message": "San Francisco Giants @ Arizona Diamondbacks (Brandon Pfaadt): Brandon Pfaadt Under 2.5 (edge -44.92%)"
     },
     {
       "level": "info",
       "stage": "MLB K prop",
-      "message": "Brandon Pfaadt: no edge cleared threshold -- skipped"
+      "message": "Landen Roupp: no market strikeout line available -- skipped"
     },
     {
       "level": "info",

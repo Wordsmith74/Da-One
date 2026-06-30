@@ -37,6 +37,21 @@ ABSOLUTE GUARDRAILS  (secondary — emergency only)
   NBA  : σ > 20.0
   WNBA : σ > 20.0
 
+LOW-PROJECTION ABSOLUTE FLOOR  (tertiary — overrides relative tier)
+  Purpose: relative σ/|mean| is structurally unreliable when the
+  projection itself is tiny (e.g. a bench player projected for ~2
+  rebounds). A small absolute σ (≈0.6-1.1) produces a huge relative
+  percentage there even though the underlying simulation is fine.
+  Below the per-sport projection threshold, switch to an absolute σ
+  ceiling instead of the relative-percentage tiers.
+  MLB  : proj < 1.5  → σ ceiling 0.8
+  NBA  : proj < 5.0  → σ ceiling 2.5
+  WNBA : proj < 5.0  → σ ceiling 2.0
+
+  NOTE: starting estimates, not backtested. TODO: replace with
+  scripts/backtest_stability_tiers.py output once enough low-projection
+  settled props exist.
+
 Exposed API (backward-compatible):
   check_stability(sport, posterior_std, posterior_mean=None) → (bool, str)
   stability_label(sport, posterior_std, posterior_mean=None) → str
@@ -68,6 +83,19 @@ _ABS_GUARDRAILS: dict[str, float] = {
 }
 _ABS_DEFAULT = 20.0
 
+# ── Low-projection absolute floor (tertiary — overrides relative tier) ────────
+# When |posterior_mean| falls below this threshold, relative σ/|mean| becomes
+# a noisy, misleading metric (tiny denominator inflates the percentage even
+# when absolute σ is unremarkable). Below threshold, fall back to a flat
+# absolute σ ceiling instead of the relative tiers.
+# Each entry is (proj_threshold, abs_sigma_ceiling).
+_LOW_PROJ_FLOOR: dict[str, tuple[float, float]] = {
+    "MLB":  (1.5, 0.8),
+    "NBA":  (5.0, 2.5),
+    "WNBA": (5.0, 2.0),
+}
+_LOW_PROJ_DEFAULT: tuple[float, float] = (5.0, 2.5)
+
 
 def stability_tier(relative_pct: float, sport: str = "") -> str:
     """Map a relative-stability percentage to its tier label, per sport."""
@@ -97,6 +125,27 @@ def check_stability(
         (False, reason)      — unstable; reject as No Play
     """
     sport_up = sport.upper()
+
+    # ── Tertiary: low-projection absolute floor ───────────────────────────────
+    # Relative σ/|mean| is unreliable when the projection itself is tiny
+    # (e.g. bench-level rebounds/assists props). Below the per-sport
+    # threshold, bypass the relative tiers and use a flat σ ceiling instead.
+    if posterior_mean is not None and abs(posterior_mean) > 1e-6:
+        proj_threshold, sigma_ceiling = _LOW_PROJ_FLOOR.get(sport_up, _LOW_PROJ_DEFAULT)
+        if abs(posterior_mean) < proj_threshold:
+            if posterior_std > sigma_ceiling:
+                rel_pct = posterior_std / abs(posterior_mean) * 100.0
+                return False, (
+                    f"low-proj absolute floor breached: σ={posterior_std:.3f} > "
+                    f"{sigma_ceiling:.2f} ({sport_up}, proj={posterior_mean:.2f} < "
+                    f"{proj_threshold:.1f}; rel={rel_pct:.1f}% ignored as unreliable "
+                    f"at this scale)"
+                )
+            rel_pct = posterior_std / abs(posterior_mean) * 100.0
+            return True, (
+                f"low-proj abs_floor=OK σ={posterior_std:.3f} "
+                f"(proj={posterior_mean:.2f}, rel={rel_pct:.1f}% ignored)"
+            )
 
     # ── Primary: relative stability ───────────────────────────────────────────
     if posterior_mean is not None and abs(posterior_mean) > 1e-6:

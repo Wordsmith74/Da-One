@@ -35,16 +35,21 @@ MLB = {
     "min_innings_sample_starts": 3,
     "prior_weight_batters_faced": 60,
     "league_avg_k_pct": 0.225,
-    "own_season_k_pct_weight": 0.5,   # when a pitcher's own season K% is available, blend it
-                                        # 50/50 with league-avg K% to form the shrinkage prior
-                                        # (own-season is a better personal prior than league avg
-                                        # once enough season-long batters-faced exist; see
-                                        # shrink_mlb_k_pct in models/bayesian.py)
-    "prior_weight_f5_games": 8,        # pseudo-count (in games) for shrinking recent F5 runs/game
-                                        # toward the team's season F5 scoring average -- mirrors
-                                        # WNBA's prior_weight_games mechanism, NOT previously applied
-                                        # to F5 totals (F5 sim used a flat 5-game average with zero
-                                        # shrinkage before this)
+    "own_season_k_pct_weight": 0.65,   # weight given to a pitcher's own season-long K%
+                                        # vs. league average when both are available
+                                        # (used by bayesian.shrink_mlb_k_pct as the prior
+                                        # blend -- own-season is a better personal prior
+                                        # than league average once enough season data
+                                        # exists). ADDED: this key was imported by
+                                        # bayesian.py but never defined here, which would
+                                        # raise a KeyError on import. Re-tune via
+                                        # models/backtest.py before changing.
+    "prior_weight_f5_games": 10,       # pseudo-count (in games) for shrinking a team's
+                                        # recent F5 runs/game toward its season F5 average
+                                        # (used by bayesian.shrink_mlb_f5_runs). ADDED:
+                                        # same missing-key issue as above -- matches
+                                        # WNBA's prior_weight_games value as a reasonable
+                                        # starting point; re-tune via backtest.py.
 
     # ---- Workload / ramp-up ----
     "workload_metric": "innings_pitched",
@@ -142,3 +147,4 @@ def get_config(sport):
         return WNBA
     raise ValueError(f"No calibration config for sport={sport!r}. Add one to sport_config.py "
                       f"rather than falling back to a generic default.")
+    

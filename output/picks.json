@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-30T13:35:51.292233+00:00",
+  "generated_at": "2026-06-30T14:13:14.238128+00:00",
   "picks": [
     {
       "sport": "MLB",
@@ -14,9 +14,9 @@
       "pick_time_odds": 100.0,
       "current_line": 7.5,
       "current_odds": 100.0,
-      "edge_pct": 36.6,
-      "confidence": 82.6,
-      "model_prob": 86.6,
+      "edge_pct": 36.66,
+      "confidence": 82.7,
+      "model_prob": 86.7,
       "tier": "Nuke",
       "game_id": "Detroit_Tigers@New_York_Yankees_MLB",
       "steam_move_threshold_pct": 8.0,
@@ -24,7 +24,7 @@
       "ccs_score": 80.78,
       "robustness": "robust",
       "line_move_pct": 0.0,
-      "pick_id": "74f2226fb134",
+      "pick_id": "1d32985588df",
       "actual_result": null,
       "closing_line": null,
       "clv_pct": null
@@ -42,9 +42,9 @@
       "pick_time_odds": 100.0,
       "current_line": 7.5,
       "current_odds": 100.0,
-      "edge_pct": 30.09,
-      "confidence": 75.6,
-      "model_prob": 80.1,
+      "edge_pct": 30.22,
+      "confidence": 75.8,
+      "model_prob": 80.2,
       "tier": "Diamond",
       "game_id": "Pittsburgh_Pirates@Philadelphia_Phillies_MLB",
       "steam_move_threshold_pct": 8.0,
@@ -52,7 +52,7 @@
       "ccs_score": 72.28,
       "robustness": "moderate",
       "line_move_pct": 0.0,
-      "pick_id": "8cd7a0611340",
+      "pick_id": "83382f793e6c",
       "actual_result": null,
       "closing_line": null,
       "clv_pct": null
@@ -70,7 +70,7 @@
       "pick_time_odds": 100.0,
       "current_line": 6.0,
       "current_odds": 100.0,
-      "edge_pct": 27.99,
+      "edge_pct": 28.0,
       "confidence": 74.4,
       "model_prob": 78.0,
       "tier": "Gold Standard",
@@ -80,7 +80,7 @@
       "ccs_score": 60.75,
       "robustness": "fragile",
       "line_move_pct": 0.0,
-      "pick_id": "cfd26a9b7f65",
+      "pick_id": "6c049c7c8538",
       "actual_result": null,
       "closing_line": null,
       "clv_pct": null

@@ -7,11 +7,28 @@ Per the Stability Filter Reform spec, the PRIMARY stability metric is
 relative stability: posterior standard deviation expressed as a percentage
 of the projected outcome (σ / |mean| × 100).
 
-RELATIVE STABILITY TIERS
-  Elite       < 8%    — highly concentrated; may qualify for premium confidence
-  Acceptable  8–12%   — fully eligible; most profitable plays land here
-  Caution     12–15%  — eligible with moderated confidence if edge/market confirms
-  Reject      > 15%   — rejected; insufficient precision for recommendation
+RELATIVE STABILITY TIERS (per sport)
+  Tiers are sport-specific, mirroring the absolute guardrails below, since
+  different sports/markets carry inherently different variance profiles
+  (e.g. WNBA rebounds/assists props are noisier than MLB strikeout props
+  due to smaller sample sizes and higher game-to-game variance).
+
+  MLB / NBA (default)
+    Elite       < 8%
+    Acceptable  8–12%
+    Caution     12–15%
+    Reject      > 15%
+
+  WNBA
+    Elite       < 12%
+    Acceptable  12–20%
+    Caution     20–28%
+    Reject      > 28%
+
+  NOTE: these WNBA cutoffs are a starting estimate based on the observed
+  reject distribution (15.3-37.5%), not a backtested calibration. Re-run
+  scripts/backtest_stability_tiers.py against historical settled props
+  before trusting them in production.
 
 ABSOLUTE GUARDRAILS  (secondary — emergency only)
   Purpose: detect extreme volatility, data corruption, or simulation failures.
@@ -23,15 +40,25 @@ ABSOLUTE GUARDRAILS  (secondary — emergency only)
 Exposed API (backward-compatible):
   check_stability(sport, posterior_std, posterior_mean=None) → (bool, str)
   stability_label(sport, posterior_std, posterior_mean=None) → str
-  stability_tier(relative_pct)                               → str
+  stability_tier(relative_pct, sport="")                      → str
 """
 from __future__ import annotations
 
 # ── Relative stability tiers (primary filter) ────────────────────────────────
-_REL_ELITE:      float = 8.0    # %
-_REL_ACCEPTABLE: float = 12.0   # %
-_REL_CAUTION:    float = 15.0   # %
-# > _REL_CAUTION  →  REJECT
+# Per-sport, mirroring the _ABS_GUARDRAILS pattern below. Each entry is
+# (elite_ceiling, acceptable_ceiling, caution_ceiling) in percent.
+# > caution_ceiling → REJECT.
+_REL_TIERS: dict[str, tuple[float, float, float]] = {
+    "MLB":  (8.0, 12.0, 15.0),
+    "NBA":  (8.0, 12.0, 15.0),
+    # WNBA props run noisier (smaller minutes samples, higher game-to-game
+    # variance on rebounds/assists) — observed rejects clustered 15.3-37.5%,
+    # so a 15% ceiling was zeroing the sport out entirely. Widened to match
+    # that distribution instead of MLB/NBA's tighter ceiling. TODO: replace
+    # with backtested values once enough settled WNBA samples exist.
+    "WNBA": (12.0, 20.0, 28.0),
+}
+_REL_DEFAULT: tuple[float, float, float] = (8.0, 12.0, 15.0)
 
 # ── Absolute guardrails (emergency secondary filter only) ─────────────────────
 _ABS_GUARDRAILS: dict[str, float] = {
@@ -42,13 +69,14 @@ _ABS_GUARDRAILS: dict[str, float] = {
 _ABS_DEFAULT = 20.0
 
 
-def stability_tier(relative_pct: float) -> str:
-    """Map a relative-stability percentage to its tier label."""
-    if relative_pct < _REL_ELITE:
+def stability_tier(relative_pct: float, sport: str = "") -> str:
+    """Map a relative-stability percentage to its tier label, per sport."""
+    elite, acceptable, caution = _REL_TIERS.get(sport.upper(), _REL_DEFAULT)
+    if relative_pct < elite:
         return "ELITE"
-    if relative_pct < _REL_ACCEPTABLE:
+    if relative_pct < acceptable:
         return "ACCEPTABLE"
-    if relative_pct < _REL_CAUTION:
+    if relative_pct < caution:
         return "CAUTION"
     return "REJECT"
 
@@ -73,11 +101,12 @@ def check_stability(
     # ── Primary: relative stability ───────────────────────────────────────────
     if posterior_mean is not None and abs(posterior_mean) > 1e-6:
         rel_pct = posterior_std / abs(posterior_mean) * 100.0
-        tier    = stability_tier(rel_pct)
+        tier    = stability_tier(rel_pct, sport_up)
 
         if tier == "REJECT":
+            _, _, caution_ceiling = _REL_TIERS.get(sport_up, _REL_DEFAULT)
             return False, (
-                f"relative σ={rel_pct:.1f}% > {_REL_CAUTION:.0f}% threshold "
+                f"relative σ={rel_pct:.1f}% > {caution_ceiling:.0f}% threshold "
                 f"({sport_up}  σ={posterior_std:.3f}  proj={posterior_mean:.2f})"
             )
 

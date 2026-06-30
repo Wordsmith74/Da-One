@@ -36,8 +36,35 @@ Schema
   "game_id":        "New_York_Mets@Cincinnati_Reds_MLB",
   "away_team":      "New York Mets",
   "home_team":      "Cincinnati Reds",
-  "bookmaker":      "Novig"
+  "bookmaker":      "Novig",
+  "flag_reason":      "Market entry floor [player_assists]: edge 2.10% < floor 4.0%",
+  "minutes_stability": "volatile",
+  "minutes_range":    9.0,
+  "blowout_level":    "moderate"
 }
+
+New fields (added to isolate the four WNBA-specific gatekeeper layers
+without string-matching `reason`):
+
+    flag_reason       — full accumulated bet.flag_reason at log time. May be
+                         a semicolon-joined chain if the bet survived several
+                         penalty steps (e.g. blowout penalty AND stability
+                         cap) before being discarded. `reason` stays the
+                         specific trigger for *this* log call; `flag_reason`
+                         is the whole trail.
+    minutes_stability — bet.raw_result["minutes_stability"]: "elite" |
+                         "moderate" | "volatile" | "unknown" | None.
+                         Drives the Step 1b2 tier cap.
+    minutes_range     — bet.raw_result["minutes_range"] (L5 minutes range,
+                         float). Underlying number behind minutes_stability.
+    blowout_level     — bet.raw_result["blowout_level"]: "none" | "moderate"
+                         | "heavy" | None. Drives the Step 1b3 confidence
+                         penalty.
+
+With these, you can filter bet_rejects.jsonl by stage="gatekeeper" and
+sport="WNBA", then group by which of flag_reason's component steps
+("Market entry floor", "WNBA minutes stability cap", "WNBA blowout",
+"V3.0 confidence cap") actually appears, instead of guessing.
 """
 
 from __future__ import annotations
@@ -77,6 +104,10 @@ def log_rejected_bet(
     away_team: str = "",
     home_team: str = "",
     bookmaker: str = "",
+    flag_reason: str = "",
+    minutes_stability: str | None = None,
+    minutes_range: float | None = None,
+    blowout_level: str | None = None,
 ) -> None:
     """Append one rejection record to data/bet_rejects.jsonl."""
     record: dict[str, Any] = {
@@ -100,6 +131,10 @@ def log_rejected_bet(
         "away_team":       away_team or None,
         "home_team":       home_team or None,
         "bookmaker":       bookmaker or None,
+        "flag_reason":     flag_reason or None,
+        "minutes_stability": minutes_stability,
+        "minutes_range":   round(minutes_range, 1) if minutes_range is not None else None,
+        "blowout_level":   blowout_level,
     }
     try:
         _REJECT_LOG.parent.mkdir(parents=True, exist_ok=True)
@@ -141,6 +176,10 @@ def log_rejected_bet_obj(
         away_team=rd.get("away_team", ""),
         home_team=rd.get("home_team", ""),
         bookmaker=rd.get("bookmaker_source", ""),
+        flag_reason=bet.flag_reason or "",
+        minutes_stability=rd.get("minutes_stability"),
+        minutes_range=rd.get("minutes_range"),
+        blowout_level=rd.get("blowout_level"),
     )
 
 

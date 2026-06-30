@@ -1,0 +1,41 @@
+{
+  "WNBA": {
+    "required_metrics": ["pace_factor", "off_rating", "def_rating"],
+    "spread_weights": {
+      "pace_factor": 0.4,
+      "off_rating": 0.35,
+      "def_rating": 0.25
+    },
+    "total_weights": {
+      "pace_factor": 0.5,
+      "off_rating": 0.3,
+      "def_rating": 0.2
+    }
+  },
+  "NBA": {
+    "required_metrics": ["pace_factor", "off_rating", "def_rating"],
+    "spread_weights": {
+      "pace_factor": 0.4,
+      "off_rating": 0.35,
+      "def_rating": 0.25
+    },
+    "total_weights": {
+      "pace_factor": 0.5,
+      "off_rating": 0.3,
+      "def_rating": 0.2
+    }
+  },
+  "MLB": {
+    "required_metrics": ["k_rate", "era", "whip"],
+    "spread_weights": {
+      "k_rate": 0.4,
+      "era": 0.35,
+      "whip": 0.25
+    },
+    "total_weights": {
+      "k_rate": 0.4,
+      "era": 0.35,
+      "whip": 0.25
+    }
+  }
+}

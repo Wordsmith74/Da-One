@@ -32,10 +32,9 @@ jobs:
 
       - name: Run pipeline
         env:
-          BALL_DONT_LIE_KEY: ${{ secrets.BALL_DONT_LIE_KEY }}
           THE_ODDS_API_KEY: ${{ secrets.THE_ODDS_API_KEY }}
-          PROP_LINE_API_KEY: ${{ secrets.PROP_LINE_API_KEY }}
-          RAPIDAPI_KEY: ${{ secrets.RAPIDAPI_KEY }}
+          THE_ODDS_API_KEY_2: ${{ secrets.THE_ODDS_API_KEY_2 }}
+          THE_ODDS_API_KEY_3: ${{ secrets.THE_ODDS_API_KEY_3 }}
         run: python3 run_pipeline.py
 
       - name: Upload run log as artifact (always, even on failure)
@@ -52,7 +51,7 @@ jobs:
         run: |
           git config user.name "picks-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add -f output/picks.json output/player_id_cache.json output/pick_history.jsonl output/run_log.json
+          git add -f output/picks.json output/player_id_cache.json output/pick_history.jsonl output/run_log.json data/results.db
           git diff --quiet --cached || git commit -m "Update picks $(date -u +%Y-%m-%d)"
           git pull --rebase origin main
           git push
@@ -76,5 +75,4 @@ jobs:
 
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v4
-
         

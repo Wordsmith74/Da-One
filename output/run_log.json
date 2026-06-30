@@ -1,5 +1,5 @@
 {
-  "run_at": "2026-06-30T12:01:01.844039+00:00",
+  "run_at": "2026-06-30T12:05:06.191053+00:00",
   "n_errors": 2,
   "n_warnings": 0,
   "n_picks_generated": 0,
@@ -42,7 +42,7 @@
     {
       "level": "error",
       "stage": "MLB",
-      "message": "odds_client fetch failed (ModuleNotFoundError: No module named 'core.api_connector')"
+      "message": "odds_client fetch failed (ModuleNotFoundError: No module named 'core.slate_cache')"
     },
     {
       "level": "info",
@@ -52,7 +52,7 @@
     {
       "level": "error",
       "stage": "WNBA",
-      "message": "odds_client fetch failed (ModuleNotFoundError: No module named 'core.api_connector')"
+      "message": "odds_client fetch failed (ModuleNotFoundError: No module named 'core.slate_cache')"
     },
     {
       "level": "info",

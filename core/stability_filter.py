@@ -20,9 +20,9 @@ RELATIVE STABILITY TIERS (per sport)
     Reject      > 15%
 
   WNBA
-    Elite       < 12%
-    Acceptable  12–20%
-    Caution     20–28%
+    Elite       < 15%
+    Acceptable  16–20%
+    Caution     21–28%
     Reject      > 28%
 
   NOTE: these WNBA cutoffs are a starting estimate based on the observed
@@ -56,7 +56,7 @@ _REL_TIERS: dict[str, tuple[float, float, float]] = {
     # so a 15% ceiling was zeroing the sport out entirely. Widened to match
     # that distribution instead of MLB/NBA's tighter ceiling. TODO: replace
     # with backtested values once enough settled WNBA samples exist.
-    "WNBA": (12.0, 20.0, 28.0),
+    "WNBA": (15.0, 20.0, 28.0),
 }
 _REL_DEFAULT: tuple[float, float, float] = (8.0, 12.0, 15.0)
 

@@ -1,9 +1,9 @@
 {
-  "run_at": "2026-06-29T20:14:27.959488+00:00",
+  "run_at": "2026-06-30T08:15:22.630501+00:00",
   "use_live_data": true,
   "n_errors": 0,
   "n_warnings": 1,
-  "n_picks_generated": 3,
+  "n_picks_generated": 2,
   "entries": [
     {
       "level": "info",
@@ -38,12 +38,12 @@
     {
       "level": "info",
       "stage": "MLB F5",
-      "message": "7 game(s) found for 2026-06-29"
+      "message": "15 game(s) found for 2026-06-30"
     },
     {
       "level": "info",
       "stage": "MLB K prop",
-      "message": "26 probable starter(s) resolved for 2026-06-29"
+      "message": "30 probable starter(s) resolved for 2026-06-30"
     },
     {
       "level": "info",
@@ -58,177 +58,182 @@
     {
       "level": "info",
       "stage": "MLB K prop",
-      "message": "Shane Baz: no edge cleared threshold -- skipped"
+      "message": "Trey Gibson: no edge cleared threshold -- skipped"
     },
     {
       "level": "info",
       "stage": "MLB K prop",
-      "message": "Sean Burke: no edge cleared threshold -- skipped"
+      "message": "Erick Fedde: no edge cleared threshold -- skipped"
     },
     {
       "level": "info",
       "stage": "MLB K prop",
-      "message": "Aaron Nola: no edge cleared threshold -- skipped"
+      "message": "Cristopher Sanchez: no edge cleared threshold -- skipped"
     },
     {
       "level": "info",
       "stage": "MLB K prop",
-      "message": "Pittsburgh Pirates @ Philadelphia Phillies (Braxton Ashcraft): Braxton Ashcraft Over 6.5 (edge 24.97%)"
+      "message": "Bubba Chandler: no edge cleared threshold -- skipped"
     },
     {
       "level": "info",
       "stage": "MLB K prop",
-      "message": "Parker Messick: no edge cleared threshold -- skipped"
+      "message": "Texas Rangers @ Cleveland Guardians (Tanner Bibee): Tanner Bibee Over 5.5 (edge 30.37%)"
     },
     {
       "level": "info",
       "stage": "MLB K prop",
-      "message": "Tyler Alexander: no edge cleared threshold -- skipped"
+      "message": "Texas Rangers @ Cleveland Guardians (Jacob deGrom): Jacob deGrom Over 6.5 (edge 22.73%)"
     },
     {
       "level": "info",
       "stage": "MLB K prop",
-      "message": "Ryan Weathers: no edge cleared threshold -- skipped"
+      "message": "Cam Schlittler: no edge cleared threshold -- skipped"
     },
     {
       "level": "info",
       "stage": "MLB K prop",
-      "message": "Casey Mize: no edge cleared threshold -- skipped"
+      "message": "Tarik Skubal: no edge cleared threshold -- skipped"
     },
     {
       "level": "info",
       "stage": "MLB K prop",
-      "message": "Trey Yesavage: no edge cleared threshold -- skipped"
+      "message": "Kevin Gausman: no edge cleared threshold -- skipped"
     },
     {
       "level": "info",
       "stage": "MLB K prop",
-      "message": "Sean Manaea: no edge cleared threshold -- skipped"
+      "message": "Nolan McLean: no edge cleared threshold -- skipped"
     },
     {
       "level": "info",
       "stage": "MLB K prop",
-      "message": "Washington Nationals @ Boston Red Sox (Ranger Suarez): Ranger Suarez Over 5.5 (edge 26.44%)"
+      "message": "Connelly Early: no edge cleared threshold -- skipped"
     },
     {
       "level": "info",
       "stage": "MLB K prop",
-      "message": "Miles Mikolas: no edge cleared threshold -- skipped"
+      "message": "Cade Cavalli: no edge cleared threshold -- skipped"
     },
     {
       "level": "info",
       "stage": "MLB K prop",
-      "message": "Robert Gasser: no edge cleared threshold -- skipped"
+      "message": "Martin Perez: no edge cleared threshold -- skipped"
     },
     {
       "level": "info",
       "stage": "MLB K prop",
-      "message": "Nick Lodolo: no edge cleared threshold -- skipped"
+      "message": "Matthew Liberatore: no edge cleared threshold -- skipped"
     },
     {
       "level": "info",
       "stage": "MLB K prop",
-      "message": "Shota Imanaga: no edge cleared threshold -- skipped"
+      "message": "Brandon Sproat: no edge cleared threshold -- skipped"
     },
     {
       "level": "info",
       "stage": "MLB K prop",
-      "message": "Griffin Canning: no market strikeout line available -- skipped"
+      "message": "Rhett Lowder: no edge cleared threshold -- skipped"
     },
     {
       "level": "info",
       "stage": "MLB K prop",
-      "message": "Griffin Canning: no edge cleared threshold -- skipped"
+      "message": "Noah Cameron: no market strikeout line available -- skipped"
     },
     {
       "level": "info",
       "stage": "MLB K prop",
-      "message": "Peter Lambert: no edge cleared threshold -- skipped"
+      "message": "Noah Cameron: no edge cleared threshold -- skipped"
     },
     {
       "level": "info",
       "stage": "MLB K prop",
-      "message": "Zebby Matthews: no market strikeout line available -- skipped"
+      "message": "Griffin Jax: no edge cleared threshold -- skipped"
     },
     {
       "level": "info",
       "stage": "MLB K prop",
-      "message": "Zebby Matthews: no edge cleared threshold -- skipped"
+      "message": "Matthew Boyd: no market strikeout line available -- skipped"
     },
     {
       "level": "info",
       "stage": "MLB K prop",
-      "message": "Sean Sullivan: no market strikeout line available -- skipped"
+      "message": "Matthew Boyd: no edge cleared threshold -- skipped"
     },
     {
       "level": "info",
       "stage": "MLB K prop",
-      "message": "Sean Sullivan: no edge cleared threshold -- skipped"
+      "message": "JP Sears: no market strikeout line available -- skipped"
     },
     {
       "level": "info",
       "stage": "MLB K prop",
-      "message": "Miami Marlins @ Colorado Rockies (Sandy Alcantara): Sandy Alcantara Over 4.5 (edge 31.38%)"
+      "message": "JP Sears: no edge cleared threshold -- skipped"
     },
     {
       "level": "info",
       "stage": "MLB K prop",
-      "message": "George Kirby: no market strikeout line available -- skipped"
+      "message": "Mike Burrows: no market strikeout line available -- skipped"
     },
     {
       "level": "info",
       "stage": "MLB K prop",
-      "message": "George Kirby: no edge cleared threshold -- skipped"
+      "message": "Mike Burrows: no edge cleared threshold -- skipped"
     },
     {
       "level": "info",
       "stage": "MLB K prop",
-      "message": "Ryan Johnson: no market strikeout line available -- skipped"
+      "message": "Joe Ryan: no market strikeout line available -- skipped"
     },
     {
       "level": "info",
       "stage": "MLB K prop",
-      "message": "Ryan Johnson: no edge cleared threshold -- skipped"
+      "message": "Joe Ryan: no edge cleared threshold -- skipped"
     },
     {
       "level": "info",
       "stage": "MLB K prop",
-      "message": "Gage Jump: no market strikeout line available -- skipped"
+      "message": "Tanner Gordon: no edge cleared threshold -- skipped"
     },
     {
       "level": "info",
       "stage": "MLB K prop",
-      "message": "Gage Jump: no edge cleared threshold -- skipped"
+      "message": "Eury Perez: no edge cleared threshold -- skipped"
     },
     {
       "level": "info",
       "stage": "MLB K prop",
-      "message": "Eric Lauer: no market strikeout line available -- skipped"
+      "message": "Bryan Woo: no edge cleared threshold -- skipped"
     },
     {
       "level": "info",
       "stage": "MLB K prop",
-      "message": "Eric Lauer: no edge cleared threshold -- skipped"
+      "message": "Jose Soriano: no edge cleared threshold -- skipped"
     },
     {
       "level": "info",
       "stage": "MLB K prop",
-      "message": "Eduardo Rodriguez: no market strikeout line available -- skipped"
+      "message": "Jeffrey Springs: no edge cleared threshold -- skipped"
     },
     {
       "level": "info",
       "stage": "MLB K prop",
-      "message": "Eduardo Rodriguez: no edge cleared threshold -- skipped"
+      "message": "Justin Wrobleski: no edge cleared threshold -- skipped"
     },
     {
       "level": "info",
       "stage": "MLB K prop",
-      "message": "Tyler Mahle: no market strikeout line available -- skipped"
+      "message": "Brandon Pfaadt: no market strikeout line available -- skipped"
     },
     {
       "level": "info",
       "stage": "MLB K prop",
-      "message": "Tyler Mahle: no edge cleared threshold -- skipped"
+      "message": "Brandon Pfaadt: no edge cleared threshold -- skipped"
+    },
+    {
+      "level": "info",
+      "stage": "MLB K prop",
+      "message": "Landen Roupp: no edge cleared threshold -- skipped"
     },
     {
       "level": "warn",
@@ -238,27 +243,27 @@
     {
       "level": "info",
       "stage": "pipeline",
-      "message": "3 raw picks generated. Running contradiction check..."
+      "message": "2 raw picks generated. Running contradiction check..."
     },
     {
       "level": "info",
       "stage": "pipeline",
-      "message": "3 picks after contradiction check. Running line movement check..."
+      "message": "2 picks after contradiction check. Running line movement check..."
     },
     {
       "level": "info",
       "stage": "pipeline",
-      "message": "3 picks after line movement check. Applying per-sport daily caps..."
+      "message": "2 picks after line movement check. Applying per-sport daily caps..."
     },
     {
       "level": "info",
       "stage": "pipeline",
-      "message": "3 picks after daily caps."
+      "message": "2 picks after daily caps."
     },
     {
       "level": "info",
       "stage": "pipeline",
-      "message": "appended 3 pick(s) to output/pick_history.jsonl"
+      "message": "appended 2 pick(s) to output/pick_history.jsonl"
     }
   ]
 }

@@ -1,15 +1,9 @@
 {
-  "run_at": "2026-06-30T10:33:48.073077+00:00",
-  "use_live_data": true,
-  "n_errors": 0,
-  "n_warnings": 3,
-  "n_picks_generated": 4,
+  "run_at": "2026-06-30T11:35:31.728587+00:00",
+  "n_errors": 2,
+  "n_warnings": 0,
+  "n_picks_generated": 0,
   "entries": [
-    {
-      "level": "info",
-      "stage": "preflight",
-      "message": "BALL_DONT_LIE_KEY is set"
-    },
     {
       "level": "info",
       "stage": "preflight",
@@ -26,249 +20,59 @@
       "message": "package 'pandas' importable"
     },
     {
-      "level": "warn",
+      "level": "info",
       "stage": "preflight",
-      "message": "package 'pybaseball' missing: No module named 'pybaseball' -- Savant advanced metrics (CSW%/SIERA) will fall back to neutral values"
+      "message": "package 'numpy' importable"
     },
     {
-      "level": "warn",
+      "level": "info",
       "stage": "preflight",
-      "message": "package 'lxml' missing: No module named 'lxml' -- Savant advanced metrics (CSW%/SIERA) will fall back to neutral values"
+      "message": "package 'pymc' importable"
     },
     {
       "level": "info",
-      "stage": "MLB F5",
-      "message": "15 game(s) found for 2026-06-30"
-    },
-    {
-      "level": "info",
-      "stage": "MLB K prop",
-      "message": "30 probable starter(s) resolved for 2026-06-30"
-    },
-    {
-      "level": "info",
-      "stage": "MLB K prop",
-      "message": "pre-fetched odds-api game list"
-    },
-    {
-      "level": "info",
-      "stage": "MLB K prop",
-      "message": "pre-fetched PropLine game list"
-    },
-    {
-      "level": "info",
-      "stage": "MLB K prop",
-      "message": "Trey Gibson: no edge cleared threshold -- skipped"
-    },
-    {
-      "level": "info",
-      "stage": "MLB K prop",
-      "message": "Erick Fedde: no edge cleared threshold -- skipped"
-    },
-    {
-      "level": "info",
-      "stage": "MLB K prop",
-      "message": "Cristopher Sanchez: no edge cleared threshold -- skipped"
-    },
-    {
-      "level": "info",
-      "stage": "MLB K prop",
-      "message": "Bubba Chandler: no edge cleared threshold -- skipped"
-    },
-    {
-      "level": "info",
-      "stage": "MLB K prop",
-      "message": "Texas Rangers @ Cleveland Guardians (Tanner Bibee): Tanner Bibee Over 5.5 (edge 31.62%)"
-    },
-    {
-      "level": "info",
-      "stage": "MLB K prop",
-      "message": "Jacob deGrom: no edge cleared threshold -- skipped"
-    },
-    {
-      "level": "info",
-      "stage": "MLB K prop",
-      "message": "Cam Schlittler: no edge cleared threshold -- skipped"
-    },
-    {
-      "level": "info",
-      "stage": "MLB K prop",
-      "message": "Tarik Skubal: no edge cleared threshold -- skipped"
-    },
-    {
-      "level": "info",
-      "stage": "MLB K prop",
-      "message": "Kevin Gausman: no edge cleared threshold -- skipped"
-    },
-    {
-      "level": "info",
-      "stage": "MLB K prop",
-      "message": "Nolan McLean: no edge cleared threshold -- skipped"
-    },
-    {
-      "level": "info",
-      "stage": "MLB K prop",
-      "message": "Connelly Early: no edge cleared threshold -- skipped"
-    },
-    {
-      "level": "info",
-      "stage": "MLB K prop",
-      "message": "Cade Cavalli: no edge cleared threshold -- skipped"
-    },
-    {
-      "level": "info",
-      "stage": "MLB K prop",
-      "message": "Martin Perez: no edge cleared threshold -- skipped"
-    },
-    {
-      "level": "info",
-      "stage": "MLB K prop",
-      "message": "Matthew Liberatore: no edge cleared threshold -- skipped"
-    },
-    {
-      "level": "info",
-      "stage": "MLB K prop",
-      "message": "Brandon Sproat: no edge cleared threshold -- skipped"
-    },
-    {
-      "level": "info",
-      "stage": "MLB K prop",
-      "message": "Rhett Lowder: no edge cleared threshold -- skipped"
-    },
-    {
-      "level": "info",
-      "stage": "MLB K prop",
-      "message": "Tampa Bay Rays @ Kansas City Royals (Noah Cameron): Noah Cameron Over 4.5 (edge 24.75%)"
-    },
-    {
-      "level": "info",
-      "stage": "MLB K prop",
-      "message": "Tampa Bay Rays @ Kansas City Royals (Griffin Jax): Griffin Jax Over 4.5 (edge 15.37%)"
-    },
-    {
-      "level": "info",
-      "stage": "MLB K prop",
-      "message": "Matthew Boyd: no edge cleared threshold -- skipped"
-    },
-    {
-      "level": "info",
-      "stage": "MLB K prop",
-      "message": "JP Sears: no market strikeout line available -- skipped"
-    },
-    {
-      "level": "info",
-      "stage": "MLB K prop",
-      "message": "JP Sears: no edge cleared threshold -- skipped"
-    },
-    {
-      "level": "info",
-      "stage": "MLB K prop",
-      "message": "Mike Burrows: no market strikeout line available -- skipped"
-    },
-    {
-      "level": "info",
-      "stage": "MLB K prop",
-      "message": "Mike Burrows: no edge cleared threshold -- skipped"
-    },
-    {
-      "level": "info",
-      "stage": "MLB K prop",
-      "message": "Joe Ryan: no market strikeout line available -- skipped"
-    },
-    {
-      "level": "info",
-      "stage": "MLB K prop",
-      "message": "Joe Ryan: no edge cleared threshold -- skipped"
-    },
-    {
-      "level": "info",
-      "stage": "MLB K prop",
-      "message": "Tanner Gordon: no market strikeout line available -- skipped"
-    },
-    {
-      "level": "info",
-      "stage": "MLB K prop",
-      "message": "Tanner Gordon: no edge cleared threshold -- skipped"
-    },
-    {
-      "level": "info",
-      "stage": "MLB K prop",
-      "message": "Eury P\u00e9rez: no market strikeout line available -- skipped"
-    },
-    {
-      "level": "info",
-      "stage": "MLB K prop",
-      "message": "Eury Perez: no edge cleared threshold -- skipped"
-    },
-    {
-      "level": "info",
-      "stage": "MLB K prop",
-      "message": "Bryan Woo: no edge cleared threshold -- skipped"
-    },
-    {
-      "level": "info",
-      "stage": "MLB K prop",
-      "message": "Jose Soriano: no edge cleared threshold -- skipped"
-    },
-    {
-      "level": "info",
-      "stage": "MLB K prop",
-      "message": "Jeffrey Springs: no market strikeout line available -- skipped"
-    },
-    {
-      "level": "info",
-      "stage": "MLB K prop",
-      "message": "Jeffrey Springs: no edge cleared threshold -- skipped"
-    },
-    {
-      "level": "info",
-      "stage": "MLB K prop",
-      "message": "Justin Wrobleski: no edge cleared threshold -- skipped"
-    },
-    {
-      "level": "info",
-      "stage": "MLB K prop",
-      "message": "San Francisco Giants @ Arizona Diamondbacks (Brandon Pfaadt): Brandon Pfaadt Under 2.5 (edge -44.92%)"
-    },
-    {
-      "level": "info",
-      "stage": "MLB K prop",
-      "message": "Landen Roupp: no market strikeout line available -- skipped"
-    },
-    {
-      "level": "info",
-      "stage": "MLB K prop",
-      "message": "Landen Roupp: no edge cleared threshold -- skipped"
-    },
-    {
-      "level": "warn",
-      "stage": "WNBA prop",
-      "message": "WNBA player props are disabled (ENABLE_WNBA_PLAYER_PROPS=False) -- no working live stats source right now (stats.wnba.com blocked from CI, balldontlie plan lacks /wnba/v1/player_stats access). Skipping WNBA picks this run instead of burning time on calls that always fail. Flip the flag back on in run_pipeline.py once a stats source works."
+      "stage": "preflight",
+      "message": "package 'arviz' importable"
     },
     {
       "level": "info",
       "stage": "pipeline",
-      "message": "4 raw picks generated. Running contradiction check..."
+      "message": "=== Running MLB ==="
+    },
+    {
+      "level": "error",
+      "stage": "MLB",
+      "message": "odds_client fetch failed (ModuleNotFoundError: No module named 'core.api_connector')"
     },
     {
       "level": "info",
       "stage": "pipeline",
-      "message": "4 picks after contradiction check. Running line movement check..."
+      "message": "=== Running WNBA ==="
+    },
+    {
+      "level": "error",
+      "stage": "WNBA",
+      "message": "odds_client fetch failed (ModuleNotFoundError: No module named 'core.api_connector')"
     },
     {
       "level": "info",
       "stage": "pipeline",
-      "message": "4 picks after line movement check. Applying per-sport daily caps..."
+      "message": "0 raw picks generated. Running contradiction check..."
     },
     {
       "level": "info",
       "stage": "pipeline",
-      "message": "4 picks after daily caps."
+      "message": "0 picks after contradiction check. Running line movement check..."
     },
     {
       "level": "info",
       "stage": "pipeline",
-      "message": "appended 4 pick(s) to output/pick_history.jsonl"
+      "message": "0 picks after line movement check. Applying per-sport daily caps..."
+    },
+    {
+      "level": "info",
+      "stage": "pipeline",
+      "message": "0 picks after daily caps."
     }
   ]
 }

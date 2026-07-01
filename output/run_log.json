@@ -1,8 +1,8 @@
 {
-  "run_at": "2026-07-01T01:41:14.431937+00:00",
+  "run_at": "2026-07-01T05:06:21.957547+00:00",
   "n_errors": 0,
   "n_warnings": 0,
-  "n_picks_generated": 0,
+  "n_picks_generated": 4,
   "entries": [
     {
       "level": "info",
@@ -42,7 +42,247 @@
     {
       "level": "info",
       "stage": "MLB",
-      "message": "No candidates returned for today."
+      "message": "22 player prop candidate(s) added."
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "50 total candidate(s) (game totals + player props)."
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "prop_Payton_Tolle_pitcher_strikeouts_over_53f6cd5e: STABILITY REJECT -- relative \u03c3=23.1% > 15% threshold (MLB  \u03c3=0.451  proj=1.96)"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "prop_Payton_Tolle_pitcher_strikeouts_under_53f6cd5e: STABILITY REJECT -- relative \u03c3=22.5% > 15% threshold (MLB  \u03c3=0.445  proj=1.98)"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "prop_Troy_Melton_pitcher_strikeouts_over_afdb817f: STABILITY REJECT -- relative \u03c3=22.4% > 15% threshold (MLB  \u03c3=0.384  proj=1.72)"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "prop_Troy_Melton_pitcher_strikeouts_under_afdb817f: STABILITY REJECT -- relative \u03c3=22.8% > 15% threshold (MLB  \u03c3=0.390  proj=1.71)"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "prop_Andrew_Alvarez_pitcher_strikeouts_over_53f6cd5e: STABILITY REJECT -- relative \u03c3=16.3% > 15% threshold (MLB  \u03c3=0.563  proj=3.46)"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "prop_Andrew_Alvarez_pitcher_strikeouts_under_53f6cd5e: STABILITY REJECT -- relative \u03c3=16.2% > 15% threshold (MLB  \u03c3=0.556  proj=3.43)"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "prop_Walker_Buehler_pitcher_strikeouts_over_51cf948c: STABILITY REJECT -- relative \u03c3=15.2% > 15% threshold (MLB  \u03c3=0.482  proj=3.18)"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "prop_Walker_Buehler_pitcher_strikeouts_under_51cf948c: STABILITY REJECT -- relative \u03c3=15.8% > 15% threshold (MLB  \u03c3=0.498  proj=3.16)"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "prop_Braydon_Fisher_pitcher_strikeouts_over_cea9b7f2: STABILITY REJECT -- relative \u03c3=19.7% > 15% threshold (MLB  \u03c3=0.379  proj=1.92)"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "prop_Braydon_Fisher_pitcher_strikeouts_under_cea9b7f2: STABILITY REJECT -- relative \u03c3=19.9% > 15% threshold (MLB  \u03c3=0.383  proj=1.92)"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "Gatekeeper: 4 approved / 9 flagged / 27 discarded"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "prop_Will_Warren_pitcher_strikeouts_over_afdb817f: GATEKEEPER FLAGGED -- tier=None edge=-26.94% conf=73.2 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (68.2\u219273.2); Market entry floor [pitcher_strikeouts]: edge -26.94% < floor 4.5%"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "prop_Joey_Cantillo_pitcher_strikeouts_over_f59c1e30: GATEKEEPER FLAGGED -- tier=None edge=-15.21% conf=64.6 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (59.6\u219264.6); Market entry floor [pitcher_strikeouts]: edge -15.21% < floor 4.5%; conf 64.6 < floor 65"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "prop_Joey_Cantillo_pitcher_strikeouts_under_f59c1e30: GATEKEEPER FLAGGED -- tier=None edge=22.62% conf=64.8 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (59.8\u219264.8); Market entry floor [pitcher_strikeouts]: conf 64.8 < floor 65"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "prop_MacKenzie_Gore_pitcher_strikeouts_over_f59c1e30: GATEKEEPER FLAGGED -- tier=None edge=10.19% conf=61.5 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (56.5\u219261.5); Market entry floor [pitcher_strikeouts]: conf 61.5 < floor 65"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "prop_MacKenzie_Gore_pitcher_strikeouts_under_f59c1e30: GATEKEEPER FLAGGED -- tier=None edge=-4.35% conf=61.4 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (56.4\u219261.4); Market entry floor [pitcher_strikeouts]: edge -4.35% < floor 4.5%; conf 61.4 < floor 65"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "prop_Colin_Rea_pitcher_strikeouts_over_51cf948c: GATEKEEPER FLAGGED -- tier=None edge=39.98% conf=87.8 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (82.8\u219287.8); Plus-money confidence floor: odds=+100 requires conf \u2265 88 for Nuke tier, got 87.8"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "prop_Colin_Rea_pitcher_strikeouts_under_51cf948c: GATEKEEPER FLAGGED -- tier=None edge=-35.82% conf=87.8 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (82.8\u219287.8); Market entry floor [pitcher_strikeouts]: edge -35.82% < floor 4.5%"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "prop_Freddy_Peralta_pitcher_strikeouts_under_cea9b7f2: GATEKEEPER FLAGGED -- tier=None edge=-42.21% conf=92.8 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (87.8\u219292.8); Market entry floor [pitcher_strikeouts]: edge -42.21% < floor 4.5%"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "prop_Dean_Kremer_pitcher_strikeouts_over_2788dd0a: GATEKEEPER FLAGGED -- tier=None edge=-35.83% conf=81.8 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (76.8\u219281.8); Market entry floor [pitcher_strikeouts]: edge -35.83% < floor 4.5%"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "BAL_total_over_2788dd0a: GATEKEEPER DISCARD -- edge=-8.53% conf=53.8 market=totals | below threshold, no specific reason recorded"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "BAL_total_under_2788dd0a: GATEKEEPER DISCARD -- edge=2.82% conf=50.4 market=totals | below threshold, no specific reason recorded"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "CLE_total_over_f59c1e30: GATEKEEPER DISCARD -- edge=-5.46% conf=53.4 market=totals | below threshold, no specific reason recorded"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "CLE_total_under_f59c1e30: GATEKEEPER DISCARD -- edge=2.69% conf=53.4 market=totals | below threshold, no specific reason recorded"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "BOS_total_over_53f6cd5e: GATEKEEPER DISCARD -- edge=-12.66% conf=58.0 market=totals | below threshold, no specific reason recorded"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "BOS_total_under_53f6cd5e: GATEKEEPER DISCARD -- edge=9.37% conf=54.4 market=totals | below threshold, no specific reason recorded"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "NYY_total_over_afdb817f: GATEKEEPER DISCARD -- edge=-16.12% conf=60.1 market=totals | below threshold, no specific reason recorded"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "NYY_total_under_afdb817f: GATEKEEPER DISCARD -- edge=13.04% conf=56.5 market=totals | below threshold, no specific reason recorded"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "CHC_total_over_51cf948c: GATEKEEPER DISCARD -- edge=-33.73% conf=73.2 market=totals | below threshold, no specific reason recorded"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "TOR_total_over_cea9b7f2: GATEKEEPER DISCARD -- edge=-6.61% conf=54.2 market=totals | below threshold, no specific reason recorded"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "TOR_total_under_cea9b7f2: GATEKEEPER DISCARD -- edge=2.92% conf=50.6 market=totals | below threshold, no specific reason recorded"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "PHI_total_over_5961513f: GATEKEEPER DISCARD -- edge=13.30% conf=57.5 market=totals | below threshold, no specific reason recorded"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "PHI_total_under_5961513f: GATEKEEPER DISCARD -- edge=-21.13% conf=64.8 market=totals | below threshold, no specific reason recorded"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "ATL_total_over_9bc02db3: GATEKEEPER DISCARD -- edge=-5.56% conf=54.1 market=totals | below threshold, no specific reason recorded"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "ATL_total_under_9bc02db3: GATEKEEPER DISCARD -- edge=4.25% conf=50.4 market=totals | below threshold, no specific reason recorded"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "KC_total_over_cf32c965: GATEKEEPER DISCARD -- edge=-16.90% conf=60.6 market=totals | below threshold, no specific reason recorded"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "KC_total_under_cf32c965: GATEKEEPER DISCARD -- edge=12.94% conf=57.2 market=totals | below threshold, no specific reason recorded"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "MIL_total_over_155102fc: GATEKEEPER DISCARD -- edge=4.48% conf=54.5 market=totals | below threshold, no specific reason recorded"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "MIL_total_under_155102fc: GATEKEEPER DISCARD -- edge=-8.02% conf=54.6 market=totals | below threshold, no specific reason recorded"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "HOU_total_over_c771b9e3: GATEKEEPER DISCARD -- edge=11.17% conf=56.9 market=totals | below threshold, no specific reason recorded"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "HOU_total_under_c771b9e3: GATEKEEPER DISCARD -- edge=-14.16% conf=60.5 market=totals | below threshold, no specific reason recorded"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "COL_total_over_8cb46e5f: GATEKEEPER DISCARD -- edge=-14.15% conf=58.9 market=totals | below threshold, no specific reason recorded"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "COL_total_under_8cb46e5f: GATEKEEPER DISCARD -- edge=10.81% conf=55.3 market=totals | below threshold, no specific reason recorded"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "ARI_total_over_4613f606: GATEKEEPER DISCARD -- edge=-7.95% conf=54.3 market=totals | below threshold, no specific reason recorded"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "ARI_total_under_4613f606: GATEKEEPER DISCARD -- edge=4.68% conf=54.3 market=totals | below threshold, no specific reason recorded"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "OAK_total_over_89e2407a: GATEKEEPER DISCARD -- edge=-1.24% conf=50.5 market=totals | below threshold, no specific reason recorded"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "OAK_total_under_89e2407a: GATEKEEPER DISCARD -- edge=-2.72% conf=53.9 market=totals | below threshold, no specific reason recorded"
     },
     {
       "level": "info",
@@ -57,22 +297,32 @@
     {
       "level": "info",
       "stage": "pipeline",
-      "message": "0 raw picks generated. Running contradiction check..."
+      "message": "CCS ranking: 4 pick(s) scored -- top assigned Nuke, runner-up Diamond, rest Gold Standard."
     },
     {
       "level": "info",
       "stage": "pipeline",
-      "message": "0 picks after contradiction check. Running line movement check..."
+      "message": "4 raw picks generated. Running contradiction check..."
     },
     {
       "level": "info",
       "stage": "pipeline",
-      "message": "0 picks after line movement check. Applying per-sport daily caps..."
+      "message": "4 picks after contradiction check. Running line movement check..."
     },
     {
       "level": "info",
       "stage": "pipeline",
-      "message": "0 picks after daily caps."
+      "message": "4 picks after line movement check. Applying per-sport daily caps..."
+    },
+    {
+      "level": "info",
+      "stage": "pipeline",
+      "message": "4 picks after daily caps."
+    },
+    {
+      "level": "info",
+      "stage": "pipeline",
+      "message": "appended 4 pick(s) to output/pick_history.jsonl"
     }
   ]
 }

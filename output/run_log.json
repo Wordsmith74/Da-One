@@ -1,8 +1,8 @@
 {
-  "run_at": "2026-06-30T16:14:08.604663+00:00",
+  "run_at": "2026-07-01T00:47:13.539216+00:00",
   "n_errors": 0,
   "n_warnings": 0,
-  "n_picks_generated": 3,
+  "n_picks_generated": 0,
   "entries": [
     {
       "level": "info",
@@ -42,267 +42,37 @@
     {
       "level": "info",
       "stage": "MLB",
-      "message": "24 player prop candidate(s) added."
+      "message": "6 total candidate(s) (game totals + player props)."
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "54 total candidate(s) (game totals + player props)."
+      "message": "Gatekeeper: 0 approved / 0 flagged / 6 discarded"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Erick_Fedde_pitcher_strikeouts_over_fc7f7468: STABILITY REJECT -- relative \u03c3=19.0% > 15% threshold (MLB  \u03c3=0.335  proj=1.76)"
+      "message": "ARI_total_over_2b3a5c8c: GATEKEEPER DISCARD -- edge=-10.84% conf=56.7 market=totals | below threshold, no specific reason recorded"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Erick_Fedde_pitcher_strikeouts_under_fc7f7468: STABILITY REJECT -- relative \u03c3=18.2% > 15% threshold (MLB  \u03c3=0.319  proj=1.76)"
+      "message": "ARI_total_under_2b3a5c8c: GATEKEEPER DISCARD -- edge=7.83% conf=53.0 market=totals | below threshold, no specific reason recorded"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Cade_Cavalli_pitcher_strikeouts_under_ff56e951: STABILITY REJECT -- relative \u03c3=15.3% > 15% threshold (MLB  \u03c3=0.582  proj=3.82)"
+      "message": "OAK_total_over_1c4be931: GATEKEEPER DISCARD -- edge=1.91% conf=50.0 market=totals | below threshold, no specific reason recorded"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "Gatekeeper: 3 approved / 21 flagged / 27 discarded"
+      "message": "OAK_total_under_1c4be931: GATEKEEPER DISCARD -- edge=-4.87% conf=53.6 market=totals | below threshold, no specific reason recorded"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "PHI_total_over_f6266726: GATEKEEPER FLAGGED -- tier=None edge=23.36% conf=65.3 market=totals | Near-miss: edge=23.4% (need \u22651.0%, gap=-22.4); conf=65.3 (need \u226568.0, gap=+2.7) \u2014 secondary analysis recommended (check injury reports & line movement)."
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "CHC_total_under_090b0370: GATEKEEPER FLAGGED -- tier=None edge=22.58% conf=67.7 market=totals | Near-miss: edge=22.6% (need \u22651.0%, gap=-21.6); conf=67.7 (need \u226568.0, gap=+0.3) \u2014 secondary analysis recommended (check injury reports & line movement)."
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "HOU_total_over_878878a6: GATEKEEPER FLAGGED -- tier=None edge=20.09% conf=63.2 market=totals | Near-miss: edge=20.1% (need \u22651.0%, gap=-19.1); conf=63.2 (need \u226568.0, gap=+4.8) \u2014 secondary analysis recommended (check injury reports & line movement)."
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "prop_Jacob_deGrom_pitcher_strikeouts_over_0673c603: GATEKEEPER FLAGGED -- tier=None edge=-14.43% conf=64.1 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (59.1\u219264.1); Market entry floor [pitcher_strikeouts]: edge -14.43% < floor 4.5%; conf 64.1 < floor 65"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "prop_Jacob_deGrom_pitcher_strikeouts_under_0673c603: GATEKEEPER FLAGGED -- tier=None edge=7.77% conf=56.6 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (51.6\u219256.6); Market entry floor [pitcher_strikeouts]: conf 56.6 < floor 65"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "prop_Tanner_Bibee_pitcher_strikeouts_over_0673c603: GATEKEEPER FLAGGED -- tier=None edge=27.80% conf=65.4 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (60.4\u219265.4); Near-miss: edge=27.8% (need \u22651.0%, gap=-26.8); conf=65.4 (need \u226568.0, gap=+2.6) \u2014 secondary analysis recommended (check injury reports & line movement)."
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "prop_Tanner_Bibee_pitcher_strikeouts_under_0673c603: GATEKEEPER FLAGGED -- tier=None edge=-25.64% conf=72.4 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (67.4\u219272.4); Market entry floor [pitcher_strikeouts]: edge -25.64% < floor 4.5%"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "prop_Bubba_Chandler_pitcher_strikeouts_over_f6266726: GATEKEEPER FLAGGED -- tier=None edge=9.84% conf=61.2 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (56.2\u219261.2); Market entry floor [pitcher_strikeouts]: conf 61.2 < floor 65"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "prop_Bubba_Chandler_pitcher_strikeouts_under_f6266726: GATEKEEPER FLAGGED -- tier=None edge=-4.49% conf=61.4 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (56.4\u219261.4); Market entry floor [pitcher_strikeouts]: edge -4.49% < floor 4.5%; conf 61.4 < floor 65"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "prop_Cristopher_Sanchez_pitcher_strikeouts_over_f6266726: GATEKEEPER FLAGGED -- tier=None edge=-16.65% conf=63.3 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (58.3\u219263.3); Market entry floor [pitcher_strikeouts]: edge -16.65% < floor 4.5%; conf 63.3 < floor 65"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "prop_Cristopher_Sanchez_pitcher_strikeouts_under_f6266726: GATEKEEPER FLAGGED -- tier=None edge=17.33% conf=63.7 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (58.7\u219263.7); Market entry floor [pitcher_strikeouts]: conf 63.7 < floor 65"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "prop_Cristopher_S\u00e1nchez_pitcher_strikeouts_over_f6266726: GATEKEEPER FLAGGED -- tier=None edge=-30.21% conf=75.7 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (70.7\u219275.7); Market entry floor [pitcher_strikeouts]: edge -30.21% < floor 4.5%"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "prop_Cam_Schlittler_pitcher_strikeouts_over_5ee2ae64: GATEKEEPER FLAGGED -- tier=None edge=-32.76% conf=82.7 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (77.7\u219282.7); Market entry floor [pitcher_strikeouts]: edge -32.76% < floor 4.5%"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "prop_Tarik_Skubal_pitcher_strikeouts_over_5ee2ae64: GATEKEEPER FLAGGED -- tier=None edge=10.73% conf=61.7 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (56.7\u219261.7); Market entry floor [pitcher_strikeouts]: conf 61.7 < floor 65"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "prop_Tarik_Skubal_pitcher_strikeouts_under_5ee2ae64: GATEKEEPER FLAGGED -- tier=None edge=1.69% conf=61.8 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (56.8\u219261.8); Market entry floor [pitcher_strikeouts]: edge 1.69% < floor 4.5%; conf 61.8 < floor 65"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "prop_Nolan_McLean_pitcher_strikeouts_over_d394e345: GATEKEEPER FLAGGED -- tier=None edge=16.20% conf=65.4 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (60.4\u219265.4); Near-miss: edge=16.2% (need \u22651.0%, gap=-15.2); conf=65.4 (need \u226568.0, gap=+2.6) \u2014 secondary analysis recommended (check injury reports & line movement)."
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "prop_Nolan_McLean_pitcher_strikeouts_under_d394e345: GATEKEEPER FLAGGED -- tier=None edge=-16.67% conf=65.8 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (60.8\u219265.8); Market entry floor [pitcher_strikeouts]: edge -16.67% < floor 4.5%"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "prop_Kevin_Gausman_pitcher_strikeouts_under_d394e345: GATEKEEPER FLAGGED -- tier=None edge=-29.54% conf=81.2 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (76.2\u219281.2); Market entry floor [pitcher_strikeouts]: edge -29.54% < floor 4.5%"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "prop_Connelly_Early_pitcher_strikeouts_over_ff56e951: GATEKEEPER FLAGGED -- tier=None edge=32.47% conf=79.0 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (74.0\u219279.0); Plus-money confidence floor: odds=+100 requires conf \u2265 81 for Diamond tier, got 79.0"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "prop_Connelly_Early_pitcher_strikeouts_under_ff56e951: GATEKEEPER FLAGGED -- tier=None edge=-30.01% conf=79.1 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (74.1\u219279.1); Market entry floor [pitcher_strikeouts]: edge -30.01% < floor 4.5%"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "prop_Cade_Cavalli_pitcher_strikeouts_over_ff56e951: GATEKEEPER FLAGGED -- tier=None edge=-25.05% conf=71.3 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (66.3\u219271.3); Market entry floor [pitcher_strikeouts]: edge -25.05% < floor 4.5%"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "BAL_total_over_fc7f7468: GATEKEEPER DISCARD -- edge=-17.86% conf=61.1 market=totals | below threshold, no specific reason recorded"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "BAL_total_under_fc7f7468: GATEKEEPER DISCARD -- edge=14.73% conf=61.1 market=totals | below threshold, no specific reason recorded"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "CLE_total_over_0673c603: GATEKEEPER DISCARD -- edge=4.87% conf=53.4 market=totals | below threshold, no specific reason recorded"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "CLE_total_under_0673c603: GATEKEEPER DISCARD -- edge=-10.10% conf=57.0 market=totals | below threshold, no specific reason recorded"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "PHI_total_under_f6266726: GATEKEEPER DISCARD -- edge=-25.36% conf=65.4 market=totals | below threshold, no specific reason recorded"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "NYY_total_over_5ee2ae64: GATEKEEPER DISCARD -- edge=14.98% conf=57.3 market=totals | below threshold, no specific reason recorded"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "NYY_total_under_5ee2ae64: GATEKEEPER DISCARD -- edge=-16.69% conf=61.0 market=totals | below threshold, no specific reason recorded"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "TOR_total_over_d394e345: GATEKEEPER DISCARD -- edge=12.69% conf=58.1 market=totals | below threshold, no specific reason recorded"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "TOR_total_under_d394e345: GATEKEEPER DISCARD -- edge=-16.21% conf=61.7 market=totals | below threshold, no specific reason recorded"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "BOS_total_over_ff56e951: GATEKEEPER DISCARD -- edge=-5.30% conf=54.6 market=totals | below threshold, no specific reason recorded"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "BOS_total_under_ff56e951: GATEKEEPER DISCARD -- edge=2.38% conf=50.8 market=totals | below threshold, no specific reason recorded"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "ATL_total_over_6685cf65: GATEKEEPER DISCARD -- edge=-9.15% conf=56.3 market=totals | below threshold, no specific reason recorded"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "ATL_total_under_6685cf65: GATEKEEPER DISCARD -- edge=5.93% conf=52.7 market=totals | below threshold, no specific reason recorded"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "MIL_total_over_1d26cb2e: GATEKEEPER DISCARD -- edge=-1.68% conf=51.2 market=totals | below threshold, no specific reason recorded"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "MIL_total_under_1d26cb2e: GATEKEEPER DISCARD -- edge=-1.51% conf=52.4 market=totals | below threshold, no specific reason recorded"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "KC_total_over_5a0c2a8d: GATEKEEPER DISCARD -- edge=-5.05% conf=52.7 market=totals | below threshold, no specific reason recorded"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "KC_total_under_5a0c2a8d: GATEKEEPER DISCARD -- edge=-0.30% conf=50.8 market=totals | below threshold, no specific reason recorded"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "CHC_total_over_090b0370: GATEKEEPER DISCARD -- edge=-25.58% conf=67.7 market=totals | below threshold, no specific reason recorded"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "HOU_total_under_878878a6: GATEKEEPER DISCARD -- edge=-22.88% conf=63.2 market=totals | below threshold, no specific reason recorded"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "COL_total_over_c9a7f8f7: GATEKEEPER DISCARD -- edge=-18.70% conf=62.9 market=totals | below threshold, no specific reason recorded"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "COL_total_under_c9a7f8f7: GATEKEEPER DISCARD -- edge=15.67% conf=59.4 market=totals | below threshold, no specific reason recorded"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "ARI_total_over_2b3a5c8c: GATEKEEPER DISCARD -- edge=-11.20% conf=56.6 market=totals | below threshold, no specific reason recorded"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "ARI_total_under_2b3a5c8c: GATEKEEPER DISCARD -- edge=9.63% conf=53.2 market=totals | below threshold, no specific reason recorded"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "OAK_total_over_1c4be931: GATEKEEPER DISCARD -- edge=3.10% conf=53.7 market=totals | below threshold, no specific reason recorded"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "OAK_total_under_1c4be931: GATEKEEPER DISCARD -- edge=-8.06% conf=57.2 market=totals | below threshold, no specific reason recorded"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "SEA_total_over_835944b5: GATEKEEPER DISCARD -- edge=16.23% conf=57.8 market=totals | below threshold, no specific reason recorded"
+      "message": "SEA_total_over_835944b5: GATEKEEPER DISCARD -- edge=16.46% conf=57.9 market=totals | below threshold, no specific reason recorded"
     },
     {
       "level": "info",
@@ -317,122 +87,27 @@
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "25 player prop candidate(s) added."
-    },
-    {
-      "level": "info",
-      "stage": "WNBA",
-      "message": "27 total candidate(s) (game totals + player props)."
-    },
-    {
-      "level": "info",
-      "stage": "WNBA",
-      "message": "Gatekeeper: 0 approved / 14 flagged / 1 discarded"
-    },
-    {
-      "level": "info",
-      "stage": "WNBA",
-      "message": "NYL_total_under_c72d086a: GATEKEEPER FLAGGED -- tier=None edge=36.60% conf=81.0 market=totals | V3.0 confidence cap [Diamond/totals]: 82.2\u219281.0; V3.0 integrity filter: 3 required elements missing (injury_projection, pace_projection, travel_rest_analysis) \u2014 discarded"
-    },
-    {
-      "level": "info",
-      "stage": "WNBA",
-      "message": "prop_Jonquel_Jones_player_rebounds_over_c72d086a: GATEKEEPER FLAGGED -- tier=None edge=-14.29% conf=64.3 market=player_rebounds | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (59.3\u219264.3); Market entry floor [player_rebounds]: edge -14.29% < floor 1.0%"
-    },
-    {
-      "level": "info",
-      "stage": "WNBA",
-      "message": "prop_Sabrina_Ionescu_player_rebounds_over_c72d086a: GATEKEEPER FLAGGED -- tier=None edge=-8.85% conf=64.1 market=player_rebounds | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (59.1\u219264.1); Market entry floor [player_rebounds]: edge -8.85% < floor 1.0%"
-    },
-    {
-      "level": "info",
-      "stage": "WNBA",
-      "message": "prop_Breanna_Stewart_player_rebounds_over_c72d086a: GATEKEEPER FLAGGED -- tier=None edge=3.01% conf=56.1 market=player_rebounds | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (51.1\u219256.1); Market entry floor [player_rebounds]: conf 56.1 < floor 60"
-    },
-    {
-      "level": "info",
-      "stage": "WNBA",
-      "message": "prop_Jackie_Young_player_rebounds_over_c72d086a: GATEKEEPER FLAGGED -- tier=None edge=-4.35% conf=62.2 market=player_rebounds | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (57.2\u219262.2); Market entry floor [player_rebounds]: edge -4.35% < floor 1.0%"
-    },
-    {
-      "level": "info",
-      "stage": "WNBA",
-      "message": "prop_NaLyssa_Smith_player_rebounds_over_c72d086a: GATEKEEPER FLAGGED -- tier=None edge=-25.98% conf=72.1 market=player_rebounds | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (67.1\u219272.1); Market entry floor [player_rebounds]: edge -25.98% < floor 1.0%"
-    },
-    {
-      "level": "info",
-      "stage": "WNBA",
-      "message": "prop_Chelsea_Gray_player_rebounds_over_c72d086a: GATEKEEPER FLAGGED -- tier=None edge=-4.66% conf=61.3 market=player_rebounds | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (56.3\u219261.3); Market entry floor [player_rebounds]: edge -4.66% < floor 1.0%"
-    },
-    {
-      "level": "info",
-      "stage": "WNBA",
-      "message": "prop_Jonquel_Jones_player_rebounds_under_c72d086a: GATEKEEPER FLAGGED -- tier=None edge=22.54% conf=69.5 market=player_rebounds | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (64.5\u219269.5); Prop confidence floor: player_rebounds requires conf \u2265 75 for broadcast eligibility, got 69.5"
-    },
-    {
-      "level": "info",
-      "stage": "WNBA",
-      "message": "prop_Sabrina_Ionescu_player_rebounds_under_c72d086a: GATEKEEPER FLAGGED -- tier=None edge=14.24% conf=63.9 market=player_rebounds | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (58.9\u219263.9); Near-miss: edge=14.2% (need \u22651.0%, gap=-13.2); conf=63.9 (need \u226568.0, gap=+4.1) \u2014 secondary analysis recommended (check injury reports & line movement)."
-    },
-    {
-      "level": "info",
-      "stage": "WNBA",
-      "message": "prop_Breanna_Stewart_player_rebounds_under_c72d086a: GATEKEEPER FLAGGED -- tier=None edge=2.19% conf=55.9 market=player_rebounds | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (50.9\u219255.9); Market entry floor [player_rebounds]: conf 55.9 < floor 60"
-    },
-    {
-      "level": "info",
-      "stage": "WNBA",
-      "message": "prop_Jackie_Young_player_rebounds_under_c72d086a: GATEKEEPER FLAGGED -- tier=None edge=4.91% conf=57.6 market=player_rebounds | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (52.6\u219257.6); Market entry floor [player_rebounds]: conf 57.6 < floor 60"
-    },
-    {
-      "level": "info",
-      "stage": "WNBA",
-      "message": "prop_NaLyssa_Smith_player_rebounds_under_c72d086a: GATEKEEPER FLAGGED -- tier=None edge=21.50% conf=67.6 market=player_rebounds | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (62.6\u219267.6); Near-miss: edge=21.5% (need \u22651.0%, gap=-20.5); conf=67.6 (need \u226568.0, gap=+0.4) \u2014 secondary analysis recommended (check injury reports & line movement)."
-    },
-    {
-      "level": "info",
-      "stage": "WNBA",
-      "message": "prop_Chelsea_Gray_player_rebounds_under_c72d086a: GATEKEEPER FLAGGED -- tier=None edge=2.90% conf=56.3 market=player_rebounds | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (51.3\u219256.3); Market entry floor [player_rebounds]: conf 56.3 < floor 60"
-    },
-    {
-      "level": "info",
-      "stage": "WNBA",
-      "message": "prop_Pauline_Astier_player_rebounds_over_c72d086a: GATEKEEPER FLAGGED -- tier=None edge=1.94% conf=56.4 market=player_rebounds | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (51.4\u219256.4); Market entry floor [player_rebounds]: conf 56.4 < floor 60"
-    },
-    {
-      "level": "info",
-      "stage": "WNBA",
-      "message": "NYL_total_over_c72d086a: GATEKEEPER DISCARD -- edge=-40.33% conf=82.1 market=totals | below threshold, no specific reason recorded"
+      "message": "No candidates returned for today."
     },
     {
       "level": "info",
       "stage": "pipeline",
-      "message": "CCS ranking: 3 pick(s) scored -- top assigned Nuke, runner-up Diamond, rest Gold Standard."
+      "message": "0 raw picks generated. Running contradiction check..."
     },
     {
       "level": "info",
       "stage": "pipeline",
-      "message": "3 raw picks generated. Running contradiction check..."
+      "message": "0 picks after contradiction check. Running line movement check..."
     },
     {
       "level": "info",
       "stage": "pipeline",
-      "message": "3 picks after contradiction check. Running line movement check..."
+      "message": "0 picks after line movement check. Applying per-sport daily caps..."
     },
     {
       "level": "info",
       "stage": "pipeline",
-      "message": "3 picks after line movement check. Applying per-sport daily caps..."
-    },
-    {
-      "level": "info",
-      "stage": "pipeline",
-      "message": "3 picks after daily caps."
-    },
-    {
-      "level": "info",
-      "stage": "pipeline",
-      "message": "appended 3 pick(s) to output/pick_history.jsonl"
+      "message": "0 picks after daily caps."
     }
   ]
 }

@@ -1,5 +1,5 @@
 {
-  "run_at": "2026-07-01T00:47:13.539216+00:00",
+  "run_at": "2026-07-01T01:41:14.431937+00:00",
   "n_errors": 0,
   "n_warnings": 0,
   "n_picks_generated": 0,
@@ -42,42 +42,7 @@
     {
       "level": "info",
       "stage": "MLB",
-      "message": "6 total candidate(s) (game totals + player props)."
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "Gatekeeper: 0 approved / 0 flagged / 6 discarded"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "ARI_total_over_2b3a5c8c: GATEKEEPER DISCARD -- edge=-10.84% conf=56.7 market=totals | below threshold, no specific reason recorded"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "ARI_total_under_2b3a5c8c: GATEKEEPER DISCARD -- edge=7.83% conf=53.0 market=totals | below threshold, no specific reason recorded"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "OAK_total_over_1c4be931: GATEKEEPER DISCARD -- edge=1.91% conf=50.0 market=totals | below threshold, no specific reason recorded"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "OAK_total_under_1c4be931: GATEKEEPER DISCARD -- edge=-4.87% conf=53.6 market=totals | below threshold, no specific reason recorded"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "SEA_total_over_835944b5: GATEKEEPER DISCARD -- edge=16.46% conf=57.9 market=totals | below threshold, no specific reason recorded"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "SEA_total_under_835944b5: GATEKEEPER DISCARD -- edge=-16.98% conf=61.4 market=totals | below threshold, no specific reason recorded"
+      "message": "No candidates returned for today."
     },
     {
       "level": "info",

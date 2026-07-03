@@ -44,19 +44,22 @@ jobs:
             cat "tournaments_${id}.json"
             echo
             if jq -e 'type == "object" and has("error")' "tournaments_${id}.json" >/dev/null 2>&1; then
-              echo "::error::OddsPapi returned an error for /tournaments (sportId=$id):"
+              echo "::warning::OddsPapi returned an error for /tournaments (sportId=$id), skipping this sport:"
               jq . "tournaments_${id}.json"
-              exit 1
+              sleep 1
+              continue
             fi
             echo "---- filtered: MLB / WNBA (sportId=$id) ----"
             jq '[.[] | select(.tournamentName != null and (.tournamentName | ascii_downcase | test("mlb|major league baseball|wnba|women.?s national basketball")))]' "tournaments_${id}.json"
             jq -s '.[0] + .[1]' tournaments_all.json "tournaments_${id}.json" > tmp.json && mv tmp.json tournaments_all.json
+            sleep 1
           done
 
       - name: Fetch markets list
         env:
           ODDSPAPI_API_KEY: ${{ secrets.ODDSPAPI_API_KEY }}
         run: |
+          sleep 1
           curl -s "https://api.oddspapi.io/v4/markets?apiKey=${ODDSPAPI_API_KEY}" -o markets.json
           echo "---- full markets.json ----"
           cat markets.json

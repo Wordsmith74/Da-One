@@ -1,12 +1,26 @@
-      -name: Run Discovery and Save Artifact
+name: OddsPapi Discovery
+on: [workflow_dispatch]
+
+jobs:
+  fetch-data:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run Discovery and Save Artifact
         env:
           API_KEY: ${{ secrets.ODDSPAPI_KEY }}
         run: |
           mkdir -p output
           
-          # Replace 'api.oddspapi.com' with the actual hostname of the API you are calling
-          # We use --resolve to map the domain to the IP, or you can use -H "Host: ..."
+          # We use --resolve to correctly handle SNI for the domain api.oddspapi.com
+          # Replace 'IP_ADDRESS' with the actual IP if you know it, 
+          # or simply use the domain name for the resolve mapping:
           curl -H "x-api-key: $API_KEY" \
-               -H "Host: api.oddspapi.com" \
+               --resolve "api.oddspapi.com:443:$(dig +short api.oddspapi.com | tail -n1)" \
                "https://api.oddspapi.com/v4/sports" > output/sports.json
-               
+
+      - name: Upload Output
+        uses: actions/upload-artifact@v4
+        with:
+          name: discovery-results
+          path: output/
+          

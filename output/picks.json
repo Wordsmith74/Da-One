@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-03T02:00:28.176366+00:00",
+  "generated_at": "2026-07-03T02:10:41.034514+00:00",
   "picks": [
     {
       "sport": "MLB",
@@ -14,9 +14,9 @@
       "pick_time_odds": -135.0,
       "current_line": 5.5,
       "current_odds": -135.0,
-      "edge_pct": 29.95,
-      "confidence": 83.5,
-      "model_prob": 87.4,
+      "edge_pct": 29.81,
+      "confidence": 83.3,
+      "model_prob": 87.3,
       "tier": "Nuke",
       "game_id": "San_Diego_Padres@Los_Angeles_Dodgers_MLB",
       "steam_move_threshold_pct": 8.0,
@@ -24,7 +24,7 @@
       "ccs_score": 78.47,
       "robustness": "robust",
       "line_move_pct": 0.0,
-      "pick_id": "1076db6874c7",
+      "pick_id": "119c7c9fa0d2",
       "actual_result": null,
       "closing_line": null,
       "clv_pct": null

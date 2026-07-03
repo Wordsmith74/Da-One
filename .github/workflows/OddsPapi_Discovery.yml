@@ -11,12 +11,12 @@ jobs:
         run: |
           mkdir -p output
           
-          # Using -H for Host and --tlsv1.2 to ensure a compatible handshake
-          # We omit complex DNS resolution to prevent shell expansion errors
-          curl -v -H "x-api-key: $API_KEY" \
-               -H "Host: api.oddspapi.com" \
-               --tlsv1.2 \
-               "https://api.oddspapi.com/v4/sports" > output/sports.json
+          # Use wget with --no-check-certificate to bypass strict SSL validation
+          # and --header to pass your API key
+          wget --no-check-certificate \
+               --header="x-api-key: $API_KEY" \
+               -O output/sports.json \
+               "https://api.oddspapi.com/v4/sports"
 
       - name: Upload Output
         uses: actions/upload-artifact@v4

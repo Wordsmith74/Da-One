@@ -1,25 +1,12 @@
-name: OddsPapi Discovery
-on: [workflow_dispatch]
-jobs:
-  fetch-data:
-    runs-on: ubuntu-latest
-    steps:
       - name: Run Discovery and Save Artifact
         env:
           API_KEY: ${{ secrets.ODDSPAPI_KEY }}
         run: |
-          # Create a directory to hold the responses
           mkdir -p output
           
-          # Fetch Sports/Leagues
-          curl -H "x-api-key: $API_KEY" "https://api.oddspapi.com/v4/sports" > output/sports.json
-          
-          # Add subsequent curl commands here once you have the sportId
-          # Example: curl -H "x-api-key: $API_KEY" "https://api.oddspapi.com/v4/markets?sportId=123" > output/markets.json
-
-      - name: Upload Output
-        uses: actions/upload-artifact@v4
-        with:
-          name: discovery-results
-          path: output/
-          
+          # Replace 'api.oddspapi.com' with the actual hostname of the API you are calling
+          # We use --resolve to map the domain to the IP, or you can use -H "Host: ..."
+          curl -H "x-api-key: $API_KEY" \
+               -H "Host: api.oddspapi.com" \
+               "https://api.oddspapi.com/v4/sports" > output/sports.json
+               

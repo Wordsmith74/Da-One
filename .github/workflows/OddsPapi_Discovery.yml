@@ -1,4 +1,4 @@
-      - name: Run Discovery and Save Artifact
+      -name: Run Discovery and Save Artifact
         env:
           API_KEY: ${{ secrets.ODDSPAPI_KEY }}
         run: |

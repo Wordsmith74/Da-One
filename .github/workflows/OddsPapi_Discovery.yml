@@ -17,26 +17,39 @@ jobs:
         env:
           ODDSPAPI_API_KEY: ${{ secrets.ODDSPAPI_API_KEY }}
         run: |
+          if [ -z "$ODDSPAPI_API_KEY" ]; then
+            echo "::error::ODDSPAPI_API_KEY secret is not set (Settings -> Secrets and variables -> Actions)."
+            exit 1
+          fi
           curl -s "https://api.oddspapi.io/v4/sports?apiKey=${ODDSPAPI_API_KEY}" -o sports.json
           echo "---- full sports.json ----"
           cat sports.json
           echo
+          if jq -e 'type == "object" and has("error")' sports.json >/dev/null 2>&1; then
+            echo "::error::OddsPapi returned an error for /sports:"
+            jq . sports.json
+            exit 1
+          fi
           echo "---- filtered: baseball / basketball ----"
-          jq '[.[] | select(.name | ascii_downcase | test("baseball|basketball"))]' sports.json | tee sports_filtered.json
+          jq '[.[] | select(.sportName != null and (.sportName | ascii_downcase | test("baseball|basketball")))]' sports.json | tee sports_filtered.json
 
       - name: Fetch tournaments for matching sports
         env:
           ODDSPAPI_API_KEY: ${{ secrets.ODDSPAPI_API_KEY }}
         run: |
-          : > tournaments_all.json
           echo "[]" > tournaments_all.json
-          for id in $(jq -r '.[].id' sports_filtered.json); do
+          for id in $(jq -r '.[].sportId' sports_filtered.json); do
             echo "---- tournaments for sportId=$id ----"
             curl -s "https://api.oddspapi.io/v4/tournaments?apiKey=${ODDSPAPI_API_KEY}&sportId=${id}" -o "tournaments_${id}.json"
             cat "tournaments_${id}.json"
             echo
+            if jq -e 'type == "object" and has("error")' "tournaments_${id}.json" >/dev/null 2>&1; then
+              echo "::error::OddsPapi returned an error for /tournaments (sportId=$id):"
+              jq . "tournaments_${id}.json"
+              exit 1
+            fi
             echo "---- filtered: MLB / WNBA (sportId=$id) ----"
-            jq '[.[] | select(.name | ascii_downcase | test("mlb|major league baseball|wnba|women.?s national basketball"))]' "tournaments_${id}.json"
+            jq '[.[] | select(.tournamentName != null and (.tournamentName | ascii_downcase | test("mlb|major league baseball|wnba|women.?s national basketball")))]' "tournaments_${id}.json"
             jq -s '.[0] + .[1]' tournaments_all.json "tournaments_${id}.json" > tmp.json && mv tmp.json tournaments_all.json
           done
 
@@ -48,8 +61,13 @@ jobs:
           echo "---- full markets.json ----"
           cat markets.json
           echo
+          if jq -e 'type == "object" and has("error")' markets.json >/dev/null 2>&1; then
+            echo "::error::OddsPapi returned an error for /markets:"
+            jq . markets.json
+            exit 1
+          fi
           echo "---- filtered: total / points ----"
-          jq '[.[] | select(.name | ascii_downcase | test("total|points|over.?under"))]' markets.json
+          jq '[.[] | select(.marketName != null and (.marketName | ascii_downcase | test("total|points|over.?under")))]' markets.json
 
       - name: Upload raw discovery output
         if: always()

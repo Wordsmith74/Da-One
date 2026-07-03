@@ -2,7 +2,7 @@ name: Discover OddsPapi IDs
 
 # One-off manual workflow to enumerate the sportId / tournamentId / marketId
 # values OddsPapi uses for MLB and WNBA, so oddspapi_client.py can be wired
-# with the correct IDs instead of guessing. Requires the ODDSPAPI_KEY repo
+# with the correct IDs instead of guessing. Requires the ODDSPAPI_API_KEY repo
 # secret to already be set. Delete this workflow once discovery is done --
 # it's not part of the pipeline.
 
@@ -15,9 +15,9 @@ jobs:
     steps:
       - name: Fetch sports list
         env:
-          ODDSPAPI_KEY: ${{ secrets.ODDSPAPI_KEY }}
+          ODDSPAPI_API_KEY: ${{ secrets.ODDSPAPI_API_KEY }}
         run: |
-          curl -s "https://api.oddspapi.io/v4/sports?apiKey=${ODDSPAPI_KEY}" -o sports.json
+          curl -s "https://api.oddspapi.io/v4/sports?apiKey=${ODDSPAPI_API_KEY}" -o sports.json
           echo "---- full sports.json ----"
           cat sports.json
           echo
@@ -26,13 +26,13 @@ jobs:
 
       - name: Fetch tournaments for matching sports
         env:
-          ODDSPAPI_KEY: ${{ secrets.ODDSPAPI_KEY }}
+          ODDSPAPI_API_KEY: ${{ secrets.ODDSPAPI_API_KEY }}
         run: |
           : > tournaments_all.json
           echo "[]" > tournaments_all.json
           for id in $(jq -r '.[].id' sports_filtered.json); do
             echo "---- tournaments for sportId=$id ----"
-            curl -s "https://api.oddspapi.io/v4/tournaments?apiKey=${ODDSPAPI_KEY}&sportId=${id}" -o "tournaments_${id}.json"
+            curl -s "https://api.oddspapi.io/v4/tournaments?apiKey=${ODDSPAPI_API_KEY}&sportId=${id}" -o "tournaments_${id}.json"
             cat "tournaments_${id}.json"
             echo
             echo "---- filtered: MLB / WNBA (sportId=$id) ----"
@@ -42,9 +42,9 @@ jobs:
 
       - name: Fetch markets list
         env:
-          ODDSPAPI_KEY: ${{ secrets.ODDSPAPI_KEY }}
+          ODDSPAPI_API_KEY: ${{ secrets.ODDSPAPI_API_KEY }}
         run: |
-          curl -s "https://api.oddspapi.io/v4/markets?apiKey=${ODDSPAPI_KEY}" -o markets.json
+          curl -s "https://api.oddspapi.io/v4/markets?apiKey=${ODDSPAPI_API_KEY}" -o markets.json
           echo "---- full markets.json ----"
           cat markets.json
           echo

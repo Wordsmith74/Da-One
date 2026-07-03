@@ -1,35 +1,66 @@
-name: OddsPapi Discovery
-on: [workflow_dispatch]
+name: Discover OddsPapi IDs
+
+# One-off manual workflow to enumerate the sportId / tournamentId / marketId
+# values OddsPapi uses for MLB and WNBA, so oddspapi_client.py can be wired
+# with the correct IDs instead of guessing. Requires the ODDSPAPI_KEY repo
+# secret to already be set. Delete this workflow once discovery is done --
+# it's not part of the pipeline.
+
+on:
+  workflow_dispatch:
 
 jobs:
-  fetch-data:
+  discover:
     runs-on: ubuntu-latest
     steps:
-      - name: Run Discovery with Python
+      - name: Fetch sports list
         env:
-          API_KEY: ${{ secrets.ODDSPAPI_KEY }}
+          ODDSPAPI_KEY: ${{ secrets.ODDSPAPI_KEY }}
         run: |
-          mkdir -p output
-          python3 -c "
-import requests
-import json
-import os
+          curl -s "https://api.oddspapi.io/v4/sports?apiKey=${ODDSPAPI_KEY}" -o sports.json
+          echo "---- full sports.json ----"
+          cat sports.json
+          echo
+          echo "---- filtered: baseball / basketball ----"
+          jq '[.[] | select(.name | ascii_downcase | test("baseball|basketball"))]' sports.json | tee sports_filtered.json
 
-key = os.getenv('API_KEY')
-headers = {'x-api-key': key}
-try:
-    response = requests.get('https://api.oddspapi.com/v4/sports', headers=headers)
-    response.raise_for_status()
-    with open('output/sports.json', 'w') as f:
-        json.dump(response.json(), f)
-    print('Successfully fetched sports data.')
-except Exception as e:
-    print(f'Error: {e}')
-"
+      - name: Fetch tournaments for matching sports
+        env:
+          ODDSPAPI_KEY: ${{ secrets.ODDSPAPI_KEY }}
+        run: |
+          : > tournaments_all.json
+          echo "[]" > tournaments_all.json
+          for id in $(jq -r '.[].id' sports_filtered.json); do
+            echo "---- tournaments for sportId=$id ----"
+            curl -s "https://api.oddspapi.io/v4/tournaments?apiKey=${ODDSPAPI_KEY}&sportId=${id}" -o "tournaments_${id}.json"
+            cat "tournaments_${id}.json"
+            echo
+            echo "---- filtered: MLB / WNBA (sportId=$id) ----"
+            jq '[.[] | select(.name | ascii_downcase | test("mlb|major league baseball|wnba|women.?s national basketball"))]' "tournaments_${id}.json"
+            jq -s '.[0] + .[1]' tournaments_all.json "tournaments_${id}.json" > tmp.json && mv tmp.json tournaments_all.json
+          done
 
-      - name: Upload Output
+      - name: Fetch markets list
+        env:
+          ODDSPAPI_KEY: ${{ secrets.ODDSPAPI_KEY }}
+        run: |
+          curl -s "https://api.oddspapi.io/v4/markets?apiKey=${ODDSPAPI_KEY}" -o markets.json
+          echo "---- full markets.json ----"
+          cat markets.json
+          echo
+          echo "---- filtered: total / points ----"
+          jq '[.[] | select(.name | ascii_downcase | test("total|points|over.?under"))]' markets.json
+
+      - name: Upload raw discovery output
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: discovery-results
-          path: output/
+          name: oddspapi-discovery
+          path: |
+            sports.json
+            sports_filtered.json
+            tournaments_all.json
+            markets.json
+          retention-days: 7
+          if-no-files-found: warn
           

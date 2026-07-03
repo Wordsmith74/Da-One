@@ -1,1 +1,16 @@
 data/results.db
+
+# Betting pipeline output (grows daily, not source-controlled data)
+output/
+*.jsonl
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.egg-info/
+
+# Environment / secrets
+.env

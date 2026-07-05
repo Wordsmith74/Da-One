@@ -1,0 +1,28 @@
+data/results.db
+data/slate_cache/
+data/slate_cache_replay/
+
+# Betting pipeline output -- output/* is ignored by default (logs, temp
+# files, reject dumps), but pick_history.jsonl is explicitly UN-ignored
+# below because GitHub Actions runners have no persistent disk: this file
+# must be committed back to the repo after each run or history is lost.
+# shadow_log.jsonl and bet_rejects.jsonl are UN-ignored for the same
+# reason -- they're the full pre-filter candidate population used by
+# backtest.py's recalibration and by ad-hoc rejection analysis, and both
+# would otherwise vanish at the end of every ephemeral Actions run.
+output/*
+*.jsonl
+!output/pick_history.jsonl
+!output/shadow_log.jsonl
+!data/bet_rejects.jsonl
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.egg-info/
+
+# Environment / secrets
+.env

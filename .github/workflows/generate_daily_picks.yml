@@ -1,0 +1,317 @@
+name: Generate Daily Picks
+
+on:
+  schedule:
+    # 10:00 UTC (~6am ET / 3am PT) -- generates today's slate.
+    - cron: '0 10 * * *'
+    # 09:00 UTC (~5am ET / 2am PT) -- grades yesterday's completed games,
+    # deliberately BEFORE the 10:00 generate run so grading always sees a
+    # clean slate before new picks land.
+    - cron: '0 9 * * *'
+  workflow_dispatch:
+    inputs:
+      job:
+        description: 'Which job to run manually'
+        required: false
+        type: choice
+        options: [generate-picks, grade-picks, both, run-replay]
+        default: both
+      replay_start_date:
+        description: 'Replay: start date (YYYY-MM-DD). Required if job=run-replay.'
+        required: false
+        type: string
+      replay_end_date:
+        description: 'Replay: end date (YYYY-MM-DD). Defaults to start date if left blank.'
+        required: false
+        type: string
+      replay_sports:
+        description: 'Replay: sports to include'
+        required: false
+        type: choice
+        options: [MLB+WNBA, MLB, WNBA]
+        default: MLB+WNBA
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  generate-picks:
+    # Fires on the 10:00 UTC schedule, or manually when explicitly selected.
+    if: >-
+      github.event.schedule == '0 10 * * *' ||
+      (github.event_name == 'workflow_dispatch' &&
+        (github.event.inputs.job == 'generate-picks' || github.event.inputs.job == 'both'))
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: python3 -m pip install -r requirements.txt
+
+      - name: Clear Python cache
+        run: find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
+
+      - name: Run pipeline
+        env:
+          BALL_DONT_LIE_KEY: ${{ secrets.BALL_DONT_LIE_KEY }}
+          THE_ODDS_API_KEY: ${{ secrets.THE_ODDS_API_KEY }}
+          PROP_LINE_API_KEY: ${{ secrets.PROP_LINE_API_KEY }}
+          RAPIDAPI_KEY: ${{ secrets.RAPIDAPI_KEY }}
+        run: python3 run_pipeline.py
+
+      - name: Upload run log as artifact (always, even on failure)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: run-log
+          path: output/run_log.json
+          retention-days: 14
+          if-no-files-found: warn
+
+      - name: Reconcile pick_history.jsonl with origin before committing
+        if: always()
+        run: |
+          git fetch origin main
+          python3 - <<'PYEOF'
+          import json, os, subprocess
+
+          path = "output/pick_history.jsonl"
+          local = []
+          if os.path.exists(path):
+              with open(path) as f:
+                  local = [json.loads(l) for l in f if l.strip()]
+
+          # Pull whatever pick_history.jsonl looked like on origin/main right
+          # now -- this may include rows from a concurrent run (e.g. the
+          # grading job) that landed after this run's checkout but before
+          # this push. `git show` returns nonzero if the file didn't exist
+          # on that ref yet (e.g. very first run ever), which is fine --
+          # just treat that as "no remote rows".
+          remote_raw = subprocess.run(
+              ["git", "show", "origin/main:" + path],
+              capture_output=True, text=True
+          )
+          remote = []
+          if remote_raw.returncode == 0:
+              remote = [json.loads(l) for l in remote_raw.stdout.splitlines() if l.strip()]
+
+          def row_id(r):
+              return r.get("pick_id") or r.get("bet_id") or r.get("id")
+
+          # Union by id (each row gets a fresh uuid4 in cache_history.py,
+          # so collisions are not expected, but dedupe defensively anyway) --
+          # remote rows this run never saw locally are appended back in rather
+          # than silently dropped, then everything is sorted by generated_at
+          # so the file stays chronological.
+          by_id = {row_id(r): r for r in remote}
+          by_id.update({row_id(r): r for r in local})
+          merged = sorted(by_id.values(), key=lambda r: r.get("generated_at") or "")
+
+          with open(path, "w") as f:
+              for r in merged:
+                  f.write(json.dumps(r) + "\n")
+
+          print(f"pick_history.jsonl reconciled: {len(local)} local + {len(remote)} remote -> {len(merged)} merged rows")
+          PYEOF
+
+      - name: Commit updated picks.json and run_log.json
+        if: always()
+        run: |
+          git config user.name "picks-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add -f output/picks.json output/player_id_cache.json output/pick_history.jsonl output/run_log.json output/shadow_log.jsonl data/bet_rejects.jsonl
+          git diff --quiet --cached || git commit -m "Update picks $(date -u +%Y-%m-%d)"
+          # picks.json and run_log.json are fully regenerated every run, so
+          # there's nothing meaningful to splice together on a conflict --
+          # always keep this run's version. pick_history.jsonl was already
+          # reconciled with origin in the previous step, so this is safe for
+          # it too. (data/results.db is untracked now -- see .gitignore -- so
+          # it can no longer cause a binary-file merge conflict here.)
+          git merge -X ours origin/main --no-edit --allow-unrelated-histories
+          git push
+
+  grade-picks:
+    # Fires on the 09:00 UTC schedule, or manually when explicitly selected.
+    if: >-
+      github.event.schedule == '0 9 * * *' ||
+      (github.event_name == 'workflow_dispatch' &&
+        (github.event.inputs.job == 'grade-picks' || github.event.inputs.job == 'both'))
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: python3 -m pip install -r requirements.txt
+
+      - name: Clear Python cache
+        run: find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
+
+      - name: Run historical grader
+        run: |
+          python3 -m core.historical_grader \
+            --pick-history output/pick_history.jsonl \
+            --reject-log output/grading_rejects.jsonl
+
+      - name: Upload reject log as artifact
+        # grading_rejects.jsonl is gitignored (ephemeral debug info, not
+        # committed) -- upload it as a workflow artifact instead so you can
+        # still inspect what failed to grade on a given run.
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: grading-rejects-${{ github.run_id }}
+          path: output/grading_rejects.jsonl
+          if-no-files-found: ignore
+          retention-days: 14
+
+      - name: Reconcile pick_history.jsonl with origin before committing
+        if: always()
+        run: |
+          git fetch origin main
+          python3 - <<'PYEOF'
+          import json, os, subprocess
+
+          path = "output/pick_history.jsonl"
+          local = []
+          if os.path.exists(path):
+              with open(path) as f:
+                  local = [json.loads(l) for l in f if l.strip()]
+
+          # Same rationale as the generate-picks reconciliation step: pull
+          # origin's current version of the file so any rows added by a
+          # concurrent generate-picks run aren't lost when this job pushes.
+          remote_raw = subprocess.run(
+              ["git", "show", "origin/main:" + path],
+              capture_output=True, text=True
+          )
+          remote = []
+          if remote_raw.returncode == 0:
+              remote = [json.loads(l) for l in remote_raw.stdout.splitlines() if l.strip()]
+
+          def row_id(r):
+              return r.get("pick_id") or r.get("bet_id") or r.get("id")
+
+          # This job only ever adds grading fields (actual_result, etc.) to
+          # existing rows or leaves rows untouched -- it never removes or
+          # regenerates rows -- so it's always safe for local (this run's
+          # freshly graded version) to win per-row here.
+          by_id = {row_id(r): r for r in remote}
+          by_id.update({row_id(r): r for r in local})
+          merged = sorted(by_id.values(), key=lambda r: r.get("generated_at") or "")
+
+          with open(path, "w") as f:
+              for r in merged:
+                  f.write(json.dumps(r) + "\n")
+
+          print(f"pick_history.jsonl reconciled (grading): {len(local)} local + {len(remote)} remote -> {len(merged)} merged rows")
+          PYEOF
+
+      - name: Commit graded pick_history.jsonl
+        if: always()
+        run: |
+          git config user.name "historical-grader-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add -f output/pick_history.jsonl
+          git diff --quiet --cached || git commit -m "Auto-grade picks $(date -u +%Y-%m-%d)"
+          git merge -X ours origin/main --no-edit --allow-unrelated-histories
+          git push
+
+  run-replay:
+    # Manual-only -- fires when the "job" input is explicitly set to
+    # run-replay. Uses the historical-snapshot / replay-isolated code paths
+    # (see replay.py's module docstring) -- never touches data/results.db,
+    # output/picks.json, or output/pick_history.jsonl. Output is uploaded as
+    # a workflow artifact rather than committed, since output/* is
+    # gitignored and this is throwaway backtest data, not live state.
+    if: >-
+      github.event_name == 'workflow_dispatch' &&
+      github.event.inputs.job == 'run-replay'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate inputs
+        run: |
+          if [ -z "${{ github.event.inputs.replay_start_date }}" ]; then
+            echo "::error::replay_start_date is required when job=run-replay"
+            exit 1
+          fi
+
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: python3 -m pip install -r requirements.txt
+
+      - name: Clear Python cache
+        run: find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
+
+      - name: Run replay
+        env:
+          BALL_DONT_LIE_KEY: ${{ secrets.BALL_DONT_LIE_KEY }}
+          THE_ODDS_API_KEY: ${{ secrets.THE_ODDS_API_KEY }}
+          PROP_LINE_API_KEY: ${{ secrets.PROP_LINE_API_KEY }}
+          RAPIDAPI_KEY: ${{ secrets.RAPIDAPI_KEY }}
+        run: |
+          START="${{ github.event.inputs.replay_start_date }}"
+          END="${{ github.event.inputs.replay_end_date }}"
+          END="${END:-$START}"
+          case "${{ github.event.inputs.replay_sports }}" in
+            MLB)  SPORTS="--sports MLB" ;;
+            WNBA) SPORTS="--sports WNBA" ;;
+            *)    SPORTS="" ;;
+          esac
+          python3 replay.py "$START" "$END" $SPORTS
+
+      - name: Upload replay output as artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: replay-output-${{ github.event.inputs.replay_start_date }}-${{ github.event.inputs.replay_end_date }}-${{ github.run_id }}
+          path: output/replay/
+          retention-days: 30
+          if-no-files-found: warn
+
+  deploy-pages:
+    needs: [generate-picks, grade-picks]
+    # Runs whichever job actually executed this trigger succeeded -- since
+    # each job above skips itself on the "wrong" schedule, `needs` results
+    # for the skipped one will be "skipped", not "success" or "failure",
+    # so this still fires correctly on either the 09:00 or 10:00 UTC run.
+    if: |
+      always() &&
+      (needs.generate-picks.result == 'success' || needs.grade-picks.result == 'success')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo (post-commit)
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: 'output'
+
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4

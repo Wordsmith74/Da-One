@@ -1,23 +1,36 @@
-name: Optimize Tier Thresholds
+name: Grade, Calibrate, and Optimize Tier Thresholds
 
-# This does NOT touch pick_history.jsonl's grades -- it only reads already
-# graded rows and writes output/threshold_recommendations.json, a report
-# for a human to review before manually editing
-# core/decision_gatekeeper.py's SPORT_TIER_THRESHOLDS. Nothing here
-# auto-applies a new threshold.
+# Runs the full grade -> calibrate -> re-threshold loop in one job:
+#   1-3. Find every ungraded pick, determine its official result, write the
+#        grade back to pick_history.jsonl        (core.historical_grader)
+#   4.   Print the calibration summary (win%/ROI by market, confidence
+#        bucket, edge bucket, tier)                (core.calibration)
+#   5.   Search graded history for the best Nuke/Diamond/Gold thresholds
+#        and write output/threshold_recommendations.json
+#                                                    (core.threshold_optimizer)
+# via run_grading_workflow.py, which just calls the three modules above in
+# order and prints all of it to this job's log.
+#
+# This DOES commit new grades to pick_history.jsonl (steps 1-3 write back),
+# but only ever adds actual_result/profit_units/etc. to existing rows or
+# leaves them untouched -- it never invents or removes picks. Step 5's
+# output/threshold_recommendations.json is a report for a human to review
+# before manually editing core/decision_gatekeeper.py's
+# SPORT_TIER_THRESHOLDS -- nothing here auto-applies a new threshold.
 on:
   schedule:
-    # 11:00 UTC every Sunday -- after that morning's grade-picks run
-    # (09:00 UTC daily, see generate_daily_picks.yml) so the week's newly
-    # graded picks are included.
-    - cron: '0 11 * * 0'
+    # 11:00 UTC daily -- after the 09:00 UTC grade-picks run in
+    # generate_daily_picks.yml, so this sees that run's committed grades
+    # too (and will pick up anything that job missed, since grading is
+    # idempotent -- already-graded rows are just skipped).
+    - cron: '0 11 * * *'
   workflow_dispatch: {}
 
 permissions:
   contents: write
 
 jobs:
-  optimize-thresholds:
+  grade-calibrate-optimize:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
@@ -31,13 +44,27 @@ jobs:
       - name: Install dependencies
         run: python3 -m pip install -r requirements.txt
 
-      - name: Run threshold optimizer
+      - name: Run grading + calibration + threshold search
         run: |
-          python3 -m core.threshold_optimizer \
+          python3 run_grading_workflow.py \
             --pick-history output/pick_history.jsonl \
-            --output output/threshold_recommendations.json
+            --reject-log output/grading_rejects.jsonl \
+            --threshold-output output/threshold_recommendations.json
 
-      - name: Upload recommendations as artifact
+      - name: Upload grading rejects as artifact
+        # grading_rejects.jsonl is gitignored (ephemeral debug info) --
+        # this is the file to check for *why* a specific pick is still
+        # ungraded (unparseable matchup, game not found, fetch failure,
+        # unsupported market, etc).
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: grading-rejects-${{ github.run_id }}
+          path: output/grading_rejects.jsonl
+          if-no-files-found: ignore
+          retention-days: 14
+
+      - name: Upload threshold recommendations as artifact
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -46,13 +73,52 @@ jobs:
           if-no-files-found: warn
           retention-days: 30
 
-      - name: Commit recommendations report
+      - name: Reconcile pick_history.jsonl with origin before committing
+        # Same reconciliation as the grade-picks job in
+        # generate_daily_picks.yml -- this job only ever adds grading
+        # fields to existing rows or leaves rows untouched, so local
+        # (this run's freshly graded version) safely wins per-row here.
+        if: always()
+        run: |
+          git fetch origin main
+          python3 - <<'PYEOF'
+          import json, os, subprocess
+
+          path = "output/pick_history.jsonl"
+          local = []
+          if os.path.exists(path):
+              with open(path) as f:
+                  local = [json.loads(l) for l in f if l.strip()]
+
+          remote_raw = subprocess.run(
+              ["git", "show", "origin/main:" + path],
+              capture_output=True, text=True
+          )
+          remote = []
+          if remote_raw.returncode == 0:
+              remote = [json.loads(l) for l in remote_raw.stdout.splitlines() if l.strip()]
+
+          def row_id(r):
+              return r.get("pick_id") or r.get("bet_id") or r.get("id")
+
+          by_id = {row_id(r): r for r in remote}
+          by_id.update({row_id(r): r for r in local})
+          merged = sorted(by_id.values(), key=lambda r: r.get("generated_at") or "")
+
+          with open(path, "w") as f:
+              for r in merged:
+                  f.write(json.dumps(r) + "\n")
+
+          print(f"pick_history.jsonl reconciled: {len(local)} local + {len(remote)} remote -> {len(merged)} merged rows")
+          PYEOF
+
+      - name: Commit graded pick_history.jsonl and threshold recommendations
         if: always()
         run: |
           git config user.name "threshold-optimizer-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add -f output/threshold_recommendations.json
-          git diff --quiet --cached || git commit -m "Update threshold recommendations $(date -u +%Y-%m-%d)"
-          git fetch origin main
+          git add -f output/pick_history.jsonl output/threshold_recommendations.json
+          git diff --quiet --cached || git commit -m "Grade + calibrate + threshold search $(date -u +%Y-%m-%d)"
           git merge -X ours origin/main --no-edit --allow-unrelated-histories
           git push
+          

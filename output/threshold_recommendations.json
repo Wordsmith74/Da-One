@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-07-07T05:31:37.883571+00:00",
+  "generated_at": "2026-07-07T05:55:57.504065+00:00",
   "n_total_picks": 152,
-  "n_graded": 100,
-  "n_usable_for_search": 100,
+  "n_graded": 106,
+  "n_usable_for_search": 106,
   "min_sample_size": 15,
   "min_sample_size_nuke": 8,
   "gold_roi_floor": 0.0,
@@ -90,6 +90,29 @@
         }
       },
       "note": "consensus_not_evaluated: only 8 picks had side_agreement_frac populated (need >= 15)."
+    },
+    {
+      "sport": "WNBA",
+      "market_class": "game",
+      "n_graded": 6,
+      "status": "insufficient_data",
+      "consensus_evaluated": false,
+      "current_thresholds": {
+        "Nuke": {
+          "edge_pct": 3.5,
+          "confidence": 85.0
+        },
+        "Diamond": {
+          "edge_pct": 2.0,
+          "confidence": 78.0
+        },
+        "Gold": {
+          "edge_pct": 1.0,
+          "confidence": 68.0
+        }
+      },
+      "recommended": null,
+      "note": "Only 6 graded picks (need >= 15). Keeping existing thresholds until more results are graded."
     }
   ]
 }

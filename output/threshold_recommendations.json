@@ -1,0 +1,95 @@
+{
+  "generated_at": "2026-07-07T05:31:37.883571+00:00",
+  "n_total_picks": 152,
+  "n_graded": 100,
+  "n_usable_for_search": 100,
+  "min_sample_size": 15,
+  "min_sample_size_nuke": 8,
+  "gold_roi_floor": 0.0,
+  "tier_step_roi": 0.05,
+  "groups": [
+    {
+      "sport": "MLB",
+      "market_class": "game",
+      "n_graded": 1,
+      "status": "insufficient_data",
+      "consensus_evaluated": false,
+      "current_thresholds": {
+        "Nuke": {
+          "edge_pct": 3.5,
+          "confidence": 85.0
+        },
+        "Diamond": {
+          "edge_pct": 2.0,
+          "confidence": 78.0
+        },
+        "Gold": {
+          "edge_pct": 1.0,
+          "confidence": 68.0
+        }
+      },
+      "recommended": null,
+      "note": "Only 1 graded picks (need >= 15). Keeping existing thresholds until more results are graded."
+    },
+    {
+      "sport": "MLB",
+      "market_class": "prop",
+      "n_graded": 99,
+      "status": "ok",
+      "consensus_evaluated": false,
+      "current_thresholds": {
+        "Nuke": {
+          "edge_pct": 3.5,
+          "confidence": 85.0
+        },
+        "Diamond": {
+          "edge_pct": 2.0,
+          "confidence": 78.0
+        },
+        "Gold": {
+          "edge_pct": 1.0,
+          "confidence": 68.0
+        }
+      },
+      "recommended": {
+        "Gold": {
+          "edge_threshold": 3.72,
+          "confidence_threshold": 77.9,
+          "consensus_threshold": null,
+          "n": 41,
+          "wins": 32,
+          "losses": 9,
+          "pushes": 0,
+          "win_pct": 0.7805,
+          "roi": 0.1465,
+          "profit_units": 0.18
+        },
+        "Diamond": {
+          "edge_threshold": 3.72,
+          "confidence_threshold": 81.7,
+          "consensus_threshold": null,
+          "n": 31,
+          "wins": 25,
+          "losses": 6,
+          "pushes": 0,
+          "win_pct": 0.8065,
+          "roi": 0.4277,
+          "profit_units": 0.28
+        },
+        "Nuke": {
+          "edge_threshold": 3.72,
+          "confidence_threshold": 82.9,
+          "consensus_threshold": null,
+          "n": 20,
+          "wins": 17,
+          "losses": 3,
+          "pushes": 0,
+          "win_pct": 0.85,
+          "roi": 0.5145,
+          "profit_units": 0.28
+        }
+      },
+      "note": "consensus_not_evaluated: only 8 picks had side_agreement_frac populated (need >= 15)."
+    }
+  ]
+}

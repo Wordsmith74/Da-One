@@ -1,0 +1,58 @@
+name: Optimize Tier Thresholds
+
+# This does NOT touch pick_history.jsonl's grades -- it only reads already
+# graded rows and writes output/threshold_recommendations.json, a report
+# for a human to review before manually editing
+# core/decision_gatekeeper.py's SPORT_TIER_THRESHOLDS. Nothing here
+# auto-applies a new threshold.
+on:
+  schedule:
+    # 11:00 UTC every Sunday -- after that morning's grade-picks run
+    # (09:00 UTC daily, see generate_daily_picks.yml) so the week's newly
+    # graded picks are included.
+    - cron: '0 11 * * 0'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  optimize-thresholds:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: python3 -m pip install -r requirements.txt
+
+      - name: Run threshold optimizer
+        run: |
+          python3 -m core.threshold_optimizer \
+            --pick-history output/pick_history.jsonl \
+            --output output/threshold_recommendations.json
+
+      - name: Upload recommendations as artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: threshold-recommendations-${{ github.run_id }}
+          path: output/threshold_recommendations.json
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Commit recommendations report
+        if: always()
+        run: |
+          git config user.name "threshold-optimizer-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add -f output/threshold_recommendations.json
+          git diff --quiet --cached || git commit -m "Update threshold recommendations $(date -u +%Y-%m-%d)"
+          git fetch origin main
+          git merge -X ours origin/main --no-edit --allow-unrelated-histories
+          git push

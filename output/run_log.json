@@ -1,8 +1,8 @@
 {
-  "run_at": "2026-07-08T15:48:47.066367+00:00",
+  "run_at": "2026-07-08T19:35:24.034769+00:00",
   "n_errors": 0,
   "n_warnings": 0,
-  "n_picks_generated": 7,
+  "n_picks_generated": 8,
   "entries": [
     {
       "level": "info",
@@ -57,22 +57,22 @@
     {
       "level": "info",
       "stage": "MLB",
-      "message": "SF_total_over_57172eeb: devig fair_prob=49.1% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
+      "message": "SF_total_over_57172eeb: devig fair_prob=50.5% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "SF_total_under_57172eeb: devig fair_prob=50.9% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
+      "message": "SF_total_under_57172eeb: devig fair_prob=49.5% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "BAL_total_over_fbdf2c95: devig fair_prob=50.6% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
+      "message": "BAL_total_over_fbdf2c95: devig fair_prob=49.6% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "BAL_total_under_fbdf2c95: devig fair_prob=49.4% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
+      "message": "BAL_total_under_fbdf2c95: devig fair_prob=50.4% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
     },
     {
       "level": "info",
@@ -87,92 +87,92 @@
     {
       "level": "info",
       "stage": "MLB",
-      "message": "PIT_total_over_f30eb306: devig fair_prob=50.6% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
+      "message": "PIT_total_over_f30eb306: devig fair_prob=49.6% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "PIT_total_under_f30eb306: devig fair_prob=49.4% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
+      "message": "PIT_total_under_f30eb306: devig fair_prob=50.4% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "MIA_total_over_ee87ced2: devig fair_prob=50.0% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
+      "message": "MIA_total_over_ee87ced2: devig fair_prob=51.1% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "MIA_total_under_ee87ced2: devig fair_prob=50.0% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
+      "message": "MIA_total_under_ee87ced2: devig fair_prob=48.9% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "TB_total_over_79b379f1: devig fair_prob=51.8% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
+      "message": "TB_total_over_79b379f1: devig fair_prob=47.7% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "TB_total_under_79b379f1: devig fair_prob=48.2% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
+      "message": "TB_total_under_79b379f1: devig fair_prob=52.3% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "WSH_total_over_673394fe: devig fair_prob=51.8% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
+      "message": "WSH_total_over_673394fe: devig fair_prob=52.0% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "WSH_total_under_673394fe: devig fair_prob=48.2% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
+      "message": "WSH_total_under_673394fe: devig fair_prob=48.0% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "CIN_total_over_1b110742: devig fair_prob=51.5% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
+      "message": "CIN_total_over_1b110742: devig fair_prob=48.5% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "CIN_total_under_1b110742: devig fair_prob=48.5% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
+      "message": "CIN_total_under_1b110742: devig fair_prob=51.5% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "NYM_total_over_fa2f6fc2: devig fair_prob=50.4% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
+      "message": "NYM_total_over_fa2f6fc2: devig fair_prob=50.8% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "NYM_total_under_fa2f6fc2: devig fair_prob=49.6% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
+      "message": "NYM_total_under_fa2f6fc2: devig fair_prob=49.2% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "CWS_total_over_e8175b3e: devig fair_prob=51.2% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
+      "message": "CWS_total_over_e8175b3e: devig fair_prob=50.9% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "CWS_total_under_e8175b3e: devig fair_prob=48.8% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
+      "message": "CWS_total_under_e8175b3e: devig fair_prob=49.1% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "MIN_total_over_f69a7dce: devig fair_prob=49.3% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
+      "message": "MIN_total_over_f69a7dce: devig fair_prob=48.5% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "MIN_total_under_f69a7dce: devig fair_prob=50.7% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
+      "message": "MIN_total_under_f69a7dce: devig fair_prob=51.5% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "STL_total_over_e885d80c: devig fair_prob=50.9% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
+      "message": "STL_total_over_e885d80c: devig fair_prob=51.2% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "STL_total_under_e885d80c: devig fair_prob=49.1% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
+      "message": "STL_total_under_e885d80c: devig fair_prob=48.8% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
     },
     {
       "level": "info",
@@ -187,142 +187,142 @@
     {
       "level": "info",
       "stage": "MLB",
-      "message": "SD_total_over_8c069570: devig fair_prob=49.9% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
+      "message": "SD_total_over_8c069570: devig fair_prob=48.9% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "SD_total_under_8c069570: devig fair_prob=50.1% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
+      "message": "SD_total_under_8c069570: devig fair_prob=51.1% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "LAD_total_over_49de1a8b: devig fair_prob=48.6% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
+      "message": "LAD_total_over_49de1a8b: devig fair_prob=48.5% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "LAD_total_under_49de1a8b: devig fair_prob=51.4% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
+      "message": "LAD_total_under_49de1a8b: devig fair_prob=51.5% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Jeffrey_Springs_pitcher_strikeouts_over_8d7cadd4: STABILITY REJECT -- relative \u03c3=20.3% > 15% threshold (MLB  \u03c3=0.538  proj=2.65)"
+      "message": "prop_Logan_Webb_pitcher_strikeouts_over_57172eeb: devig fair_prob=51.4% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Troy_Melton_pitcher_strikeouts_over_8d7cadd4: devig fair_prob=54.7% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
+      "message": "prop_Jeffrey_Springs_pitcher_strikeouts_over_8d7cadd4: STABILITY REJECT -- relative \u03c3=20.9% > 15% threshold (MLB  \u03c3=0.548  proj=2.62)"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Jared_Jones_pitcher_strikeouts_over_f30eb306: devig fair_prob=55.9% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
+      "message": "prop_Troy_Melton_pitcher_strikeouts_over_8d7cadd4: devig fair_prob=54.0% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Grant_Holmes_pitcher_strikeouts_over_f30eb306: devig fair_prob=52.8% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
+      "message": "prop_Jared_Jones_pitcher_strikeouts_over_f30eb306: devig fair_prob=54.9% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_George_Kirby_pitcher_strikeouts_over_ee87ced2: devig fair_prob=42.1% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
+      "message": "prop_Grant_Holmes_pitcher_strikeouts_over_f30eb306: devig fair_prob=51.7% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Shane_McClanahan_pitcher_strikeouts_over_79b379f1: devig fair_prob=49.7% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
+      "message": "prop_Shane_McClanahan_pitcher_strikeouts_over_79b379f1: devig fair_prob=48.3% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Gerrit_Cole_pitcher_strikeouts_over_79b379f1: devig fair_prob=42.9% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
+      "message": "prop_Logan_Webb_pitcher_strikeouts_under_57172eeb: devig fair_prob=48.6% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Jeffrey_Springs_pitcher_strikeouts_under_8d7cadd4: STABILITY REJECT -- relative \u03c3=20.4% > 15% threshold (MLB  \u03c3=0.539  proj=2.64)"
+      "message": "prop_Dylan_Cease_pitcher_strikeouts_over_57172eeb: devig fair_prob=41.1% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Troy_Melton_pitcher_strikeouts_under_8d7cadd4: devig fair_prob=45.3% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
+      "message": "prop_Jeffrey_Springs_pitcher_strikeouts_under_8d7cadd4: STABILITY REJECT -- relative \u03c3=19.9% > 15% threshold (MLB  \u03c3=0.524  proj=2.64)"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Jared_Jones_pitcher_strikeouts_under_f30eb306: devig fair_prob=44.1% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
+      "message": "prop_Troy_Melton_pitcher_strikeouts_under_8d7cadd4: devig fair_prob=46.0% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Grant_Holmes_pitcher_strikeouts_under_f30eb306: devig fair_prob=47.2% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
+      "message": "prop_Jared_Jones_pitcher_strikeouts_under_f30eb306: devig fair_prob=45.1% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Tyler_Phillips_pitcher_strikeouts_over_ee87ced2: devig fair_prob=46.6% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
+      "message": "prop_Grant_Holmes_pitcher_strikeouts_under_f30eb306: devig fair_prob=48.3% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_George_Kirby_pitcher_strikeouts_under_ee87ced2: devig fair_prob=57.9% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
+      "message": "prop_Tyler_Phillips_pitcher_strikeouts_over_ee87ced2: devig fair_prob=43.4% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Shane_McClanahan_pitcher_strikeouts_under_79b379f1: devig fair_prob=50.3% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
+      "message": "prop_Shane_McClanahan_pitcher_strikeouts_under_79b379f1: devig fair_prob=51.7% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Gerrit_Cole_pitcher_strikeouts_under_79b379f1: devig fair_prob=57.1% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
+      "message": "prop_Dylan_Cease_pitcher_strikeouts_under_57172eeb: devig fair_prob=58.9% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Tyler_Phillips_pitcher_strikeouts_under_ee87ced2: devig fair_prob=53.4% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
+      "message": "prop_Tyler_Phillips_pitcher_strikeouts_under_ee87ced2: devig fair_prob=56.6% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Colin_Rea_pitcher_strikeouts_over_fbdf2c95: STABILITY REJECT -- relative \u03c3=15.5% > 15% threshold (MLB  \u03c3=0.476  proj=3.07)"
+      "message": "prop_Colin_Rea_pitcher_strikeouts_over_fbdf2c95: STABILITY REJECT -- relative \u03c3=15.5% > 15% threshold (MLB  \u03c3=0.477  proj=3.07)"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Colin_Rea_pitcher_strikeouts_under_fbdf2c95: STABILITY REJECT -- relative \u03c3=16.2% > 15% threshold (MLB  \u03c3=0.496  proj=3.06)"
+      "message": "prop_Colin_Rea_pitcher_strikeouts_under_fbdf2c95: STABILITY REJECT -- relative \u03c3=16.4% > 15% threshold (MLB  \u03c3=0.502  proj=3.06)"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Logan_Webb_pitcher_strikeouts_over_57172eeb: devig fair_prob=58.3% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
+      "message": "prop_Dean_Kremer_pitcher_strikeouts_over_fbdf2c95: devig fair_prob=41.2% books=['FanDuel', 'Pinnacle'] weight_covered=0.75"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Logan_Webb_pitcher_strikeouts_under_57172eeb: devig fair_prob=41.7% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
+      "message": "prop_Dean_Kremer_pitcher_strikeouts_under_fbdf2c95: devig fair_prob=58.8% books=['FanDuel', 'Pinnacle'] weight_covered=0.75"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Dean_Kremer_pitcher_strikeouts_over_fbdf2c95: devig fair_prob=41.7% books=['FanDuel'] weight_covered=0.40"
+      "message": "prop_George_Kirby_pitcher_strikeouts_over_ee87ced2: devig fair_prob=41.4% books=['FanDuel'] weight_covered=0.40"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Dean_Kremer_pitcher_strikeouts_under_fbdf2c95: devig fair_prob=58.3% books=['FanDuel'] weight_covered=0.40"
+      "message": "prop_George_Kirby_pitcher_strikeouts_under_ee87ced2: devig fair_prob=58.6% books=['FanDuel'] weight_covered=0.40"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Dylan_Cease_pitcher_strikeouts_over_57172eeb: devig fair_prob=58.2% books=['FanDuel', 'Pinnacle'] weight_covered=0.75"
+      "message": "prop_Gerrit_Cole_pitcher_strikeouts_over_79b379f1: devig fair_prob=38.7% books=['FanDuel'] weight_covered=0.40"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Dylan_Cease_pitcher_strikeouts_under_57172eeb: devig fair_prob=41.8% books=['FanDuel', 'Pinnacle'] weight_covered=0.75"
+      "message": "prop_Gerrit_Cole_pitcher_strikeouts_under_79b379f1: devig fair_prob=61.3% books=['FanDuel'] weight_covered=0.40"
     },
     {
       "level": "info",
@@ -332,12 +332,12 @@
     {
       "level": "info",
       "stage": "MLB",
-      "message": "Gatekeeper: 8 approved / 42 flagged / 0 discarded"
+      "message": "Gatekeeper: 8 approved / 41 flagged / 1 discarded"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "SF_moneyline_home: GATEKEEPER FLAGGED -- tier=None edge=5.35% conf=80.0 market=moneyline | V3.0 confidence cap [Diamond/totals]: 81.2\u219280.0; Market signal filter: sharp_signal='sharp_contrary' \u2014 confirmed sharp money is against this pick"
+      "message": "SF_moneyline_home: GATEKEEPER FLAGGED -- tier=None edge=6.90% conf=80.0 market=moneyline | V3.0 confidence cap [Diamond/totals]: 81.2\u219280.0; Market signal filter: sharp_signal='sharp_contrary' \u2014 confirmed sharp money is against this pick"
     },
     {
       "level": "info",
@@ -372,12 +372,7 @@
     {
       "level": "info",
       "stage": "MLB",
-      "message": "TB_run_line_home: GATEKEEPER FLAGGED -- tier=None edge=0.93% conf=81.2 market=run_line | Market entry floor [run_line]: edge 0.93% < floor 4.0%"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "NYY_run_line_away: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=80.9 market=run_line | Market entry floor [run_line]: edge 0.00% < floor 4.0%"
+      "message": "TB_total_over_79b379f1: GATEKEEPER FLAGGED -- tier=None edge=1.95% conf=67.7 market=game_total | Near-miss: edge=1.9% (need \u22651.0%, gap=-0.9); conf=67.7 (need \u226568.0, gap=+0.3) \u2014 secondary analysis recommended (check injury reports & line movement)."
     },
     {
       "level": "info",
@@ -387,7 +382,7 @@
     {
       "level": "info",
       "stage": "MLB",
-      "message": "CIN_run_line_home: GATEKEEPER FLAGGED -- tier=None edge=0.63% conf=80.7 market=run_line | Market entry floor [run_line]: edge 0.63% < floor 4.0%"
+      "message": "CIN_run_line_home: GATEKEEPER FLAGGED -- tier=None edge=0.67% conf=80.7 market=run_line | Market entry floor [run_line]: edge 0.67% < floor 4.0%"
     },
     {
       "level": "info",
@@ -407,17 +402,17 @@
     {
       "level": "info",
       "stage": "MLB",
-      "message": "BOS_run_line_away: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=80.0 market=run_line | Market entry floor [run_line]: edge 0.00% < floor 4.0%"
+      "message": "CWS_moneyline_home: GATEKEEPER FLAGGED -- tier=None edge=4.83% conf=80.0 market=moneyline | V3.0 confidence cap [Diamond/totals]: 81.5\u219280.0; Market signal filter: sharp_signal='sharp_contrary' \u2014 confirmed sharp money is against this pick"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "BOS_moneyline_away: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=81.5 market=moneyline | Market entry floor [moneyline]: edge 0.00% < floor 4.0%"
     },
     {
       "level": "info",
       "stage": "MLB",
       "message": "CLE_run_line_away: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=80.7 market=run_line | Market entry floor [run_line]: edge 0.00% < floor 4.0%"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "STL_moneyline_home: GATEKEEPER FLAGGED -- tier=None edge=4.05% conf=80.0 market=moneyline | V3.0 confidence cap [Diamond/totals]: 80.4\u219280.0; Market signal filter: sharp_signal='sharp_contrary' \u2014 confirmed sharp money is against this pick"
     },
     {
       "level": "info",
@@ -437,12 +432,12 @@
     {
       "level": "info",
       "stage": "MLB",
-      "message": "SD_run_line_home: GATEKEEPER FLAGGED -- tier=None edge=0.24% conf=81.0 market=run_line | Market entry floor [run_line]: edge 0.24% < floor 4.0%"
+      "message": "SD_moneyline_home: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=80.2 market=moneyline | Market entry floor [moneyline]: edge 0.00% < floor 4.0%"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "ARI_run_line_away: GATEKEEPER FLAGGED -- tier=None edge=0.59% conf=80.7 market=run_line | Market entry floor [run_line]: edge 0.59% < floor 4.0%"
+      "message": "ARI_moneyline_away: GATEKEEPER FLAGGED -- tier=None edge=0.70% conf=80.2 market=moneyline | Market entry floor [moneyline]: edge 0.70% < floor 4.0%"
     },
     {
       "level": "info",
@@ -457,72 +452,7 @@
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Troy_Melton_pitcher_strikeouts_over_8d7cadd4: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=65.3 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (60.3\u219265.3); Market entry floor [pitcher_strikeouts]: edge 0.00% < floor 3.0%; conf 65.3 < floor 70"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "prop_Troy_Melton_pitcher_strikeouts_under_8d7cadd4: GATEKEEPER FLAGGED -- tier=None edge=2.82% conf=58.4 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (53.4\u219258.4); Market entry floor [pitcher_strikeouts]: edge 2.82% < floor 3.0%; conf 58.4 < floor 70"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "prop_Jared_Jones_pitcher_strikeouts_over_f30eb306: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=77.2 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (72.2\u219277.2); Market entry floor [pitcher_strikeouts]: edge 0.00% < floor 3.0%"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "prop_Grant_Holmes_pitcher_strikeouts_over_f30eb306: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=70.1 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (65.1\u219270.1); Market entry floor [pitcher_strikeouts]: edge 0.00% < floor 3.0%"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "prop_Jared_Jones_pitcher_strikeouts_under_f30eb306: GATEKEEPER FLAGGED -- tier=None edge=8.70% conf=70.4 market=pitcher_strikeouts | Plus-money confidence floor: odds=+127 requires conf \u2265 71 even at Gold Standard, got 70.4"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "prop_Grant_Holmes_pitcher_strikeouts_under_f30eb306: GATEKEEPER FLAGGED -- tier=None edge=7.56% conf=70.0 market=pitcher_strikeouts | Plus-money confidence floor: odds=+113 requires conf \u2265 71 even at Gold Standard, got 70.0"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "prop_George_Kirby_pitcher_strikeouts_over_ee87ced2: GATEKEEPER FLAGGED -- tier=None edge=1.82% conf=55.0 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (50.0\u219255.0); Market entry floor [pitcher_strikeouts]: edge 1.82% < floor 3.0%; conf 55.0 < floor 70"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "prop_Tyler_Phillips_pitcher_strikeouts_over_ee87ced2: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=100.0 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (95.3\u2192100.0); Market entry floor [pitcher_strikeouts]: edge 0.00% < floor 3.0%"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "prop_George_Kirby_pitcher_strikeouts_under_ee87ced2: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=55.1 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (50.1\u219255.1); Market entry floor [pitcher_strikeouts]: edge 0.00% < floor 3.0%; conf 55.1 < floor 70"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "prop_Shane_McClanahan_pitcher_strikeouts_over_79b379f1: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=66.3 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (61.3\u219266.3); Market entry floor [pitcher_strikeouts]: edge 0.00% < floor 3.0%; conf 66.3 < floor 70"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "prop_Gerrit_Cole_pitcher_strikeouts_over_79b379f1: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=77.2 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (72.2\u219277.2); Market entry floor [pitcher_strikeouts]: edge 0.00% < floor 3.0%"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "prop_Shane_McClanahan_pitcher_strikeouts_under_79b379f1: GATEKEEPER FLAGGED -- tier=None edge=4.96% conf=66.3 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (61.3\u219266.3); Market entry floor [pitcher_strikeouts]: conf 66.3 < floor 70"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "prop_Gerrit_Cole_pitcher_strikeouts_under_79b379f1: GATEKEEPER FLAGGED -- tier=None edge=4.63% conf=70.3 market=pitcher_strikeouts | Plus-money confidence floor: odds=+100 requires conf \u2265 71 even at Gold Standard, got 70.3"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "prop_Logan_Webb_pitcher_strikeouts_over_57172eeb: GATEKEEPER FLAGGED -- tier=None edge=0.14% conf=60.7 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (55.7\u219260.7); Market entry floor [pitcher_strikeouts]: edge 0.14% < floor 3.0%; conf 60.7 < floor 70"
+      "message": "prop_Logan_Webb_pitcher_strikeouts_over_57172eeb: GATEKEEPER FLAGGED -- tier=None edge=2.02% conf=61.0 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (56.0\u219261.0); Market entry floor [pitcher_strikeouts]: edge 2.02% < floor 3.0%; conf 61.0 < floor 70"
     },
     {
       "level": "info",
@@ -537,12 +467,82 @@
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Dean_Kremer_pitcher_strikeouts_over_fbdf2c95: GATEKEEPER FLAGGED -- tier=None edge=3.93% conf=59.0 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (54.0\u219259.0); Market entry floor [pitcher_strikeouts]: conf 59.0 < floor 70"
+      "message": "prop_Troy_Melton_pitcher_strikeouts_over_8d7cadd4: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=65.2 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (60.2\u219265.2); Market entry floor [pitcher_strikeouts]: edge 0.00% < floor 3.0%; conf 65.2 < floor 70"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Dean_Kremer_pitcher_strikeouts_under_fbdf2c95: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=59.2 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (54.2\u219259.2); Market entry floor [pitcher_strikeouts]: edge 0.00% < floor 3.0%; conf 59.2 < floor 70"
+      "message": "prop_Troy_Melton_pitcher_strikeouts_under_8d7cadd4: GATEKEEPER FLAGGED -- tier=None edge=2.62% conf=58.4 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (53.4\u219258.4); Market entry floor [pitcher_strikeouts]: edge 2.62% < floor 3.0%; conf 58.4 < floor 70"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "prop_Jared_Jones_pitcher_strikeouts_over_f30eb306: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=77.4 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (72.4\u219277.4); Market entry floor [pitcher_strikeouts]: edge 0.00% < floor 3.0%"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "prop_Grant_Holmes_pitcher_strikeouts_over_f30eb306: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=70.1 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (65.1\u219270.1); Market entry floor [pitcher_strikeouts]: edge 0.00% < floor 3.0%"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "prop_Jared_Jones_pitcher_strikeouts_under_f30eb306: GATEKEEPER FLAGGED -- tier=None edge=8.37% conf=70.4 market=pitcher_strikeouts | Plus-money confidence floor: odds=+125 requires conf \u2265 71 even at Gold Standard, got 70.4"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "prop_Grant_Holmes_pitcher_strikeouts_under_f30eb306: GATEKEEPER FLAGGED -- tier=None edge=7.27% conf=70.1 market=pitcher_strikeouts | Plus-money confidence floor: odds=+104 requires conf \u2265 71 even at Gold Standard, got 70.1"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "prop_Shane_McClanahan_pitcher_strikeouts_over_79b379f1: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=66.4 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (61.4\u219266.4); Market entry floor [pitcher_strikeouts]: edge 0.00% < floor 3.0%; conf 66.4 < floor 70"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "prop_Shane_McClanahan_pitcher_strikeouts_under_79b379f1: GATEKEEPER FLAGGED -- tier=None edge=4.62% conf=66.5 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (61.5\u219266.5); Market entry floor [pitcher_strikeouts]: conf 66.5 < floor 70"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "prop_Gerrit_Cole_pitcher_strikeouts_over_79b379f1: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=77.2 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (72.2\u219277.2); Market entry floor [pitcher_strikeouts]: edge 0.00% < floor 3.0%"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "prop_Gerrit_Cole_pitcher_strikeouts_under_79b379f1: GATEKEEPER FLAGGED -- tier=None edge=3.32% conf=70.3 market=pitcher_strikeouts | Plus-money confidence floor: odds=+100 requires conf \u2265 71 even at Gold Standard, got 70.3"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "prop_Tyler_Phillips_pitcher_strikeouts_over_ee87ced2: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=100.0 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (95.5\u2192100.0); Market entry floor [pitcher_strikeouts]: edge 0.00% < floor 3.0%"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "prop_George_Kirby_pitcher_strikeouts_over_ee87ced2: GATEKEEPER FLAGGED -- tier=None edge=1.97% conf=55.1 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (50.1\u219255.1); Market entry floor [pitcher_strikeouts]: edge 1.97% < floor 3.0%; conf 55.1 < floor 70"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "prop_George_Kirby_pitcher_strikeouts_under_ee87ced2: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=62.0 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (57.0\u219262.0); Market entry floor [pitcher_strikeouts]: edge 0.00% < floor 3.0%; conf 62.0 < floor 70"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "prop_Dean_Kremer_pitcher_strikeouts_over_fbdf2c95: GATEKEEPER FLAGGED -- tier=None edge=4.19% conf=59.2 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (54.2\u219259.2); Market entry floor [pitcher_strikeouts]: conf 59.2 < floor 70"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "prop_Dean_Kremer_pitcher_strikeouts_under_fbdf2c95: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=59.4 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (54.4\u219259.4); Market entry floor [pitcher_strikeouts]: edge 0.00% < floor 3.0%; conf 59.4 < floor 70"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "TB_total_under_79b379f1: GATEKEEPER DISCARD -- edge=0.00% conf=76.1 market=game_total | below threshold, no specific reason recorded"
     },
     {
       "level": "info",
@@ -567,12 +567,12 @@
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "TOR_total_over_82635798: devig fair_prob=49.8% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
+      "message": "TOR_total_over_82635798: devig fair_prob=49.9% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "TOR_total_under_82635798: devig fair_prob=50.2% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
+      "message": "TOR_total_under_82635798: devig fair_prob=50.1% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
     },
     {
       "level": "info",
@@ -587,22 +587,22 @@
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "LAS_total_over_b0cfbd10: devig fair_prob=49.7% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
+      "message": "LAS_total_over_b0cfbd10: devig fair_prob=50.1% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "LAS_total_under_b0cfbd10: devig fair_prob=50.3% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
+      "message": "LAS_total_under_b0cfbd10: devig fair_prob=49.9% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Marina_Mabrey_player_assists_over_82635798: devig fair_prob=53.6% books=['BetOnline', 'FanDuel'] weight_covered=0.65"
+      "message": "prop_Marina_Mabrey_player_assists_over_82635798: devig fair_prob=49.4% books=['BetOnline', 'FanDuel'] weight_covered=0.65"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Veronica_Burton_player_assists_over_82635798: devig fair_prob=53.5% books=['BetOnline', 'FanDuel'] weight_covered=0.65"
+      "message": "prop_Veronica_Burton_player_assists_over_82635798: devig fair_prob=50.6% books=['BetOnline', 'FanDuel'] weight_covered=0.65"
     },
     {
       "level": "info",
@@ -612,57 +612,52 @@
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Nyara_Sabally_player_rebounds_over_82635798: devig fair_prob=45.5% books=['BetOnline', 'FanDuel'] weight_covered=0.65"
+      "message": "prop_Nyara_Sabally_player_rebounds_over_82635798: devig fair_prob=47.8% books=['BetOnline', 'FanDuel'] weight_covered=0.65"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Isabelle_Harrison_player_rebounds_over_82635798: devig fair_prob=54.8% books=['BetOnline', 'FanDuel'] weight_covered=0.65"
+      "message": "prop_Kayla_Thornton_player_rebounds_over_82635798: devig fair_prob=52.2% books=['BetOnline', 'FanDuel'] weight_covered=0.65"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Courtney_Williams_player_assists_over_0fc4abb4: devig fair_prob=51.2% books=['BetOnline', 'FanDuel'] weight_covered=0.65"
+      "message": "prop_Courtney_Williams_player_assists_over_0fc4abb4: devig fair_prob=50.2% books=['BetOnline', 'FanDuel'] weight_covered=0.65"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Olivia_Nelson-Ododa_player_rebounds_over_0fc4abb4: devig fair_prob=46.6% books=['BetOnline', 'FanDuel'] weight_covered=0.65"
+      "message": "prop_Natasha_Howard_player_rebounds_over_0fc4abb4: devig fair_prob=49.5% books=['BetOnline', 'FanDuel'] weight_covered=0.65"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Caitlin_Clark_player_assists_over_b0cfbd10: devig fair_prob=50.0% books=['BetOnline', 'FanDuel'] weight_covered=0.65"
+      "message": "prop_Olivia_Nelson-Ododa_player_rebounds_over_0fc4abb4: devig fair_prob=48.1% books=['BetOnline', 'FanDuel'] weight_covered=0.65"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Aliyah_Boston_player_assists_over_b0cfbd10: devig fair_prob=55.9% books=['BetOnline', 'FanDuel'] weight_covered=0.65"
+      "message": "prop_Caitlin_Clark_player_assists_over_b0cfbd10: devig fair_prob=49.1% books=['BetOnline', 'FanDuel'] weight_covered=0.65"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Caitlin_Clark_player_rebounds_over_b0cfbd10: devig fair_prob=46.4% books=['BetOnline', 'FanDuel'] weight_covered=0.65"
+      "message": "prop_Caitlin_Clark_player_rebounds_over_b0cfbd10: devig fair_prob=42.9% books=['BetOnline', 'FanDuel'] weight_covered=0.65"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Aliyah_Boston_player_rebounds_over_b0cfbd10: devig fair_prob=50.0% books=['BetOnline', 'FanDuel'] weight_covered=0.65"
+      "message": "prop_Nneka_Ogwumike_player_rebounds_over_b0cfbd10: devig fair_prob=52.1% books=['BetOnline', 'FanDuel'] weight_covered=0.65"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Nneka_Ogwumike_player_rebounds_over_b0cfbd10: devig fair_prob=51.8% books=['BetOnline', 'FanDuel'] weight_covered=0.65"
+      "message": "prop_Marina_Mabrey_player_assists_under_82635798: devig fair_prob=50.6% books=['BetOnline', 'FanDuel'] weight_covered=0.65"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Marina_Mabrey_player_assists_under_82635798: devig fair_prob=46.4% books=['BetOnline', 'FanDuel'] weight_covered=0.65"
-    },
-    {
-      "level": "info",
-      "stage": "WNBA",
-      "message": "prop_Veronica_Burton_player_assists_under_82635798: devig fair_prob=46.5% books=['BetOnline', 'FanDuel'] weight_covered=0.65"
+      "message": "prop_Veronica_Burton_player_assists_under_82635798: devig fair_prob=49.4% books=['BetOnline', 'FanDuel'] weight_covered=0.65"
     },
     {
       "level": "info",
@@ -672,52 +667,57 @@
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Veronica_Burton_player_rebounds_over_82635798: devig fair_prob=58.6% books=['BetOnline', 'FanDuel'] weight_covered=0.65"
+      "message": "prop_Nyara_Sabally_player_rebounds_under_82635798: devig fair_prob=52.2% books=['BetOnline', 'FanDuel'] weight_covered=0.65"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Nyara_Sabally_player_rebounds_under_82635798: devig fair_prob=54.5% books=['BetOnline', 'FanDuel'] weight_covered=0.65"
+      "message": "prop_Kayla_Thornton_player_rebounds_under_82635798: devig fair_prob=47.8% books=['BetOnline', 'FanDuel'] weight_covered=0.65"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Kayla_Thornton_player_rebounds_over_82635798: devig fair_prob=48.2% books=['BetOnline', 'FanDuel'] weight_covered=0.65"
+      "message": "prop_Isabelle_Harrison_player_rebounds_over_82635798: devig fair_prob=55.9% books=['BetOnline', 'FanDuel'] weight_covered=0.65"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Isabelle_Harrison_player_rebounds_under_82635798: devig fair_prob=45.2% books=['BetOnline', 'FanDuel'] weight_covered=0.65"
+      "message": "prop_Courtney_Williams_player_assists_under_0fc4abb4: devig fair_prob=49.8% books=['BetOnline', 'FanDuel'] weight_covered=0.65"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Courtney_Williams_player_assists_under_0fc4abb4: devig fair_prob=48.8% books=['BetOnline', 'FanDuel'] weight_covered=0.65"
+      "message": "prop_Natasha_Howard_player_rebounds_under_0fc4abb4: devig fair_prob=50.5% books=['BetOnline', 'FanDuel'] weight_covered=0.65"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Natasha_Howard_player_rebounds_over_0fc4abb4: devig fair_prob=48.4% books=['BetOnline', 'FanDuel'] weight_covered=0.65"
+      "message": "prop_Olivia_Nelson-Ododa_player_rebounds_under_0fc4abb4: STABILITY REJECT -- relative \u03c3=28.8% > 28% threshold (WNBA  \u03c3=2.141  proj=7.42)"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Olivia_Nelson-Ododa_player_rebounds_under_0fc4abb4: STABILITY REJECT -- relative \u03c3=29.3% > 28% threshold (WNBA  \u03c3=2.174  proj=7.42)"
+      "message": "prop_Caitlin_Clark_player_assists_under_b0cfbd10: devig fair_prob=50.9% books=['BetOnline', 'FanDuel'] weight_covered=0.65"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Caitlin_Clark_player_assists_under_b0cfbd10: devig fair_prob=50.0% books=['BetOnline', 'FanDuel'] weight_covered=0.65"
+      "message": "prop_Caitlin_Clark_player_rebounds_under_b0cfbd10: devig fair_prob=57.1% books=['BetOnline', 'FanDuel'] weight_covered=0.65"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Aliyah_Boston_player_assists_under_b0cfbd10: devig fair_prob=44.1% books=['BetOnline', 'FanDuel'] weight_covered=0.65"
+      "message": "prop_Nneka_Ogwumike_player_rebounds_under_b0cfbd10: devig fair_prob=47.9% books=['BetOnline', 'FanDuel'] weight_covered=0.65"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Caitlin_Clark_player_rebounds_under_b0cfbd10: devig fair_prob=53.6% books=['BetOnline', 'FanDuel'] weight_covered=0.65"
+      "message": "prop_Gabby_Williams_player_assists_over_82635798: devig fair_prob=44.4% books=['BetOnline', 'FanDuel'] weight_covered=0.65"
+    },
+    {
+      "level": "info",
+      "stage": "WNBA",
+      "message": "prop_Isabelle_Harrison_player_rebounds_under_82635798: devig fair_prob=44.1% books=['BetOnline', 'FanDuel'] weight_covered=0.65"
     },
     {
       "level": "info",
@@ -727,7 +727,7 @@
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "Gatekeeper: 1 approved / 10 flagged / 5 discarded"
+      "message": "Gatekeeper: 2 approved / 10 flagged / 4 discarded"
     },
     {
       "level": "info",
@@ -737,47 +737,47 @@
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "CON_moneyline_home: GATEKEEPER FLAGGED -- tier=None edge=10.00% conf=78.3 market=moneyline | Market signal filter: sharp_signal='sharp_contrary' \u2014 confirmed sharp money is against this pick"
+      "message": "CON_moneyline_home: GATEKEEPER FLAGGED -- tier=None edge=9.40% conf=78.3 market=moneyline | Market signal filter: sharp_signal='sharp_contrary' \u2014 confirmed sharp money is against this pick"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "LAS_moneyline_home: GATEKEEPER FLAGGED -- tier=None edge=10.00% conf=78.0 market=moneyline | Market signal filter: sharp_signal='sharp_contrary' \u2014 confirmed sharp money is against this pick"
+      "message": "prop_Veronica_Burton_player_assists_over_82635798: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=68.7 market=player_assists | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (63.7\u219268.7); Market entry floor [player_assists]: edge 0.00% < floor 1.0%"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Veronica_Burton_player_assists_over_82635798: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=68.4 market=player_assists | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (63.4\u219268.4); Market entry floor [player_assists]: edge 0.00% < floor 1.0%"
+      "message": "prop_Marina_Mabrey_player_assists_under_82635798: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=62.5 market=player_assists | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (57.5\u219262.5); Market entry floor [player_assists]: edge 0.00% < floor 1.0%"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Marina_Mabrey_player_assists_under_82635798: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=62.4 market=player_assists | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (57.4\u219262.4); Market entry floor [player_assists]: edge 0.00% < floor 1.0%"
+      "message": "prop_Veronica_Burton_player_assists_under_82635798: GATEKEEPER FLAGGED -- tier=None edge=5.90% conf=65.9 market=player_assists | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (63.9\u219268.9)"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Veronica_Burton_player_assists_under_82635798: GATEKEEPER FLAGGED -- tier=None edge=6.54% conf=65.4 market=player_assists | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (63.4\u219268.4)"
+      "message": "prop_Gabby_Williams_player_assists_over_82635798: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=63.7 market=player_assists | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (58.7\u219263.7); Market entry floor [player_assists]: edge 0.00% < floor 1.0%"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Olivia_Nelson-Ododa_player_rebounds_over_0fc4abb4: GATEKEEPER FLAGGED -- tier=None edge=0.20% conf=56.1 market=player_rebounds | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (51.1\u219256.1); Market entry floor [player_rebounds]: edge 0.20% < floor 1.0%; conf 56.1 < floor 60"
+      "message": "prop_Natasha_Howard_player_rebounds_over_0fc4abb4: GATEKEEPER FLAGGED -- tier=None edge=6.52% conf=68.0 market=player_rebounds | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (66.0\u219271.0); Prop confidence floor: player_rebounds requires conf \u2265 75 for broadcast eligibility, got 68.0"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Natasha_Howard_player_rebounds_over_0fc4abb4: GATEKEEPER FLAGGED -- tier=None edge=7.11% conf=68.6 market=player_rebounds | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (66.6\u219271.6); Prop confidence floor: player_rebounds requires conf \u2265 75 for broadcast eligibility, got 68.6"
+      "message": "prop_Olivia_Nelson-Ododa_player_rebounds_over_0fc4abb4: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=56.3 market=player_rebounds | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (51.3\u219256.3); Market entry floor [player_rebounds]: edge 0.00% < floor 1.0%; conf 56.3 < floor 60"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Caitlin_Clark_player_assists_under_b0cfbd10: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=94.6 market=player_assists | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (89.6\u219294.6); Market entry floor [player_assists]: edge 0.00% < floor 1.0%"
+      "message": "prop_Natasha_Howard_player_rebounds_under_0fc4abb4: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=71.1 market=player_rebounds | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (66.1\u219271.1); Market entry floor [player_rebounds]: edge 0.00% < floor 1.0%"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Aliyah_Boston_player_assists_under_b0cfbd10: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=61.3 market=player_assists | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (56.3\u219261.3); Market entry floor [player_assists]: edge 0.00% < floor 1.0%"
+      "message": "prop_Caitlin_Clark_player_assists_under_b0cfbd10: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=94.3 market=player_assists | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (89.3\u219294.3); Market entry floor [player_assists]: edge 0.00% < floor 1.0%"
     },
     {
       "level": "info",
@@ -797,47 +797,42 @@
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Marina_Mabrey_player_assists_over_82635798: GATEKEEPER DISCARD -- edge=2.04% conf=62.5 market=player_assists | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (57.5\u219262.5)"
-    },
-    {
-      "level": "info",
-      "stage": "WNBA",
-      "message": "prop_Aliyah_Boston_player_assists_over_b0cfbd10: GATEKEEPER DISCARD -- edge=1.18% conf=61.7 market=player_assists | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (56.7\u219261.7)"
+      "message": "prop_Marina_Mabrey_player_assists_over_82635798: GATEKEEPER DISCARD -- edge=3.42% conf=62.6 market=player_assists | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (57.6\u219262.6)"
     },
     {
       "level": "info",
       "stage": "pipeline",
-      "message": "CCS ranking: 9 pick(s) scored -- top assigned Nuke, runner-up Diamond, rest Gold Standard."
+      "message": "CCS ranking: 10 pick(s) scored -- top assigned Nuke, runner-up Diamond, rest Gold Standard."
     },
     {
       "level": "info",
       "stage": "pipeline",
-      "message": "9 raw picks generated. Running contradiction check..."
+      "message": "10 raw picks generated. Running contradiction check..."
     },
     {
       "level": "info",
       "stage": "pipeline",
-      "message": "9 picks after contradiction check. Running line movement check..."
+      "message": "10 picks after contradiction check. Running line movement check..."
     },
     {
       "level": "info",
       "stage": "pipeline",
-      "message": "9 picks after line movement check. Applying per-sport daily caps..."
+      "message": "10 picks after line movement check. Applying per-sport daily caps..."
     },
     {
       "level": "info",
       "stage": "pipeline",
-      "message": "7 picks after daily caps."
+      "message": "8 picks after daily caps."
     },
     {
       "level": "info",
       "stage": "pipeline",
-      "message": "7 picks after publication whitelist."
+      "message": "8 picks after publication whitelist."
     },
     {
       "level": "info",
       "stage": "pipeline",
-      "message": "appended 3 pick(s) to output/pick_history.jsonl (4 skipped as same-day duplicates)"
+      "message": "appended 4 pick(s) to output/pick_history.jsonl (4 skipped as same-day duplicates)"
     }
   ]
 }

@@ -996,6 +996,30 @@ def _wnba_prop_projection(
     l5_avg  = round(sum(stat_vals[:5])  / min(5,  n_stat), 2) if n_stat >= 3 else None
     l10_avg = round(sum(stat_vals[:10]) / min(10, n_stat), 2) if n_stat >= 5 else None
 
+    # ── Ramp-up / workload-limitation check (models/ramp_detection.py) ────────
+    # Catches a player whose last 3 games look fine in isolation but are
+    # actually a minutes restriction (e.g. returning from injury, gradually
+    # being worked back up) -- the season-long minutes average below would
+    # otherwise take that inflated-relative-to-current-workload sample at
+    # face value. min_vals is most-recent-first, so recent = min_vals[:3].
+    _ramp_mult = 1.0
+    _ramp_note = ""
+    if n_min >= 4:
+        try:
+            from models.ramp_detection import auto_adjust_workload_input
+            _ramp = auto_adjust_workload_input(
+                recent_values=min_vals[:3], baseline_values=min_vals[3:],
+                sport="wnba_player",
+            )
+            if _ramp["ramp_flag"] and _ramp["baseline_mean"] > 0:
+                _ramp_mult = max(0.85, _ramp["adjusted_value"] / _ramp["baseline_mean"])
+                _ramp_note = (
+                    f"Workload ramp flag: L3 min avg {_ramp['recent_mean']:.1f} vs "
+                    f"baseline {_ramp['baseline_mean']:.1f} ({_ramp['drop_pct']:.0f}% drop)"
+                )
+        except Exception as _ramp_exc:
+            logger.debug(f"[wnba_model] ramp_detection check failed for {player_name}: {_ramp_exc}")
+
     # ── Step 1: minutes projection & stability ────────────────────────────────
     if n_min >= 1:
         projected_minutes, minutes_range, minutes_stability = (
@@ -1100,7 +1124,10 @@ def _wnba_prop_projection(
     # Apply blowout + foul-trouble dampeners to projected minutes before the
     # rate calculation; reallocation/matchup act on the rate side since
     # they represent opportunity share, not raw playing time.
-    _effective_minutes = projected_minutes * _blowout_mult * _foul_trouble_mult
+    _effective_minutes = projected_minutes * _blowout_mult * _foul_trouble_mult * _ramp_mult
+
+    if _ramp_note:
+        _matchup_note = f"{_matchup_note} | {_ramp_note}" if _matchup_note else _ramp_note
 
     # ── Step 5: final projection ──────────────────────────────────────────────
     raw_proj    = (
@@ -1115,7 +1142,7 @@ def _wnba_prop_projection(
     logger.debug(
         f"[wnba_model] {player_name} {market}: "
         f"rate={blended_rate:.3f}/min × {_effective_minutes:.1f}min "
-        f"(foul_trouble×{_foul_trouble_mult:.2f}) "
+        f"(foul_trouble×{_foul_trouble_mult:.2f}, ramp×{_ramp_mult:.2f}) "
         f"× role({role_label})×{role_adj:.2f} × opp_adj×{opp_adj:.3f} "
         f"× realloc×{_realloc_mult:.2f} × matchup×{_matchup_mult:.2f} "
         f"→ raw={raw_proj:.2f} | legacy={legacy_proj:.2f} | final={final_proj:.2f} | "
@@ -1742,6 +1769,40 @@ def get_player_prop_candidates(
                 )
                 continue
 
+            # ── Season-phase (regular vs. postseason) adjustment ──────────────
+            # (models/season_context.py) -- no-ops entirely outside the
+            # postseason window, which is the common case (low urgency
+            # mid-regular-season, but harmless and correct to leave wired).
+            # MLB support here is pitcher-only, matching this pipeline's MLB
+            # market config (pitcher_strikeouts is the only MLB prop market).
+            try:
+                from models.season_context import detect_phase, adjust_for_postseason
+                _phase_date = as_of_date or datetime.now(timezone.utc).strftime("%Y-%m-%d")
+                if detect_phase(_phase_date, sport_up.lower()) == "postseason":
+                    if sport_up == "MLB" and mkt_key.startswith("pitcher"):
+                        _sc = adjust_for_postseason(
+                            weighted_proj, "mlb_pitcher", postseason_sample_size=0,
+                        )
+                        weighted_proj = round(_sc["adjusted_value"], 2)
+                        logger.debug(f"[player_props] {player_name} {mkt_key}: {_sc['note']}")
+                    elif sport_up == "WNBA":
+                        # role_label above is market-specific (ballhandler/
+                        # frontcourt/etc.), not a usage indicator -- use
+                        # projected minutes as the starter/high-usage proxy.
+                        _high_usage = _proj_minutes >= 24.0
+                        _sc = adjust_for_postseason(
+                            weighted_proj, "wnba_player",
+                            is_starter_or_high_usage=_high_usage,
+                            postseason_sample_size=0,
+                        )
+                        weighted_proj = round(_sc["adjusted_value"], 2)
+                        logger.debug(f"[player_props] {player_name} {mkt_key}: {_sc['note']}")
+            except Exception as _sc_exc:
+                logger.debug(
+                    f"[player_props] season_context check failed for "
+                    f"{player_name} {mkt_key}: {_sc_exc}"
+                )
+
             # ── Workload scaling for pitcher strikeouts (MLB only) ────────────
             # Scale the historical projection by expected_ip / LEAGUE_AVG_IP so
             # a starter projected to throw 4.5 IP yields ~18% fewer K chances
@@ -1753,6 +1814,7 @@ def get_player_prop_candidates(
                     from core.pitcher_workload import (
                         get_pitcher_workload,
                         get_k_workload_scale,
+                        get_ramp_signal,
                     )
                     from strikeout_matchup import get_k_matchup_scale
                     _wl = get_pitcher_workload(
@@ -1788,10 +1850,99 @@ def get_player_prop_candidates(
                             f"{_orig_m:.2f} → {weighted_proj:.2f} "
                             f"(×{_matchup_scale:.4f})"
                         )
+                    # ── Ramp-up / workload-limitation check (models/ramp_detection.py) ──
+                    _ramp = get_ramp_signal(_wl)
+                    if _ramp.get("ramp_flag") and _ramp.get("baseline_mean", 0) > 0:
+                        _ramp_scale = max(0.85, _ramp["adjusted_value"] / _ramp["baseline_mean"])
+                        _orig_r = weighted_proj
+                        weighted_proj = round(weighted_proj * _ramp_scale, 2)
+                        logger.debug(
+                            f"[player_props] K ramp-up flag {player_name}: "
+                            f"{_orig_r:.2f} → {weighted_proj:.2f} (×{_ramp_scale:.3f}, "
+                            f"L3 IP={_ramp['recent_mean']:.1f} vs "
+                            f"baseline={_ramp['baseline_mean']:.1f}, "
+                            f"drop={_ramp['drop_pct']:.0f}%)"
+                        )
+
+                    # ── CSW%/SwStr% blend (models/advanced_metrics.py) ────────────
+                    # process stats (how often a pitcher generates whiffs/called
+                    # strikes per pitch) predict forward K% better than recent
+                    # outcome-based K% alone, which can be inflated/deflated by
+                    # sequencing luck. Distinct from the workload/matchup scales
+                    # above: those adjust expected OPPORTUNITIES (innings,
+                    # lineup quality); this adjusts the underlying RATE.
+                    try:
+                        from data.fetch import get_savant_pitcher_advanced_stats
+                        from models.advanced_metrics import project_k_pct_advanced
+                        _season_yr = int(_wl.game_date[:4]) if _wl.game_date else datetime.now(timezone.utc).year
+                        _savant_row = get_savant_pitcher_advanced_stats(player_name, _season_yr)
+                        if _savant_row is not None and not _savant_row.empty:
+                            _raw_k_pct = _savant_row.iloc[0].get("K%")
+                            _csw_pct   = _savant_row.iloc[0].get("CSW%")
+                            _swstr_pct = _savant_row.iloc[0].get("SwStr%")
+                            if _raw_k_pct and _raw_k_pct > 0 and (_csw_pct is not None or _swstr_pct is not None):
+                                _blended_k_pct = project_k_pct_advanced(_csw_pct, _swstr_pct, _raw_k_pct)
+                                _k_pct_scale = max(0.85, min(1.15, _blended_k_pct / _raw_k_pct))
+                                if _k_pct_scale != 1.0:
+                                    _orig_a = weighted_proj
+                                    weighted_proj = round(weighted_proj * _k_pct_scale, 2)
+                                    logger.debug(
+                                        f"[player_props] K CSW%/SwStr% blend {player_name}: "
+                                        f"{_orig_a:.2f} → {weighted_proj:.2f} (×{_k_pct_scale:.3f}, "
+                                        f"raw K%={_raw_k_pct:.3f} → blended={_blended_k_pct:.3f})"
+                                    )
+                    except Exception as _adv_exc:
+                        logger.debug(
+                            f"[player_props] advanced_metrics K% blend failed for "
+                            f"{player_name}: {_adv_exc}"
+                        )
                 except Exception as _wl_exc:
                     logger.debug(
                         f"[player_props] workload/matchup K scale failed for "
                         f"{player_name}: {_wl_exc}"
+                    )
+
+            # ── Injury risk adjustment (WNBA player props only) ───────────────
+            # (models/injury_intel.py) -- distinct from wnba_opp_intel.py's
+            # teammate-out REALLOCATION signal above (which boosts this
+            # player's own projection when a TEAMMATE is ruled out): this
+            # checks whether the SUBJECT player themselves carries a live
+            # game-status flag (questionable/doubtful/day-to-day) that the
+            # box-score-only model has no way to see. data/fetch.py's
+            # get_wnba_team_injuries() was already built with this exact
+            # caller in mind (RotoWire primary, ESPN fallback).
+            if sport_up == "WNBA":
+                try:
+                    from data.fetch import get_wnba_team_injuries
+                    from models.injury_intel import compute_injury_adjustment
+                    _own_abbr, _ = _wnba_resolve_player_team(
+                        player_name, home_team, away_team, as_of_date=as_of_date,
+                    )
+                    _team_inj = get_wnba_team_injuries(_own_abbr) if _own_abbr else None
+                    _subject_rows = [
+                        r for r in (_team_inj or {}).get("injuries", [])
+                        if (r.get("athlete", {}).get("shortName") or "").strip().lower()
+                           == player_name.strip().lower()
+                    ]
+                    if _subject_rows:
+                        _inj = compute_injury_adjustment(
+                            {"injuries": _subject_rows}, subject_team_is_backed=True,
+                        )
+                        if _inj["edge_adjustment"] < 0:
+                            # Risk flag, not a hard override -- max impact
+                            # (-6.0) maps to a 12% haircut on the projection.
+                            _injury_scale = max(0.88, 1.0 + _inj["edge_adjustment"] * 0.02)
+                            _orig_i = weighted_proj
+                            weighted_proj = round(weighted_proj * _injury_scale, 2)
+                            logger.debug(
+                                f"[player_props] injury risk {player_name}: "
+                                f"{_orig_i:.2f} → {weighted_proj:.2f} "
+                                f"(×{_injury_scale:.3f}) — {_inj['factor_text']}"
+                            )
+                except Exception as _inj_exc:
+                    logger.debug(
+                        f"[player_props] injury_intel check failed for "
+                        f"{player_name}: {_inj_exc}"
                     )
 
             hist_mean = weighted_proj

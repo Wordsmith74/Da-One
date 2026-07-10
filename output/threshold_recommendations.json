@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-07-09T13:52:42.563202+00:00",
-  "n_total_picks": 197,
-  "n_graded": 134,
-  "n_usable_for_search": 134,
+  "generated_at": "2026-07-10T04:54:57.800085+00:00",
+  "n_total_picks": 202,
+  "n_graded": 142,
+  "n_usable_for_search": 142,
   "min_sample_size": 15,
   "min_sample_size_nuke": 8,
   "gold_roi_floor": 0.0,
@@ -11,7 +11,7 @@
     {
       "sport": "MLB",
       "market_class": "game",
-      "n_graded": 15,
+      "n_graded": 20,
       "status": "insufficient_data",
       "consensus_evaluated": false,
       "current_thresholds": {
@@ -34,7 +34,7 @@
     {
       "sport": "MLB",
       "market_class": "prop",
-      "n_graded": 109,
+      "n_graded": 111,
       "status": "ok",
       "consensus_evaluated": true,
       "current_thresholds": {
@@ -56,37 +56,37 @@
           "edge_threshold": 3.72,
           "confidence_threshold": 70.0,
           "consensus_threshold": null,
-          "n": 109,
-          "wins": 77,
+          "n": 111,
+          "wins": 79,
           "losses": 32,
           "pushes": 0,
-          "win_pct": 0.7064,
-          "roi": 0.2365,
-          "profit_units": 0.97
+          "win_pct": 0.7117,
+          "roi": 0.3105,
+          "profit_units": 1.41
         },
         "Diamond": {
           "edge_threshold": 3.72,
-          "confidence_threshold": 77.6,
+          "confidence_threshold": 72.5,
           "consensus_threshold": 0.0,
-          "n": 15,
-          "wins": 9,
-          "losses": 6,
+          "n": 19,
+          "wins": 12,
+          "losses": 7,
           "pushes": 0,
-          "win_pct": 0.6,
-          "roi": 0.31,
-          "profit_units": 0.86
+          "win_pct": 0.6316,
+          "roi": 0.3654,
+          "profit_units": 1.28
         },
         "Nuke": {
           "edge_threshold": 3.72,
-          "confidence_threshold": 81.6,
-          "consensus_threshold": null,
-          "n": 38,
-          "wins": 30,
-          "losses": 8,
+          "confidence_threshold": 73.2,
+          "consensus_threshold": 1.0,
+          "n": 10,
+          "wins": 7,
+          "losses": 3,
           "pushes": 0,
-          "win_pct": 0.7895,
-          "roi": 0.5604,
-          "profit_units": 1.24
+          "win_pct": 0.7,
+          "roi": 0.4368,
+          "profit_units": 0.87
         }
       },
       "note": "OK"
@@ -94,7 +94,7 @@
     {
       "sport": "WNBA",
       "market_class": "game",
-      "n_graded": 10,
+      "n_graded": 11,
       "status": "insufficient_data",
       "consensus_evaluated": false,
       "current_thresholds": {
@@ -112,7 +112,7 @@
         }
       },
       "recommended": null,
-      "note": "Only 10 graded picks (need >= 15). Keeping existing thresholds until more results are graded."
+      "note": "Only 11 graded picks (need >= 15). Keeping existing thresholds until more results are graded."
     }
   ]
 }

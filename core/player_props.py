@@ -1,0 +1,2249 @@
+"""
+core/player_props.py — Player prop candidate generator for the Bayesian engine.
+
+Fetches today's player prop lines from two sources:
+  1. The Odds API  (per-event endpoint) — primary source
+  2. PropLine API  (sport-level endpoint) — supplementary bookmakers
+
+Both bookmaker lists are merged before analysis so the engine sees the widest
+possible book coverage (including Novig, Pinnacle, Smarkets).
+
+Historical data
+---------------
+  NBA  : ESPN athlete season-average API, then synthetic history around it.
+  MLB  : MLB Stats API season game-log, then synthetic history around it.
+  Combo mkts : Sum of component ESPN stats (Pts+Reb = PTS + REB, etc.).
+  Fallback   : Synthetic history anchored at a sport/market league mean when the
+               external stat API is unavailable.
+
+Supported markets
+-----------------
+  WNBA : (no player props — game totals only via game_markets.py)
+  NBA  : player_points, player_rebounds, player_assists, player_blocks,
+         player_steals, player_threes, player_turnovers,
+         player_points_rebounds, player_points_assists, player_rebounds_assists,
+         player_points_rebounds_assists
+  MLB  : pitcher_strikeouts, pitcher_earned_runs
+         (hits_allowed retired — removed from broadcast)
+"""
+
+from __future__ import annotations
+
+import json
+import logging
+import os
+import random
+import statistics as _stats
+import urllib.error
+import urllib.parse
+import urllib.request
+from datetime import date, datetime, timezone
+from typing import Any
+
+from core.market_intelligence import (
+    compute_mis,
+    compute_data_reliability,
+    detect_sharp_action,
+    detect_steam_move,
+    detect_reverse_line_movement,
+)
+
+logger = logging.getLogger(__name__)
+
+_API_KEY   = os.environ.get("THE_ODDS_API_KEY", "")
+_ODDS_BASE = "https://api.the-odds-api.com/v4"
+
+# ── Sport / market config ────────────────────────────────────────────────────
+
+_SPORT_KEY: dict[str, str] = {
+    "WNBA": "basketball_wnba",
+    "NBA":  "basketball_nba",
+    "MLB":  "baseball_mlb",
+}
+
+_ESPN_SPORT_PATH: dict[str, str] = {
+    "WNBA": "basketball/wnba",
+    "NBA":  "basketball/nba",
+}
+
+# Odds API market keys requested per sport (comma-separated for the endpoint)
+# pitcher_hits_allowed retired from broadcast (poor model fit, removed 2026-06-06).
+# Scope defined by the System Scope Definition (core/market_gate.py):
+#   MLB  — pitcher_strikeouts only. Moneyline / run line / game total are
+#          handled by core/odds_client.py + core/game_markets.py, not here.
+#   WNBA — player_rebounds + player_assists only (unchanged)
+#   NBA  — no prop markets in scope (removed entirely)
+_PROP_MARKETS: dict[str, str] = {
+    "WNBA": "player_rebounds,player_assists",
+    "MLB":  "pitcher_strikeouts",
+}
+
+# ── Performance-based market suspension ──────────────────────────────────────
+# Markets removed from broadcast pending model recalibration.
+# Evidence (43 graded picks):
+#   batter_hits           → 43.8% WR, −31% ROI (16 picks) — no opposing pitcher adjustment
+#   batter_total_bases    → removed per audit (same root cause as hits: no pitcher context)
+#   player_points         → 28.6% WR, −39% ROI (7 picks)  — prior not role/matchup aware
+#   pitcher_hits_allowed  → retired 2026-06-06 — model fit insufficient; market retired entirely
+# Re-enable by removing from this set once the prior is recalibrated.
+_SUSPENDED_PROP_MARKETS: frozenset[str] = frozenset({
+    "batter_hits",
+    "batter_total_bases",
+    "player_points",
+    "pitcher_hits_allowed",
+})
+
+# PropLine API market keys per sport — supplementary source for additional books.
+# Includes markets PropLine carries that The Odds API may not serve per-event.
+# pitcher_hits_allowed retired.
+_PROPLINE_MARKETS: dict[str, list[str]] = {
+    "WNBA": ["player_rebounds", "player_assists"],
+    "MLB":  ["pitcher_strikeouts"],
+    # NBA: no markets in scope
+}
+
+# Human-readable display name stored as `market` in each candidate
+_MARKET_DISPLAY: dict[str, str] = {
+    # Basketball
+    "player_points":                 "Points",
+    "player_rebounds":               "Rebounds",
+    "player_assists":                "Assists",
+    "player_blocks":                 "Blocks",
+    "player_steals":                 "Steals",
+    "player_threes":                 "3-Pointers",
+    "player_turnovers":              "Turnovers",
+    "player_points_rebounds":        "Pts+Reb",
+    "player_points_assists":         "Pts+Ast",
+    "player_rebounds_assists":       "Reb+Ast",
+    "player_points_rebounds_assists":"Pts+Reb+Ast",
+    # Baseball — pitching
+    "pitcher_strikeouts":            "Strikeouts",
+    "pitcher_earned_runs":           "Earned Runs",
+    "pitcher_hits_allowed":          "Hits Allowed",
+    # Baseball — batting
+    "batter_hits":                   "Hits",
+    "batter_total_bases":            "Total Bases",
+}
+
+# League-level priors (Bayesian mean + std) used when player stat lookup fails.
+# Also gates which market keys are processed — keys absent here are skipped.
+_PROP_PRIOR: dict[str, dict[str, float]] = {
+    # Basketball — individual
+    "player_points":                 {"mean": 15.0, "std": 5.0},
+    "player_rebounds":               {"mean":  5.0, "std": 3.0},
+    "player_assists":                {"mean":  3.5, "std": 2.0},
+    "player_blocks":                 {"mean":  0.8, "std": 0.8},
+    "player_steals":                 {"mean":  0.9, "std": 0.7},
+    "player_threes":                 {"mean":  1.5, "std": 1.2},
+    "player_turnovers":              {"mean":  2.5, "std": 1.5},
+    # Basketball — combo
+    "player_points_rebounds":        {"mean": 20.5, "std": 6.0},
+    "player_points_assists":         {"mean": 18.5, "std": 5.5},
+    "player_rebounds_assists":       {"mean":  9.0, "std": 3.5},
+    "player_points_rebounds_assists":{"mean": 27.0, "std": 7.5},
+    # Baseball — pitching
+    "pitcher_strikeouts":            {"mean":  5.5, "std": 2.0},
+    "pitcher_earned_runs":           {"mean":  2.5, "std": 1.5},
+    "pitcher_hits_allowed":          {"mean":  5.0, "std": 2.0},
+    # Baseball — batting
+    "batter_hits":                   {"mean":  1.0, "std": 0.8},
+    "batter_total_bases":            {"mean":  1.2, "std": 0.8},
+}
+
+# ESPN stat abbreviation(s) for each prop market.
+# Combo markets use a tuple — the player avg is the SUM of the component stats.
+_ESPN_STAT_COL: dict[str, str | tuple[str, ...]] = {
+    # Individual stats
+    "player_points":                 "PTS",
+    "player_rebounds":               "REB",
+    "player_assists":                "AST",
+    "player_blocks":                 "BLK",
+    "player_steals":                 "STL",
+    "player_threes":                 "3PM",
+    "player_turnovers":              "TO",
+    # Combo markets (sum of components)
+    "player_points_rebounds":        ("PTS", "REB"),
+    "player_points_assists":         ("PTS", "AST"),
+    "player_rebounds_assists":       ("REB", "AST"),
+    "player_points_rebounds_assists":("PTS", "REB", "AST"),
+}
+
+# Max prop candidates returned per sport (keeps engine runtime manageable)
+_MAX_CANDIDATES_PER_SPORT = 25
+
+# Max events to process per sport per run (avoids flooding the Odds API)
+_MAX_EVENTS_PER_SPORT = 6
+
+# Rule 2: maximum allowed deviation between the best-price line and the
+# consensus (median across all bookmakers) before a pick is rejected.
+_LINE_CONSENSUS_MAX_DRIFT: float = 0.5
+
+# Process-level registry: bet_id → metadata needed for pre-publish re-verification.
+# Populated by get_player_prop_candidates(); consumed by core/line_validator.py.
+_PROP_META: dict[str, dict] = {}
+
+# MLB Stats API group + stat column for player stat history lookup.
+_MLB_STAT_SPEC: dict[str, tuple[str, str]] = {
+    # Pitching
+    "pitcher_strikeouts":  ("pitching", "strikeOuts"),
+    "pitcher_earned_runs": ("pitching", "earnedRuns"),
+    "pitcher_hits_allowed":("pitching", "hits"),
+    # Batting
+    "batter_hits":         ("hitting",  "hits"),
+    "batter_total_bases":  ("hitting",  "totalBases"),
+}
+
+
+# ── HTTP helper ──────────────────────────────────────────────────────────────
+
+def _get_json(url: str, timeout: int = 6) -> Any:
+    req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+    with urllib.request.urlopen(req, timeout=timeout) as r:
+        return json.loads(r.read())
+
+
+# ── Synthetic history ────────────────────────────────────────────────────────
+
+def _synthetic_history(
+    mean: float, std: float, n: int = 15, seed: float | None = None
+) -> list[float]:
+    rng = random.Random(seed)
+    return [max(0.0, round(rng.gauss(mean, std), 1)) for _ in range(n)]
+
+
+# ── ESPN season-average lookup (WNBA / NBA) ───────────────────────────────────
+
+def _espn_player_avg(player_name: str, sport: str, market: str) -> float | None:
+    """
+    Return a player's season average for the given prop market.
+    Uses ESPN's athlete search + athlete stats endpoint.
+
+    For combo markets (player_points_rebounds etc.) stat_col is a tuple —
+    the returned value is the SUM of each component's season average.
+
+    Returns None when the athlete is not found or the API is unavailable.
+    """
+    sport_path = _ESPN_SPORT_PATH.get(sport.upper())
+    stat_col   = _ESPN_STAT_COL.get(market)
+    if not sport_path or not stat_col:
+        return None
+
+    # Normalise to tuple so the rest of the function is uniform
+    stat_cols: tuple[str, ...] = (stat_col,) if isinstance(stat_col, str) else stat_col
+    target_cols = {c.upper() for c in stat_cols}
+
+    try:
+        encoded = urllib.parse.quote(player_name)
+        search_url = (
+            f"https://site.api.espn.com/apis/site/v2/sports/"
+            f"{sport_path}/athletes?search={encoded}&limit=3"
+        )
+        sdata    = _get_json(search_url)
+        athletes = sdata.get("items") or sdata.get("athletes", [])
+        if not athletes:
+            return None
+        first      = athletes[0]
+        athlete_id = str(first.get("id", ""))
+        if not athlete_id:
+            ref = first.get("$ref", "")
+            athlete_id = ref.split("/")[-1].split("?")[0]
+        if not athlete_id:
+            return None
+
+        stats_url = (
+            f"https://site.api.espn.com/apis/site/v2/sports/"
+            f"{sport_path}/athletes/{athlete_id}/stats"
+        )
+        data = _get_json(stats_url)
+
+        # Collect all matching stat values from all split categories
+        found: dict[str, float] = {}
+        for cat in (
+            data.get("splits", {}).get("categories", [])
+            + data.get("statistics", {}).get("splits", {}).get("categories", [])
+        ):
+            for stat in cat.get("stats", []):
+                abbr = stat.get("abbreviation", "").upper()
+                if abbr in target_cols and abbr not in found:
+                    try:
+                        found[abbr] = float(stat["value"])
+                    except (TypeError, ValueError) as _stat_exc:
+                        logger.debug(f"[player_props] stat parse skip: {_stat_exc}")
+
+        if not found:
+            return None
+
+        # Sum all requested components (works for both single and combo markets)
+        return round(sum(found.get(c.upper(), 0.0) for c in stat_cols), 2)
+
+    except Exception as _exc:
+        logger.debug(f"[player_props] ESPN stat lookup failed: {_exc}")
+    return None
+
+
+# ── MLB Stats API — season avg + last-5 / last-10 game averages ─────────────
+
+# Process-level cache keyed on (player_name, market, as_of_date) so a
+# replay loop over multiple historical dates doesn't leak one date's game
+# log into another's, and live mode (as_of_date=None) still gets the
+# within-run memoization the old code implicitly relied on via _get_json.
+_MLB_PLAYER_STATS_CACHE: dict[tuple[str, str, str | None], tuple[float | None, float | None, float | None]] = {}
+
+
+def _mlb_player_stats(
+    player_name: str, market: str, as_of_date: str | None = None,
+) -> tuple[float | None, float | None, float | None]:
+    """
+    Return (season_avg, l5_avg, l10_avg) from the MLB Stats API game log.
+
+    Uses a single player search → gamelog call so we don't double the API
+    quota versus the old season-only approach.  Returns (None, None, None)
+    when the player or market is not found.
+
+    Parameters
+    ----------
+    as_of_date : ISO 'YYYY-MM-DD' string. When set (replay mode), the
+                 season queried is derived from this date instead of
+                 always being hardcoded to 2025, and game-log splits are
+                 filtered to games played on-or-before this date before
+                 computing season/L5/L10 averages — otherwise a replay run
+                 would silently see the player's whole-season line
+                 (including games after the replay date) for every pick.
+                 When None (live mode), this also fixes a standing bug:
+                 the season was hardcoded to 2025, so every live MLB
+                 player-prop pick was being generated off last season's
+                 game log regardless of the actual current date.
+    """
+    spec = _MLB_STAT_SPEC.get(market)
+    if not spec:
+        return None, None, None
+    group_key, stat_col = spec
+
+    cache_key = (player_name, market, as_of_date)
+    if cache_key in _MLB_PLAYER_STATS_CACHE:
+        return _MLB_PLAYER_STATS_CACHE[cache_key]
+
+    try:
+        encoded    = urllib.parse.quote(player_name)
+        search_url = (
+            f"https://statsapi.mlb.com/api/v1/people/search"
+            f"?names={encoded}&sportId=1"
+        )
+        sdata  = _get_json(search_url)
+        people = sdata.get("people", [])
+        if not people:
+            return None, None, None
+        pid = people[0]["id"]
+
+        season = (
+            date.fromisoformat(as_of_date).year
+            if as_of_date else date.today().year
+        )
+
+        # Game log gives us per-game splits — from which we compute all three.
+        gl_url = (
+            f"https://statsapi.mlb.com/api/v1/people/{pid}/stats"
+            f"?stats=gameLog&group={group_key}&season={season}&gameType=R"
+        )
+        gdata  = _get_json(gl_url)
+        splits = []
+        for block in gdata.get("stats", []):
+            splits = block.get("splits", [])
+            if splits:
+                break
+        if not splits:
+            return None, None, None
+
+        if as_of_date is not None:
+            splits = [s for s in splits if (s.get("date") or "") <= as_of_date]
+            if not splits:
+                return None, None, None
+
+        def _stat(s: dict) -> float:
+            raw = s["stat"]
+            return float(raw.get(stat_col) or 0)
+
+        all_vals = [_stat(s) for s in splits]
+        n        = len(all_vals)
+        if n == 0:
+            return None, None, None
+
+        season_avg = round(sum(all_vals) / n, 2)
+        l5_avg     = round(sum(all_vals[-5:]) / min(5, n), 2) if n >= 1 else None
+        l10_avg    = round(sum(all_vals[-10:]) / min(10, n), 2) if n >= 5 else None
+
+        result = (season_avg, l5_avg, l10_avg)
+        _MLB_PLAYER_STATS_CACHE[cache_key] = result
+        return result
+    except Exception:
+        return None, None, None
+
+
+# ── ESPN per-game gamelog helper ──────────────────────────────────────────────
+
+# ESPN stat label aliases — the gamelog endpoint uses the same abbreviations
+# as the season stats endpoint for most markets, but some leagues use variants.
+# Values are lists of accepted label strings (checked case-insensitively).
+_ESPN_LABEL_ALIASES: dict[str, list[str]] = {
+    "PTS": ["PTS", "POINTS"],
+    "REB": ["REB", "TRB", "REBOUNDS"],
+    "AST": ["AST", "ASSISTS"],
+    "BLK": ["BLK", "BS",  "BLOCKS"],
+    "STL": ["STL", "ST",  "STEALS"],
+    "3PM": ["3PM", "3FGM", "TPM", "3FG"],
+    "TO":  ["TO",  "TOV", "TURNOVERS"],
+}
+
+
+def _espn_athlete_id(player_name: str, sport_path: str) -> str | None:
+    """Search ESPN for an athlete and return their numeric ID string, or None."""
+    try:
+        encoded = urllib.parse.quote(player_name)
+        url = (
+            f"https://site.api.espn.com/apis/site/v2/sports/"
+            f"{sport_path}/athletes?search={encoded}&limit=3"
+        )
+        data     = _get_json(url)
+        athletes = data.get("items") or data.get("athletes", [])
+        if not athletes:
+            return None
+        first = athletes[0]
+        aid   = str(first.get("id", ""))
+        if not aid:
+            ref = first.get("$ref", "")
+            aid = ref.split("/")[-1].split("?")[0]
+        return aid or None
+    except Exception as _exc:
+        logger.debug(f"[player_props] ESPN athlete search failed ({player_name}): {_exc}")
+        return None
+
+
+def _espn_gamelog_per_game(
+    athlete_id: str,
+    sport_path: str,
+    stat_cols: tuple[str, ...],
+) -> list[float]:
+    """
+    Fetch an athlete's regular-season game log from ESPN and return a list of
+    per-game stat totals (one float per game, ordered oldest → newest).
+
+    For combo markets, each entry is the SUM of the component stats (e.g. PTS+REB).
+
+    Returns an empty list when the endpoint is unavailable or the stat columns
+    are not found in the gamelog labels.
+
+    ESPN gamelog structure (regular-season type, id="2"):
+      seasonTypes[i].categories[j].labels  — stat abbreviation list
+      seasonTypes[i].categories[j].events[k].stats  — per-game values (same order)
+    """
+    # Build a lookup of target labels → canonical stat_col so we can match
+    # ESPN's abbreviations case-insensitively and handle variants.
+    target_upper = {c.upper() for c in stat_cols}
+    alias_map: dict[str, str] = {}   # espn_label_upper → stat_col
+    for col in stat_cols:
+        col_up = col.upper()
+        for alias in _ESPN_LABEL_ALIASES.get(col_up, [col_up]):
+            alias_map[alias.upper()] = col_up
+
+    try:
+        url  = (
+            f"https://site.api.espn.com/apis/site/v2/sports/"
+            f"{sport_path}/athletes/{athlete_id}/gamelog"
+        )
+        data = _get_json(url, timeout=8)
+
+        season_types = data.get("seasonTypes", [])
+        if not season_types:
+            return []
+
+        # Prefer the Regular Season type (id="2"); fall back to first entry.
+        reg = next(
+            (st for st in season_types if str(st.get("id", "")) == "2"),
+            season_types[0],
+        )
+
+        per_game: list[float] = []
+
+        for cat in reg.get("categories", []):
+            labels = [lbl.upper() for lbl in cat.get("labels", [])]
+
+            # Build a col → [index, ...] map for this category
+            col_indices: dict[str, list[int]] = {c: [] for c in target_upper}
+            for idx, lbl in enumerate(labels):
+                canon = alias_map.get(lbl)
+                if canon and canon in col_indices:
+                    col_indices[canon].append(idx)
+
+            # Only proceed if ALL target columns have at least one matching index
+            if not all(col_indices[c] for c in target_upper):
+                continue
+
+            for event in cat.get("events", []):
+                raw_stats = event.get("stats", [])
+                try:
+                    total = 0.0
+                    for col in target_upper:
+                        for idx in col_indices[col]:
+                            total += float(raw_stats[idx])
+                    per_game.append(total)
+                except (IndexError, TypeError, ValueError):
+                    continue
+
+            # First category that satisfies all columns is authoritative
+            if per_game:
+                break
+
+        return per_game
+
+    except Exception as _exc:
+        logger.debug(
+            f"[player_props] ESPN gamelog failed "
+            f"(athlete={athlete_id}, cols={stat_cols}): {_exc}"
+        )
+        return []
+
+
+# ── WNBA player stats cache (scoreboard + boxscore approach) ──────────────────
+# ESPN's WNBA athlete search and gamelog endpoints both return 404.
+# Solution: scan recent WNBA scoreboard dates, fetch game summaries, extract
+# per-game REB/AST from boxscores.  Built once per process on first WNBA call.
+# vals are stored most-recent-first (scoreboard scanned newest → oldest).
+
+# Keyed by as_of_date (None for live mode) so a multi-date replay loop
+# rebuilds a fresh, correctly-windowed cache per date instead of reusing
+# the first date's (wrong) 21-day window for every subsequent date. Live
+# mode keeps the old single-build-per-process behaviour under key None.
+_WNBA_STATS_CACHE: dict[str | None, dict[str, dict[str, list[float]]]] = {}
+_WNBA_CACHE_BUILT: set[str | None] = set()
+_WNBA_BDL_ATTEMPTED: set[str] = set()   # players already tried via BDL (avoid retries); live mode only
+
+# Player name (lowercase) → team abbreviation, captured as a free byproduct
+# of the ESPN boxscore scan in _build_wnba_stats_cache() below (each
+# boxscore team block already carries its own team abbreviation -- we just
+# weren't recording it). This is what lets _wnba_prop_projection() resolve
+# "which team is this player on" for the Layer 4/5 teammate-out reallocation
+# and positional-matchup adjustments in wnba_opp_intel.py, with zero extra
+# network calls. Keyed by as_of_date the same way _WNBA_STATS_CACHE is.
+_WNBA_PLAYER_TEAM: dict[str | None, dict[str, str]] = {}
+
+# Boxscore column → market key (prop markets)
+_WNBA_BOX_COL: dict[str, str] = {
+    "player_rebounds": "REB",
+    "player_assists":  "AST",
+}
+
+# Additional boxscore columns captured for per-minute modeling (not prop markets).
+# PF (personal fouls) added for foul-trouble risk modeling on rebound props --
+# a frontcourt player with an elevated recent foul rate carries real risk of
+# missing minutes to foul trouble, on top of (not a substitute for) the L5
+# minutes-stability signal already tracked above.
+_WNBA_CACHE_COLS: set[str] = {"REB", "AST", "MIN", "PF"}
+
+# ── Minutes stability thresholds (L5 range = max - min) ──────────────────────
+_WNBA_MIN_STABLE_RANGE   = 4.0   # ≤4 min range → "elite"
+_WNBA_MIN_MODERATE_RANGE = 8.0   # 4–8 min range → "moderate"; >8 → "volatile"
+
+# ── Role-based multipliers for per-minute projection ─────────────────────────
+_WNBA_AST_ROLE_MULT: dict[str, float] = {
+    "ballhandler": 1.15,   # primary creator — high AST/min
+    "secondary":   1.05,   # facilitating scorer
+    "off_ball":    0.80,   # limited creation
+}
+_WNBA_REB_ROLE_MULT: dict[str, float] = {
+    "frontcourt": 1.10,    # primary rebounder
+    "wing":       1.00,    # neutral
+    "guard":      0.85,    # limited rebounding
+}
+
+# Per-minute rate thresholds for role classification
+_WNBA_AST_HIGH  = 0.12   # ≥ → ballhandler
+_WNBA_AST_LOW   = 0.07   # < → off_ball
+_WNBA_REB_HIGH  = 0.20   # ≥ → frontcourt
+_WNBA_REB_LOW   = 0.10   # < → guard
+
+
+def _build_wnba_stats_cache(days_back: int = 21, as_of_date: str | None = None) -> None:
+    """
+    Populate _WNBA_STATS_CACHE[as_of_date] by scanning WNBA scoreboard dates
+    and extracting per-game stats from ESPN game summary boxscores.
+
+    ESPN's athlete-level search and gamelog APIs return 404 for WNBA; this
+    scoreboard approach is the only reliable ESPN data path for WNBA players.
+
+    Parameters
+    ----------
+    as_of_date : ISO 'YYYY-MM-DD' string. When set (replay mode), the
+                 *days_back* window scans the days before this date instead
+                 of before real "today", so the cache reflects only games
+                 that had actually been played as of the replay date. Each
+                 as_of_date gets its own cache entry and its own build-once
+                 flag — a multi-date replay loop rebuilds this cache fresh
+                 per date rather than reusing the first date's window for
+                 every subsequent date. Live mode (as_of_date=None) keeps
+                 the original build-once-per-process behaviour.
+    """
+    global _WNBA_STATS_CACHE, _WNBA_CACHE_BUILT
+    if as_of_date in _WNBA_CACHE_BUILT:
+        return
+
+    from datetime import date, timedelta
+    anchor = date.fromisoformat(as_of_date) if as_of_date else date.today()
+    target_cols = set(_WNBA_BOX_COL.values())   # {"REB", "AST"}
+
+    cache_for_date: dict[str, dict[str, list[float]]] = _WNBA_STATS_CACHE.setdefault(as_of_date, {})
+
+    # Phase 1: collect completed game IDs from scoreboard (one call per day)
+    game_ids: list[str] = []
+    for days_ago in range(1, days_back + 1):
+        ds = (anchor - timedelta(days=days_ago)).strftime("%Y%m%d")
+        try:
+            data = _get_json(
+                f"https://site.api.espn.com/apis/site/v2/sports/"
+                f"basketball/wnba/scoreboard?dates={ds}",
+                timeout=6,
+            )
+            for ev in data.get("events", []):
+                comp = (ev.get("competitions") or [{}])[0]
+                if comp.get("status", {}).get("type", {}).get("completed", False):
+                    gid = comp.get("id")
+                    if gid:
+                        game_ids.append(str(gid))
+        except Exception as _exc:
+            logger.debug(f"[wnba_cache] scoreboard {ds}: {_exc}")
+
+    logger.info(
+        f"[wnba_cache] building (as_of={as_of_date or 'live'}) from "
+        f"{len(game_ids)} completed WNBA games"
+    )
+
+    # Columns that gate which stat groups we enter (must contain REB or AST)
+    _stat_cols = set(_WNBA_BOX_COL.values())   # {"REB", "AST"}
+
+    # Phase 2: fetch each game summary and extract player stats
+    for gid in game_ids:
+        try:
+            summ = _get_json(
+                f"https://site.api.espn.com/apis/site/v2/sports/"
+                f"basketball/wnba/summary?event={gid}",
+                timeout=8,
+            )
+        except Exception:
+            continue
+
+        team_for_date = _WNBA_PLAYER_TEAM.setdefault(as_of_date, {})
+
+        for team_data in summ.get("boxscore", {}).get("players", []):
+            team_obj  = team_data.get("team", {}) or {}
+            team_abbr = (team_obj.get("abbreviation") or "").strip().upper() or None
+
+            for stat_group in team_data.get("statistics", []):
+                names: list[str] = stat_group.get("names", [])
+                # Only enter the stat group that contains REB or AST
+                if not _stat_cols.intersection(names):
+                    continue
+
+                # Build index map for ALL desired columns (REB, AST, MIN, PF)
+                col_idx: dict[str, int] = {}
+                for col in _WNBA_CACHE_COLS:
+                    if col in names:
+                        col_idx[col] = names.index(col)
+
+                for ath_entry in stat_group.get("athletes", []):
+                    ath   = ath_entry.get("athlete", {})
+                    pname = (ath.get("displayName") or "").strip().lower()
+                    if not pname:
+                        continue
+                    stats = ath_entry.get("stats", [])
+                    if not stats:
+                        continue  # DNP — skip, don't zero-pad
+
+                    if pname not in cache_for_date:
+                        cache_for_date[pname] = {c: [] for c in _WNBA_CACHE_COLS}
+
+                    if team_abbr and pname not in team_for_date:
+                        team_for_date[pname] = team_abbr
+
+                    for col, idx in col_idx.items():
+                        try:
+                            raw = stats[idx]
+                            if isinstance(raw, str) and "-" in raw:
+                                raw = raw.split("-")[0]
+                            cache_for_date[pname][col].append(float(raw))
+                        except (IndexError, TypeError, ValueError):
+                            pass
+
+    _WNBA_CACHE_BUILT.add(as_of_date)
+    logger.info(  # noqa: E501 — keep the leading logger call
+        f"[wnba_cache] ready (as_of={as_of_date or 'live'}): "
+        f"{len(cache_for_date)} WNBA players from {len(game_ids)} games"
+    )
+
+
+def _ensure_wnba_cached(player_name: str, as_of_date: str | None = None) -> None:
+    """
+    Ensure the WNBA stats cache has data for *player_name*.
+
+    Priority order (live mode only, as_of_date=None):
+      1. stats.wnba.com (FREE, no key — core.wnba_stats_client)
+      2. BDL per-player fetch (fast, targeted — requires paid All-Star tier)
+      3. ESPN bulk boxscore scan (once per process — covers all players at once)
+
+    In replay mode (as_of_date set), steps 1 and 2 are skipped entirely —
+    both are "current as of right now" lookups with no historical cutoff
+    parameter, so they would silently return today's data regardless of
+    which date is being replayed. Only the date-scoped ESPN scan (step 3,
+    which does support as_of_date) is used.
+
+    BDL is skipped when BALLDONTLIE_API_KEY is not configured or when the
+    player was already attempted and not found (tracked by _WNBA_BDL_ATTEMPTED).
+    """
+    name_lower = player_name.strip().lower()
+
+    # 1. Already in cache → nothing to do
+    if name_lower in _WNBA_STATS_CACHE.get(as_of_date, {}):
+        return
+
+    if as_of_date is None:
+        # 2. Try the free stats.wnba.com client first — no key, no tier wall.
+        try:
+            from core.wnba_stats_client import get_player_stats as _free_wnba_stats
+            data = _free_wnba_stats(player_name)
+            if data and data.get("MIN"):
+                _WNBA_STATS_CACHE.setdefault(None, {})[name_lower] = data
+                logger.info(
+                    f"[wnba_cache] stats.wnba.com ✓  {player_name} — "
+                    f"{len(data['MIN'])} games "
+                    f"(avg {sum(data['MIN'])/len(data['MIN']):.1f} min)"
+                )
+                return
+            logger.debug(f"[wnba_cache] stats.wnba.com: no data for '{player_name}'")
+        except Exception as _free_exc:
+            logger.debug(f"[wnba_cache] stats.wnba.com error for '{player_name}': {_free_exc}")
+
+        # 3. Try BDL (targeted, paid-tier for stats)
+        if name_lower not in _WNBA_BDL_ATTEMPTED:
+            _WNBA_BDL_ATTEMPTED.add(name_lower)
+            try:
+                from core import bdl_wnba
+                if bdl_wnba.is_available() and bdl_wnba.is_stats_available():
+                    data = bdl_wnba.get_player_stats(player_name)
+                    if data and data.get("MIN"):
+                        _WNBA_STATS_CACHE.setdefault(None, {})[name_lower] = data
+                        logger.info(
+                            f"[wnba_cache] BDL ✓  {player_name} — "
+                            f"{len(data['MIN'])} games "
+                            f"(avg {sum(data['MIN'])/len(data['MIN']):.1f} min)"
+                        )
+                        return
+                    else:
+                        logger.debug(f"[wnba_cache] BDL: no data for '{player_name}'")
+            except Exception as _bdl_exc:
+                logger.debug(f"[wnba_cache] BDL error for '{player_name}': {_bdl_exc}")
+
+    # 4. Fall back to ESPN bulk scan (idempotent per as_of_date)
+    _build_wnba_stats_cache(as_of_date=as_of_date)
+
+
+def _wnba_stats_from_cache(
+    player_name: str, market: str, as_of_date: str | None = None,
+) -> tuple[float | None, float | None, float | None]:
+    """
+    Return (season_avg, l5_avg, l10_avg) for a WNBA player from the boxscore
+    cache.  Ensures the cache is populated (BDL → ESPN fallback) on first call.
+
+    Matching: exact display-name (case-insensitive), then last-name fallback.
+    Returns (None, None, None) when the player or market is not found.
+    """
+    _ensure_wnba_cached(player_name, as_of_date=as_of_date)
+
+    col = _WNBA_BOX_COL.get(market)
+    if not col:
+        return None, None, None
+
+    name_lower = player_name.strip().lower()
+    cache_for_date = _WNBA_STATS_CACHE.get(as_of_date, {})
+
+    # Exact match first
+    entry = cache_for_date.get(name_lower)
+
+    # Last-name fallback (handles minor name format mismatches)
+    if entry is None:
+        parts = name_lower.split()
+        last  = parts[-1] if parts else ""
+        if last:
+            for cached_name, data in cache_for_date.items():
+                cached_parts = cached_name.split()
+                if cached_parts and cached_parts[-1] == last:
+                    entry = data
+                    logger.debug(
+                        f"[wnba_cache] last-name match: '{player_name}' → '{cached_name}'"
+                    )
+                    break
+
+    if entry is None:
+        logger.debug(f"[wnba_cache] no cached stats for '{player_name}'")
+        return None, None, None
+
+    vals = entry.get(col, [])   # most-recent-first order
+    n    = len(vals)
+    if not vals:
+        return None, None, None
+
+    season_avg = round(sum(vals) / n, 2)
+    l5_avg  = round(sum(vals[:5])  / min(5,  n), 2) if n >= 3  else None
+    l10_avg = round(sum(vals[:10]) / min(10, n), 2) if n >= 5  else None
+
+    return season_avg, l5_avg, l10_avg
+
+
+# ── WNBA per-minute × projected-minutes modeling ─────────────────────────────
+
+def _wnba_minutes_classification(
+    min_vals: list[float],
+) -> tuple[float, float, str]:
+    """
+    From L5 minutes (most-recent-first) compute:
+      (projected_minutes, minutes_range, stability_label)
+
+    Projected minutes use a recency-weighted blend: most-recent game gets
+    highest weight.  Stability is classified by L5 max−min range.
+    """
+    recent = [m for m in min_vals[:5] if m > 0]   # skip DNP
+    n = len(recent)
+    if n == 0:
+        return 25.0, 0.0, "moderate"
+    if n == 1:
+        return round(recent[0], 1), 0.0, "elite"
+
+    _w = [0.30, 0.25, 0.20, 0.15, 0.10][:n]
+    _wsum = sum(_w)
+    projected = sum(v * w for v, w in zip(recent, _w)) / _wsum
+    minutes_range = max(recent) - min(recent)
+
+    if minutes_range <= _WNBA_MIN_STABLE_RANGE:
+        stability = "elite"
+    elif minutes_range <= _WNBA_MIN_MODERATE_RANGE:
+        stability = "moderate"
+    else:
+        stability = "volatile"
+
+    return round(projected, 1), round(minutes_range, 1), stability
+
+
+def _wnba_classify_role(player_name: str, market: str, as_of_date: str | None = None) -> str:
+    """
+    Infer a player's role from their season per-minute rates.
+
+    player_assists  → "ballhandler" | "secondary" | "off_ball"
+    player_rebounds → "frontcourt"  | "wing"      | "guard"
+    """
+    entry = _WNBA_STATS_CACHE.get(as_of_date, {}).get(player_name.strip().lower())
+    if entry is None:
+        return "secondary" if market == "player_assists" else "wing"
+
+    min_vals  = entry.get("MIN", [])
+    valid_min = [m for m in min_vals if m > 0]
+    if not valid_min:
+        return "secondary" if market == "player_assists" else "wing"
+
+    avg_min = sum(valid_min) / len(valid_min)
+    if avg_min <= 0:
+        return "secondary" if market == "player_assists" else "wing"
+
+    if market == "player_assists":
+        ast_vals = entry.get("AST", [])
+        if not ast_vals:
+            return "secondary"
+        ast_per_min = (sum(ast_vals) / len(ast_vals)) / avg_min
+        if ast_per_min >= _WNBA_AST_HIGH:
+            return "ballhandler"
+        if ast_per_min < _WNBA_AST_LOW:
+            return "off_ball"
+        return "secondary"
+
+    if market == "player_rebounds":
+        reb_vals = entry.get("REB", [])
+        if not reb_vals:
+            return "wing"
+        reb_per_min = (sum(reb_vals) / len(reb_vals)) / avg_min
+        if reb_per_min >= _WNBA_REB_HIGH:
+            return "frontcourt"
+        if reb_per_min < _WNBA_REB_LOW:
+            return "guard"
+        return "wing"
+
+    return "secondary"
+
+
+def _wnba_resolve_player_team(
+    player_name: str,
+    home_team: str,
+    away_team: str,
+    as_of_date: str | None = None,
+) -> tuple[str | None, str | None]:
+    """
+    Resolve (own_team_abbr, opp_team_abbr) for a WNBA player using the
+    roster map captured as a byproduct of the boxscore cache scan (see
+    _WNBA_PLAYER_TEAM above) -- no extra network call.
+
+    Falls back to (None, None) when the player hasn't appeared in any
+    scanned boxscore yet (e.g. first game of a callup) or the game's teams
+    don't resolve to ESPN abbreviations. Callers must treat both as
+    "unknown" and skip the reallocation/matchup layers, not guess.
+    """
+    from core.intelligence.wnba_opp_intel import _to_abbr
+
+    name_lower = player_name.strip().lower()
+    team_map = _WNBA_PLAYER_TEAM.get(as_of_date, {})
+    own_abbr = team_map.get(name_lower)
+
+    if own_abbr is None:
+        # Last-name fallback, same pattern used elsewhere in this file
+        parts = name_lower.split()
+        last = parts[-1] if parts else ""
+        if last:
+            for cached_name, abbr in team_map.items():
+                if cached_name.split() and cached_name.split()[-1] == last:
+                    own_abbr = abbr
+                    break
+
+    if own_abbr is None:
+        return None, None
+
+    home_abbr = _to_abbr(home_team)
+    away_abbr = _to_abbr(away_team)
+    if own_abbr == home_abbr:
+        return own_abbr, away_abbr
+    if own_abbr == away_abbr:
+        return own_abbr, home_abbr
+    # Resolved a team but it doesn't match either side of this game
+    # (stale/incorrect roster capture) -- don't guess an opponent.
+    return own_abbr, None
+
+
+def _wnba_prop_projection(
+    player_name: str,
+    market: str,
+    matchup_context: str = "",
+    home_team: str = "",
+    away_team: str = "",
+    spread: float | None = None,
+    as_of_date: str | None = None,
+) -> tuple[float, float, float | None, float | None, float, float, str, str, str, str, str, bool]:
+    """
+    Full WNBA per-minute × projected-minutes prop projection.
+
+    Steps (per spec):
+      1. Project minutes (L5-weighted, stability classified)
+      2. Per-minute production rate (L5-weighted blend)
+      3. Role adjustment (ballhandler / frontcourt / guard etc.)
+      4. Opponent / game-environment adjustment (shooting env, rebound env,
+         blowout risk, teammate-out reallocation, positional matchup)
+      4b. Foul-trouble minutes dampener (rebounds, frontcourt only)
+      5. Final = rate × minutes × role_adj blended with legacy projection
+
+    Returns:
+      (weighted_proj, season_avg, l5_avg, l10_avg,
+       projected_minutes, minutes_range, minutes_stability, role_label,
+       blowout_level, reallocation_note, matchup_note, ramp_flag)
+
+    ramp_flag (new): True if EITHER (a) the minutes-drop heuristic in
+    models/ramp_detection.py fired (L3 minutes materially below baseline),
+    OR (b) the subject player currently carries a live "questionable" /
+    "day-to-day" / "probable" game-status tag from get_wnba_team_injuries()
+    -- the direct signal for "returning from injury, workload still
+    ramping" that (a)'s minutes-only heuristic can miss (a player can look
+    fine in raw minutes for a game or two before the restriction actually
+    shows up). Read by gatekeeper as a hard entry gate for
+    player_assists/player_rebounds -- see decision_gatekeeper.py Step 0.5b.
+    """
+    # Pre-compute blowout level from spread so early-exit paths can return it
+    def _bl_from_spread(sp: float | None) -> str:
+        if sp is None:
+            return "none"
+        a = abs(sp)
+        return "heavy" if a >= 17.0 else "moderate" if a >= 10.0 else "none"
+
+    _early_bl = _bl_from_spread(spread)
+
+    _ensure_wnba_cached(player_name, as_of_date=as_of_date)
+
+    col = _WNBA_BOX_COL.get(market)
+    if not col:
+        return 0.0, 0.0, None, None, 25.0, 0.0, "moderate", "unknown", _early_bl, "", "", False
+
+    name_lower = player_name.strip().lower()
+    cache_for_date = _WNBA_STATS_CACHE.get(as_of_date, {})
+    entry = cache_for_date.get(name_lower)
+
+    # Last-name fallback
+    if entry is None:
+        parts = name_lower.split()
+        last  = parts[-1] if parts else ""
+        if last:
+            for cached_name, data in cache_for_date.items():
+                if cached_name.split() and cached_name.split()[-1] == last:
+                    entry = data
+                    logger.debug(
+                        f"[wnba_model] last-name match: '{player_name}' → '{cached_name}'"
+                    )
+                    break
+
+    if entry is None:
+        return 0.0, 0.0, None, None, 25.0, 0.0, "moderate", "unknown", _early_bl, "", "", False
+
+    stat_vals = entry.get(col, [])    # most-recent-first
+    min_vals  = entry.get("MIN", [])  # most-recent-first
+
+    if not stat_vals:
+        return 0.0, 0.0, None, None, 25.0, 0.0, "moderate", "unknown", _early_bl, "", "", False
+
+    n_stat = len(stat_vals)
+    n_min  = len(min_vals)
+
+    # ── Raw stat averages (used by gatekeeper L5 brake + factor display) ──────
+    season_avg = round(sum(stat_vals) / n_stat, 2)
+    l5_avg  = round(sum(stat_vals[:5])  / min(5,  n_stat), 2) if n_stat >= 3 else None
+    l10_avg = round(sum(stat_vals[:10]) / min(10, n_stat), 2) if n_stat >= 5 else None
+
+    # ── Ramp-up / workload-limitation check (models/ramp_detection.py) ────────
+    # Catches a player whose last 3 games look fine in isolation but are
+    # actually a minutes restriction (e.g. returning from injury, gradually
+    # being worked back up) -- the season-long minutes average below would
+    # otherwise take that inflated-relative-to-current-workload sample at
+    # face value. min_vals is most-recent-first, so recent = min_vals[:3].
+    _ramp_mult = 1.0
+    _ramp_note = ""
+    _ramp_flag = False
+
+    # Live game-status check for the subject player -- feeds ramp_detection's
+    # status_history param (previously never passed here, so
+    # _is_returning_from_layoff() could never actually fire for WNBA; only
+    # the minutes-drop heuristic below did). A current "questionable" /
+    # "day-to-day" / "probable" tag is the direct signal for "not fully
+    # ramped back up yet" and can precede any visible drop in raw minutes.
+    _status_history: list[dict] = []
+    try:
+        from data.fetch import get_wnba_team_injuries
+        _own_abbr, _ = _wnba_resolve_player_team(
+            player_name, home_team, away_team, as_of_date=as_of_date,
+        )
+        _team_inj = get_wnba_team_injuries(_own_abbr) if _own_abbr else None
+        for _row in (_team_inj or {}).get("injuries", []):
+            _athlete_name = (_row.get("athlete", {}).get("shortName") or "").strip().lower()
+            if _athlete_name == name_lower:
+                _status_history.append({"status": _row.get("status", "")})
+    except Exception as _status_exc:
+        logger.debug(
+            f"[wnba_model] injury-status lookup failed for {player_name}: {_status_exc}"
+        )
+
+    if n_min >= 4:
+        try:
+            from models.ramp_detection import auto_adjust_workload_input
+            _ramp = auto_adjust_workload_input(
+                recent_values=min_vals[:3], baseline_values=min_vals[3:],
+                sport="wnba_player", status_history=_status_history,
+            )
+            _ramp_flag = bool(_ramp["ramp_flag"])
+            if _ramp["ramp_flag"] and _ramp["baseline_mean"] > 0:
+                _ramp_mult = max(0.85, _ramp["adjusted_value"] / _ramp["baseline_mean"])
+                _ramp_note = (
+                    f"Workload ramp flag: L3 min avg {_ramp['recent_mean']:.1f} vs "
+                    f"baseline {_ramp['baseline_mean']:.1f} ({_ramp['drop_pct']:.0f}% drop)"
+                )
+        except Exception as _ramp_exc:
+            logger.debug(f"[wnba_model] ramp_detection check failed for {player_name}: {_ramp_exc}")
+    elif _status_history:
+        # Too few games for the minutes-drop heuristic (fresh return), but a
+        # live status tag is present -- trust that on its own rather than
+        # silently skipping the ramp check entirely.
+        _ramp_flag = any(
+            s.get("status", "").strip().lower() in
+            ("il", "inactive", "out", "day-to-day", "questionable", "probable")
+            for s in _status_history
+        )
+        if _ramp_flag:
+            _ramp_mult = 0.85
+            _ramp_note = "Workload ramp flag: live game-status tag, insufficient minutes history"
+
+    # ── Step 1: minutes projection & stability ────────────────────────────────
+    if n_min >= 1:
+        projected_minutes, minutes_range, minutes_stability = (
+            _wnba_minutes_classification(min_vals)
+        )
+    else:
+        projected_minutes, minutes_range, minutes_stability = 25.0, 0.0, "moderate"
+
+    # ── Step 2: per-minute production rate (recency-weighted) ─────────────────
+    # Pair stat with its corresponding minutes; skip games with 0 min played
+    per_min_vals: list[float] = []
+    for i, stat in enumerate(stat_vals):
+        if i < n_min and min_vals[i] > 0:
+            per_min_vals.append(stat / min_vals[i])
+
+    if not per_min_vals:
+        # No per-minute data — fall back to legacy weighted projection
+        weighted_proj = _weighted_projection(season_avg, l5_avg, l10_avg)
+        return (weighted_proj, season_avg, l5_avg, l10_avg,
+                projected_minutes, minutes_range, minutes_stability, "unknown", _early_bl,
+                "", "")
+
+    # L5-prioritised rate blend
+    _pw = [0.40, 0.25, 0.20, 0.10, 0.05][:len(per_min_vals)]
+    _pwsum = sum(_pw)
+    recent_rate  = sum(r * w for r, w in zip(per_min_vals[:len(_pw)], _pw)) / _pwsum
+    season_rate  = sum(per_min_vals) / len(per_min_vals)
+    blended_rate = recent_rate * 0.60 + season_rate * 0.40
+
+    # ── Step 3: role adjustment ───────────────────────────────────────────────
+    role_label = _wnba_classify_role(player_name, market, as_of_date=as_of_date)
+    role_adj = (
+        _WNBA_AST_ROLE_MULT.get(role_label, 1.0)
+        if market == "player_assists"
+        else _WNBA_REB_ROLE_MULT.get(role_label, 1.0)
+    )
+
+    # ── Step 4: opponent / game-environment adjustment ────────────────────────
+    # Five layers from wnba_opp_intel:
+    #   Layer 1 — shooting environment  (assists only): high pts-allowed → more assists
+    #   Layer 2 — rebounding environment (rebounds only): high opp reb → fewer boards
+    #   Layer 3 — blowout risk (all markets): large spread → fewer starter minutes
+    #   Layer 4 — teammate-out reallocation (own team, both markets)
+    #   Layer 5 — positional matchup (rebounds only, opponent frontcourt out)
+    opp_adj       = 1.0
+    _blowout_mult = 1.0
+    _blowout_level = _early_bl   # default: derived from spread; overwritten by opp_intel
+    _realloc_mult  = 1.0
+    _matchup_mult  = 1.0
+    _realloc_note  = ""
+    _matchup_note  = ""
+    _own_abbr, _opp_abbr = _wnba_resolve_player_team(
+        player_name, home_team, away_team, as_of_date=as_of_date,
+    )
+    try:
+        from core.intelligence.wnba_opp_intel import get_wnba_opp_intel
+        _intel = get_wnba_opp_intel(
+            home_team, away_team, market, spread,
+            own_team_abbr=_own_abbr, opp_team_abbr=_opp_abbr,
+            role_label=role_label,
+        )
+        opp_adj        = (
+            _intel.shooting_mult
+            if market == "player_assists"
+            else _intel.rebound_mult
+        )
+        _blowout_mult  = _intel.blowout_mult
+        _blowout_level = _intel.blowout_level
+        _realloc_mult  = _intel.reallocation_mult
+        _matchup_mult  = _intel.matchup_mult
+        _realloc_note  = _intel.reallocation_note
+        _matchup_note  = _intel.matchup_note
+        if _intel.diag:
+            logger.debug(
+                f"[wnba_model] {player_name} {market} opp_intel: {_intel.diag}"
+            )
+    except Exception as _intel_exc:
+        logger.warning(
+            f"[wnba_model] opp_intel failed for {player_name} {market} — "
+            f"using spread-derived blowout_level='{_blowout_level}': {_intel_exc}"
+        )
+
+    # ── Step 4b: foul-trouble risk (rebounds, frontcourt role only) ───────────
+    # Proxy signal: this codebase has no live in-game foul tracking, so we
+    # use the player's own recent personal-foul rate as an indicator of
+    # foul-prone play style / minutes risk, not a prediction of tonight's
+    # officiating. Centers/forwards with an elevated L5 PF average carry
+    # real downside risk of missing fourth-quarter minutes to foul trouble --
+    # dampen effective minutes modestly rather than the final stat count
+    # directly, since fewer minutes is the actual mechanism.
+    _foul_trouble_mult = 1.0
+    if market == "player_rebounds" and role_label == "frontcourt":
+        pf_vals = entry.get("PF", [])
+        recent_pf = [p for p in pf_vals[:5] if p is not None]
+        if recent_pf:
+            avg_pf = sum(recent_pf) / len(recent_pf)
+            if avg_pf >= 4.0:
+                _foul_trouble_mult = 0.94
+            elif avg_pf >= 3.5:
+                _foul_trouble_mult = 0.97
+
+    # Apply blowout + foul-trouble dampeners to projected minutes before the
+    # rate calculation; reallocation/matchup act on the rate side since
+    # they represent opportunity share, not raw playing time.
+    _effective_minutes = projected_minutes * _blowout_mult * _foul_trouble_mult * _ramp_mult
+
+    if _ramp_note:
+        _matchup_note = f"{_matchup_note} | {_ramp_note}" if _matchup_note else _ramp_note
+
+    # ── Step 5: final projection ──────────────────────────────────────────────
+    raw_proj    = (
+        blended_rate * _effective_minutes * role_adj * opp_adj
+        * _realloc_mult * _matchup_mult
+    )
+    legacy_proj = _weighted_projection(season_avg, l5_avg, l10_avg)
+    # Blend per-minute model (70%) with legacy season-average model (30%)
+    # for stability when the per-minute sample is small.
+    final_proj  = round(raw_proj * 0.70 + legacy_proj * 0.30, 2)
+
+    logger.debug(
+        f"[wnba_model] {player_name} {market}: "
+        f"rate={blended_rate:.3f}/min × {_effective_minutes:.1f}min "
+        f"(foul_trouble×{_foul_trouble_mult:.2f}, ramp×{_ramp_mult:.2f}) "
+        f"× role({role_label})×{role_adj:.2f} × opp_adj×{opp_adj:.3f} "
+        f"× realloc×{_realloc_mult:.2f} × matchup×{_matchup_mult:.2f} "
+        f"→ raw={raw_proj:.2f} | legacy={legacy_proj:.2f} | final={final_proj:.2f} | "
+        f"stability={minutes_stability} (range={minutes_range:.1f}min)"
+        + (f" | {_realloc_note}" if _realloc_note else "")
+        + (f" | {_matchup_note}" if _matchup_note else "")
+    )
+
+    return (final_proj, season_avg, l5_avg, l10_avg,
+            projected_minutes, minutes_range, minutes_stability, role_label,
+            _blowout_level, _realloc_note, _matchup_note, _ramp_flag)
+
+
+# ── ESPN season-average + recent-form wrapper ─────────────────────────────────
+
+def _espn_player_stats(
+    player_name: str, sport: str, market: str, as_of_date: str | None = None,
+) -> tuple[float | None, float | None, float | None]:
+    """
+    Return (season_avg, l5_avg, l10_avg) for NBA/WNBA athletes via ESPN.
+
+    WNBA short-circuit: ESPN's WNBA athlete search and gamelog APIs both return
+    404, so WNBA stats are resolved via the scoreboard + boxscore cache instead.
+    This path fully supports as_of_date (see _wnba_stats_from_cache).
+
+    For NBA: tries the per-game gamelog endpoint first so the weighted projection
+    can use real L5/L10 recent-form data instead of 100% season average.
+    Falls back to the season-average-only stats endpoint when the gamelog
+    is unavailable or returns fewer than 3 games. NOTE: the NBA gamelog path
+    does not currently support as_of_date filtering — NBA isn't part of the
+    replay scope (MLB/WNBA only), so this is left as a live-only lookup for
+    now rather than adding unused plumbing.
+
+    Returns (None, None, None) when the athlete or market is not found.
+    """
+    # WNBA: ESPN athlete search + gamelog both 404 — use boxscore cache
+    if sport.upper() == "WNBA":
+        return _wnba_stats_from_cache(player_name, market, as_of_date=as_of_date)
+
+    sport_path = _ESPN_SPORT_PATH.get(sport.upper())
+    stat_col   = _ESPN_STAT_COL.get(market)
+    if not sport_path or not stat_col:
+        return None, None, None
+
+    stat_cols: tuple[str, ...] = (
+        (stat_col,) if isinstance(stat_col, str) else stat_col
+    )
+
+    # Step 1 — resolve athlete ID (shared by both code paths below)
+    athlete_id = _espn_athlete_id(player_name, sport_path)
+    if not athlete_id:
+        return None, None, None
+
+    # Step 2 — attempt per-game gamelog
+    per_game = _espn_gamelog_per_game(athlete_id, sport_path, stat_cols)
+
+    if len(per_game) >= 3:
+        n          = len(per_game)
+        season_avg = round(sum(per_game) / n, 2)
+        l5_avg     = round(sum(per_game[-5:])  / min(5,  n), 2)
+        l10_avg    = round(sum(per_game[-10:]) / min(10, n), 2) if n >= 5 else None
+        logger.debug(
+            f"[player_props] ESPN gamelog OK — {player_name} {market} "
+            f"n={n} season={season_avg} L5={l5_avg} L10={l10_avg}"
+        )
+        return season_avg, l5_avg, l10_avg
+
+    # Step 3 — fall back to season-average-only stats endpoint
+    logger.debug(
+        f"[player_props] ESPN gamelog insufficient (n={len(per_game)}) "
+        f"for {player_name} — falling back to season avg"
+    )
+    avg = _espn_player_avg(player_name, sport, market)
+    return avg, None, None
+
+
+# ── Weighted projection (40 % L5 · 30 % L10 · 20 % season · 10 % matchup) ──
+
+def _weighted_projection(
+    season_avg: float,
+    l5_avg: float | None,
+    l10_avg: float | None,
+    matchup_adj: float = 0.0,
+) -> float:
+    """
+    Compute a blended projection using recent-form weighting.
+
+    When recency data is unavailable the weight is redistributed to season avg
+    so the weights always sum to 1.0.
+    """
+    w_l5, w_l10, w_season, w_matchup = 0.40, 0.30, 0.20, 0.10
+
+    # Redistribute missing weights to season_avg
+    if l5_avg is None:
+        w_season += w_l5
+        w_l5 = 0.0
+    if l10_avg is None:
+        w_season += w_l10
+        w_l10 = 0.0
+
+    proj = (
+        (l5_avg or 0.0) * w_l5
+        + (l10_avg or 0.0) * w_l10
+        + season_avg * w_season
+        + (season_avg + matchup_adj) * w_matchup
+    )
+    return round(proj, 2)
+
+
+# ── Odds API helpers ─────────────────────────────────────────────────────────
+
+def _unwrap_historical(raw: Any) -> Any:
+    """
+    The Odds API's /v4/historical/ tree wraps responses as
+    {"timestamp": ..., "previous_timestamp": ..., "next_timestamp": ...,
+    "data": <same shape the live endpoint would return>}. Unwrap "data" so
+    callers see the same shape as the live fetch.
+    """
+    if isinstance(raw, dict) and "data" in raw:
+        return raw["data"]
+    return raw
+
+
+def _fetch_events(
+    sport_key: str,
+    as_of_date: str | None = None,
+    snapshot_time: str = "10:00:00",
+) -> list[dict]:
+    """
+    Return the event list for *sport_key*.
+
+    Parameters
+    ----------
+    as_of_date : ISO 'YYYY-MM-DD' string. When set (replay mode), uses the
+                 historical events endpoint (1 credit) with a snapshot
+                 timestamp of `{as_of_date}T{snapshot_time}Z`, matching the
+                 live 10:00 UTC cron, instead of the live "today" endpoint.
+    """
+    if as_of_date is not None:
+        snapshot_iso = f"{as_of_date}T{snapshot_time}Z"
+        url = (
+            f"{_ODDS_BASE}/historical/sports/{sport_key}/events/"
+            f"?apiKey={_API_KEY}&dateFormat=iso&date={snapshot_iso}"
+        )
+    else:
+        url = f"{_ODDS_BASE}/sports/{sport_key}/events/?apiKey={_API_KEY}&dateFormat=iso"
+    try:
+        result = _unwrap_historical(_get_json(url))
+        return result if isinstance(result, list) else []
+    except Exception as exc:
+        logger.debug(f"[player_props] event list failed for {sport_key}: {exc}")
+        return []
+
+
+def _fetch_event_props(
+    sport_key: str,
+    event_id: str,
+    markets: str,
+    as_of_date: str | None = None,
+    snapshot_time: str = "10:00:00",
+) -> dict | None:
+    """
+    Return per-event bookmaker odds for *event_id*.
+
+    Parameters
+    ----------
+    as_of_date : ISO 'YYYY-MM-DD' string. When set (replay mode), uses the
+                 historical event-odds endpoint (10 credits × regions ×
+                 markets per event — real API cost for a full slate) with
+                 the same `{as_of_date}T{snapshot_time}Z` snapshot used by
+                 `_fetch_events`, instead of always pulling live "today"
+                 odds regardless of which date is being replayed.
+    """
+    if as_of_date is not None:
+        snapshot_iso = f"{as_of_date}T{snapshot_time}Z"
+        url = (
+            f"{_ODDS_BASE}/historical/sports/{sport_key}/events/{event_id}/odds"
+            f"?apiKey={_API_KEY}&regions=us,us2&markets={markets}&oddsFormat=american"
+            f"&date={snapshot_iso}"
+        )
+    else:
+        url = (
+            f"{_ODDS_BASE}/sports/{sport_key}/events/{event_id}/odds"
+            f"?apiKey={_API_KEY}&regions=us,us2&markets={markets}&oddsFormat=american"
+        )
+    try:
+        return _unwrap_historical(_get_json(url))
+    except urllib.error.HTTPError as exc:
+        logger.debug(f"[player_props] {event_id} props HTTP {exc.code}: {exc}")
+        return None
+    except Exception as exc:
+        logger.debug(f"[player_props] {event_id} props error: {exc}")
+        return None
+
+
+# ── PropLine bookmaker merge ─────────────────────────────────────────────────
+
+def _merge_propline_books(
+    prop_map:       dict[tuple[str, str], dict[str, dict]],
+    propline_books: list[dict],
+    valid_markets:  set[str],
+) -> None:
+    """
+    Merge bookmaker lines from PropLine into an existing prop_map in-place.
+
+    propline_books is a list of bookmaker dicts already normalised by
+    propline_client._normalize_outcomes() — all outcomes have name="over"/"under",
+    a stripped player description, and a float point.
+
+    Players already present in prop_map get additional book coverage (higher
+    book_count → better MIS, better consensus, sharper sharp-action detection).
+    Players only in PropLine are created fresh.
+    """
+    for bk in propline_books:
+        bk_title = bk.get("title") or bk.get("key", "Unknown")
+        for mkt in bk.get("markets", []):
+            mkt_key = mkt.get("key", "")
+            if mkt_key not in valid_markets:
+                continue
+            for outcome in mkt.get("outcomes", []):
+                player_name = (outcome.get("description") or "").strip()
+                direction   = (outcome.get("name") or "").lower()
+                point       = outcome.get("point")
+                price       = outcome.get("price")
+                if (
+                    not player_name
+                    or direction not in ("over", "under")
+                    or point is None
+                    or price is None
+                ):
+                    continue
+                key = (player_name, mkt_key)
+                if key not in prop_map:
+                    prop_map[key] = {}
+                existing = prop_map[key].get(direction)
+                if existing is None:
+                    prop_map[key][direction] = {
+                        "best_line":  float(point),
+                        "best_odds":  int(price),
+                        "best_book":  bk_title,
+                        "book_count": 1,
+                        "all_lines":  [float(point)],
+                        "book_lines": [{"book": bk_title, "line": float(point), "odds": int(price)}],
+                    }
+                else:
+                    # Avoid double-counting the same book if Odds API already has it
+                    already = any(
+                        bl["book"] == bk_title
+                        for bl in existing.get("book_lines", [])
+                    )
+                    if already:
+                        continue
+                    new_pt = float(point)
+                    # Skip alt-line variants (e.g. Pinnacle's 0.5 alongside the
+                    # canonical 1.5 for batter_total_bases).  If the incoming line
+                    # deviates more than the consensus-drift threshold from the
+                    # current pool median it belongs to a different bet class.
+                    if abs(new_pt - _stats.median(existing["all_lines"])) > _LINE_CONSENSUS_MAX_DRIFT:
+                        continue
+                    existing["all_lines"].append(new_pt)
+                    existing["book_count"] += 1
+                    existing.setdefault("book_lines", []).append(
+                        {"book": bk_title, "line": new_pt, "odds": int(price)}
+                    )
+                    if int(price) > existing["best_odds"]:
+                        existing["best_line"] = new_pt
+                        existing["best_odds"] = int(price)
+                        existing["best_book"] = bk_title
+
+
+# ── Player-prop helper: build team-matchup key for prop_grader ───────────────
+
+def _prop_matchup_key(away_team: str, home_team: str, sport: str) -> str:
+    """
+    Build wager_details['team'] for player-prop bets so prop_grader can locate
+    the right ESPN event without relying on the brute-force fallback.
+
+    Format: "{AWAY_ABBR}v{HOME_ABBR}"  e.g. "PORvLA"
+    prop_grader splits on "v" → target set {"POR", "LA"} → ESPN event match.
+
+    WNBA: uses the verified ESPN abbreviation map from wnba_opp_intel.
+    MLB/NBA: uses the first token of each full team name (e.g. "San" from
+    "San Francisco Giants"), which isn't perfect but triggers the game-level
+    fallback scan — far better than storing the player name.
+    """
+    try:
+        if sport.upper() == "WNBA":
+            from core.intelligence.wnba_opp_intel import _to_abbr
+            a = _to_abbr(away_team) or away_team.split()[0].upper()[:4]
+            h = _to_abbr(home_team) or home_team.split()[0].upper()[:4]
+            return f"{a}v{h}"
+        # MLB / NBA: full team names → pick the last word (city teams end in
+        # a nickname, e.g. "Chicago Cubs" → "CUBS"; "San Francisco Giants" → "GIANTS")
+        # but the prop_grader's fallback handles imprecise matches, so just use
+        # a token that narrows the search more than the player name would.
+        a_tok = away_team.split()[-1].upper()[:6]
+        h_tok = home_team.split()[-1].upper()[:6]
+        return f"{a_tok}v{h_tok}"
+    except Exception:
+        return "UNKvUNK"
+
+
+# ── Public entry point ───────────────────────────────────────────────────────
+
+def get_player_prop_candidates(
+    sport: str,
+    raw_mode: bool = False,
+    as_of_date: str | None = None,
+    snapshot_time: str = "10:00:00",
+) -> list[dict[str, Any]]:
+    """
+    Return player prop candidates for today's games in *sport*.
+
+    Each candidate dict is structurally identical to a game-total candidate and
+    can be processed by _validate_candidate_for_simulation() → engine.analyze()
+    → run_gatekeeper() without any modifications to the caller's pipeline.
+
+    The `player` field is set to the player's name (non-null) so the existing
+    thin-data check and the MiniApp's props-tab filter both work correctly.
+
+    raw_mode=True (revalidation only):
+        Skips Rule 2 (cross-bookmaker consensus gate) and uses the consensus
+        median as the sportsbook_line so the revalidation engine can detect
+        significant line movement even when books are currently spread apart.
+
+    as_of_date=... (replay mode):
+        ISO 'YYYY-MM-DD' string. Swaps the live Odds API event/odds calls
+        for the historical-snapshot endpoints (via `_fetch_events` /
+        `_fetch_event_props`) at `{as_of_date}T{snapshot_time}Z`, and
+        threads the same date through every player-stat lookup
+        (`_wnba_prop_projection`, `_espn_player_stats`, `_mlb_player_stats`)
+        so history is bounded to on-or-before the replay date. PropLine has
+        no historical endpoint, so it's a live-only source and is skipped
+        entirely (no-op) when as_of_date is set — a replay run only sees
+        the Odds API's own historical bookmakers, never PropLine's current
+        snapshot passed off as a past one.
+    """
+    from core.time_utils import now_est, convert_to_est
+    from core.api_connector import normalize_api_timestamp
+
+    sport_up    = sport.upper()
+    api_sport   = _SPORT_KEY.get(sport_up)
+    markets_str = _PROP_MARKETS.get(sport_up)
+
+    # Strip performance-suspended markets from the API request
+    if markets_str and _SUSPENDED_PROP_MARKETS:
+        _active = [m for m in markets_str.split(",") if m.strip() not in _SUSPENDED_PROP_MARKETS]
+        if len(_active) < len(markets_str.split(",")):
+            logger.info(
+                f"[player_props] {sport_up} suspended markets filtered: "
+                + ", ".join(_SUSPENDED_PROP_MARKETS & set(markets_str.split(",")))
+            )
+        markets_str = ",".join(_active) if _active else None
+    if not api_sport or not markets_str:
+        return []
+
+    if as_of_date is not None:
+        today_et     = date.fromisoformat(as_of_date)
+        snapshot_iso = f"{as_of_date}T{snapshot_time}Z"
+    else:
+        today_et     = now_est().date()
+        snapshot_iso = None
+    events = _fetch_events(api_sport, as_of_date=as_of_date, snapshot_time=snapshot_time)
+    if not events:
+        logger.debug(f"[player_props] no events found for {sport_up}")
+        return []
+
+    # ── Fetch PropLine supplementary data (one call covers all events) ────────
+    # Done once here, outside the event loop, to avoid redundant API hits.
+    # Apply the same suspension filter as the Odds API path — suspended markets
+    # must not re-enter through PropLine.
+    # Skipped entirely in replay mode: PropLine has no historical endpoint, so
+    # it would only ever return live "right now" bookmaker data regardless of
+    # as_of_date — passing that off as a historical snapshot would silently
+    # leak current lines into a backtest.
+    _propline_mkts = [
+        m for m in _PROPLINE_MARKETS.get(sport_up, [])
+        if m not in _SUSPENDED_PROP_MARKETS
+    ]
+    if _propline_mkts != _PROPLINE_MARKETS.get(sport_up, []):
+        _filtered = set(_PROPLINE_MARKETS.get(sport_up, [])) & _SUSPENDED_PROP_MARKETS
+        logger.info(
+            f"[player_props] {sport_up} PropLine suspended markets filtered: "
+            + ", ".join(sorted(_filtered))
+        )
+    _valid_markets   = set(_PROP_PRIOR.keys())   # same gate used in the loop
+    _propline_all: dict[tuple[str, str], list[dict]] = {}
+    if _propline_mkts and as_of_date is None:
+        try:
+            from core.propline_client import fetch_propline_books, _match_event
+            _propline_all = fetch_propline_books(api_sport, _propline_mkts)
+            logger.debug(
+                f"[player_props] PropLine {sport_up}: "
+                f"{len(_propline_all)} event(s) with data."
+            )
+        except Exception as _pl_exc:
+            logger.warning(f"[player_props] PropLine fetch skipped: {_pl_exc}")
+
+    candidates: list[dict[str, Any]] = []
+    events_today = 0
+
+    for event in events[:_MAX_EVENTS_PER_SPORT]:
+        # Filter to today's games only
+        commence = event.get("commence_time", "")
+        try:
+            game_time_utc = normalize_api_timestamp(commence)
+            game_et       = convert_to_est(game_time_utc)
+        except Exception:
+            continue
+        if game_et.date() != today_et:
+            continue
+        # Skip games that have already started. In replay mode, "already
+        # started" is relative to the snapshot time being replayed, not
+        # real now — otherwise every replayed game would look "already
+        # started" for dates in the past.
+        if as_of_date is None:
+            if game_et <= now_est():
+                continue
+        else:
+            _cutoff = convert_to_est(datetime.fromisoformat(snapshot_iso.replace("Z", "+00:00")))
+            if game_et <= _cutoff:
+                continue
+
+        event_id  = event["id"]
+        home_team = event.get("home_team", "")
+        away_team = event.get("away_team", "")
+
+        # ── Fetch game spread for blowout-risk layer (WNBA only) ──────────
+        # One Odds API call per event; result passed to _wnba_prop_projection.
+        # Spread is the home-team line (negative = home is favoured).
+        _game_spread: float | None = None
+        if sport_up == "WNBA":
+            try:
+                _sp_data = _fetch_event_props(
+                    api_sport, event_id, "spreads",
+                    as_of_date=as_of_date, snapshot_time=snapshot_time,
+                )
+                if _sp_data:
+                    for _bk in _sp_data.get("bookmakers", []):
+                        for _mkt in _bk.get("markets", []):
+                            if _mkt.get("key") == "spreads":
+                                for _oc in _mkt.get("outcomes", []):
+                                    if _oc.get("name", "").lower() == home_team.lower():
+                                        try:
+                                            _game_spread = float(_oc["point"])
+                                        except (KeyError, TypeError, ValueError):
+                                            pass
+                                        break
+                            if _game_spread is not None:
+                                break
+                        if _game_spread is not None:
+                            break
+                logger.debug(
+                    f"[player_props] WNBA spread for {away_team} @ {home_team}: "
+                    f"{_game_spread:+.1f}" if _game_spread is not None
+                    else f"[player_props] WNBA spread unavailable for {event_id}"
+                )
+            except Exception as _sp_exc:
+                logger.debug(f"[player_props] spread fetch error: {_sp_exc}")
+
+        props_data = _fetch_event_props(
+            api_sport, event_id, markets_str,
+            as_of_date=as_of_date, snapshot_time=snapshot_time,
+        )
+        # Skip only when BOTH Odds API and PropLine have no data for THIS event.
+        # WNBA player props are not on the Odds API (422) but ARE on PropLine —
+        # don't discard the event; PropLine will populate the prop_map below.
+        #
+        # Bug fix: this used to check `not _propline_all` (i.e. whether
+        # PropLine returned data for *any* event in the whole sport), not
+        # whether it returned data for *this* event. When PropLine had data
+        # for some other game but not this one, and the Odds API had none
+        # either (props_data is None), the loop fell through to
+        # `props_data.get("bookmakers", [])` below with props_data still
+        # None -> AttributeError: 'NoneType' object has no attribute 'get'.
+        # Now we look up this specific event via _match_event() (same
+        # lookup used later for the actual merge) to decide whether to skip.
+        _pl_books_for_event = []
+        if _propline_all:
+            try:
+                from core.propline_client import _match_event
+                _pl_books_for_event = _match_event(home_team, away_team, _propline_all)
+            except Exception as _pl_lookup_exc:
+                logger.debug(f"[player_props] PropLine event lookup error: {_pl_lookup_exc}")
+        if not props_data and not _pl_books_for_event:
+            continue
+
+        events_today += 1
+
+        # ── Rule 1 + 2: Collect ALL bookmaker lines per (player, market, direction).
+        # Track every individual book's line for consensus (median) validation.
+        # Structure: prop_map[(player, mkt_key)][direction] = {
+        #   best_line, best_odds, best_book, book_count, all_lines: list[float]
+        # }
+        prop_map: dict[tuple[str, str], dict[str, dict]] = {}
+
+        # Defensive: props_data can legitimately be None here (Odds API had
+        # nothing for this event) when we only kept going because PropLine
+        # had data for it -- guard against the AttributeError this used to
+        # throw when iterating a None.
+        for bk in (props_data or {}).get("bookmakers", []):
+            bk_title = bk.get("title") or bk.get("key", "Unknown")
+            for mkt in bk.get("markets", []):
+                mkt_key = mkt.get("key", "")
+                if mkt_key not in _PROP_PRIOR:
+                    continue
+                for outcome in mkt.get("outcomes", []):
+                    player_name = outcome.get("description", "").strip()
+                    direction   = outcome.get("name", "").lower()
+                    point       = outcome.get("point")
+                    price       = outcome.get("price")
+                    if (
+                        not player_name
+                        or direction not in ("over", "under")
+                        or point is None
+                        or price is None
+                    ):
+                        continue
+                    key = (player_name, mkt_key)
+                    if key not in prop_map:
+                        prop_map[key] = {}
+                    existing = prop_map[key].get(direction)
+                    if existing is None:
+                        prop_map[key][direction] = {
+                            "best_line":  float(point),
+                            "best_odds":  int(price),
+                            "best_book":  bk_title,
+                            "book_count": 1,
+                            "all_lines":  [float(point)],
+                            # "odds" added — previously line-only, which made
+                            # per-book two-sided devig impossible even though
+                            # the book quoted both directions.
+                            "book_lines": [{"book": bk_title, "line": float(point), "odds": int(price)}],
+                        }
+                    else:
+                        new_pt = float(point)
+                        # Skip alt-line variants: if this line deviates more than
+                        # the consensus-drift threshold from the current pool median
+                        # it is a different bet class (e.g. "2+ HRs" vs "1+ HR").
+                        if abs(new_pt - _stats.median(existing["all_lines"])) > _LINE_CONSENSUS_MAX_DRIFT:
+                            continue
+                        existing["all_lines"].append(new_pt)
+                        existing["book_count"] += 1
+                        existing.setdefault("book_lines", []).append(
+                            {"book": bk_title, "line": new_pt, "odds": int(price)}
+                        )
+                        if int(price) > existing["best_odds"]:
+                            existing["best_line"] = new_pt
+                            existing["best_odds"] = int(price)
+                            existing["best_book"] = bk_title
+
+        # ── Merge PropLine supplementary bookmakers ───────────────────────────
+        # Reuse the per-event lookup done above (_pl_books_for_event) instead
+        # of calling _match_event() a second time for the same game.
+        if _pl_books_for_event:
+            try:
+                _merge_propline_books(prop_map, _pl_books_for_event, _valid_markets)
+                logger.debug(
+                    f"[player_props] PropLine merged {len(_pl_books_for_event)} "
+                    f"book(s) for {away_team} @ {home_team}"
+                )
+            except Exception as _pl_exc:
+                logger.debug(f"[player_props] PropLine merge error: {_pl_exc}")
+
+        # ── Timestamp for this batch of lines ─────────────────────────────────
+        _now_et     = datetime.now(timezone.utc)
+        _verified_at = _now_et.strftime("%-I:%M %p ET")   # e.g. "9:02 AM ET"
+
+        # ── Build one candidate per (player, market, direction) ───────────────
+        for (player_name, mkt_key), sides in prop_map.items():
+            prior       = _PROP_PRIOR[mkt_key]
+            league_std  = prior["std"]
+
+            # ── Resolve player stats (real data or NO PLAY) ───────────────────
+            # WNBA: use the per-minute × projected-minutes model (full pipeline).
+            # NBA/MLB: use the existing stat lookup + weighted projection.
+            _proj_minutes:    float = 25.0
+            _min_range:       float = 0.0
+            _min_stability:   str   = "moderate"
+            _role_label:      str   = "unknown"
+
+            _blowout_level = "none"
+            _realloc_note  = ""
+            _matchup_note  = ""
+            _ramp_flag_out: bool = False
+            if sport_up == "WNBA":
+                (weighted_proj, season_avg, l5_avg, l10_avg,
+                 _proj_minutes, _min_range, _min_stability, _role_label,
+                 _blowout_level, _realloc_note, _matchup_note, _ramp_flag_out) = (
+                    _wnba_prop_projection(
+                        player_name, mkt_key,
+                        matchup_context=f"{away_team} @ {home_team}",
+                        home_team=home_team,
+                        away_team=away_team,
+                        spread=_game_spread,
+                        as_of_date=as_of_date,
+                    )
+                )
+            elif sport_up == "NBA":
+                season_avg, l5_avg, l10_avg = _espn_player_stats(
+                    player_name, sport_up, mkt_key, as_of_date=as_of_date,
+                )
+                weighted_proj = _weighted_projection(
+                    season_avg=season_avg or 0.0,
+                    l5_avg=l5_avg,
+                    l10_avg=l10_avg,
+                )
+            else:
+                season_avg, l5_avg, l10_avg = _mlb_player_stats(
+                    player_name, mkt_key, as_of_date=as_of_date,
+                )
+                weighted_proj = _weighted_projection(
+                    season_avg=season_avg or 0.0,
+                    l5_avg=l5_avg,
+                    l10_avg=l10_avg,
+                )
+
+            data_available = bool(season_avg and season_avg > 0)
+
+            if not data_available:
+                # Phase 1: hard block — no real stats = NO PLAY for all directions
+                logger.info(
+                    f"[player_props] NO PLAY: {player_name} {mkt_key} — "
+                    "real stats unavailable, candidate blocked (no fallback allowed)"
+                )
+                continue
+
+            # ── Season-phase (regular vs. postseason) adjustment ──────────────
+            # (models/season_context.py) -- no-ops entirely outside the
+            # postseason window, which is the common case (low urgency
+            # mid-regular-season, but harmless and correct to leave wired).
+            # MLB support here is pitcher-only, matching this pipeline's MLB
+            # market config (pitcher_strikeouts is the only MLB prop market).
+            try:
+                from models.season_context import detect_phase, adjust_for_postseason
+                _phase_date = as_of_date or datetime.now(timezone.utc).strftime("%Y-%m-%d")
+                if detect_phase(_phase_date, sport_up.lower()) == "postseason":
+                    if sport_up == "MLB" and mkt_key.startswith("pitcher"):
+                        _sc = adjust_for_postseason(
+                            weighted_proj, "mlb_pitcher", postseason_sample_size=0,
+                        )
+                        weighted_proj = round(_sc["adjusted_value"], 2)
+                        logger.debug(f"[player_props] {player_name} {mkt_key}: {_sc['note']}")
+                    elif sport_up == "WNBA":
+                        # role_label above is market-specific (ballhandler/
+                        # frontcourt/etc.), not a usage indicator -- use
+                        # projected minutes as the starter/high-usage proxy.
+                        _high_usage = _proj_minutes >= 24.0
+                        _sc = adjust_for_postseason(
+                            weighted_proj, "wnba_player",
+                            is_starter_or_high_usage=_high_usage,
+                            postseason_sample_size=0,
+                        )
+                        weighted_proj = round(_sc["adjusted_value"], 2)
+                        logger.debug(f"[player_props] {player_name} {mkt_key}: {_sc['note']}")
+            except Exception as _sc_exc:
+                logger.debug(
+                    f"[player_props] season_context check failed for "
+                    f"{player_name} {mkt_key}: {_sc_exc}"
+                )
+
+            # ── Workload scaling for pitcher strikeouts (MLB only) ────────────
+            # Scale the historical projection by expected_ip / LEAGUE_AVG_IP so
+            # a starter projected to throw 4.5 IP yields ~18% fewer K chances
+            # than one projected to throw 6.0 IP.  Confidence-weighted blend
+            # ensures a low-confidence workload blends back towards 1.0.
+            _workload_confidence_tier = None   # read by gatekeeper Step 1b4 (OVER hook-risk penalty)
+            if sport_up == "MLB" and mkt_key == "pitcher_strikeouts":
+                try:
+                    from core.pitcher_workload import (
+                        get_pitcher_workload,
+                        get_k_workload_scale,
+                        get_ramp_signal,
+                    )
+                    from strikeout_matchup import get_k_matchup_scale
+                    _wl = get_pitcher_workload(
+                        pitcher_name = player_name,
+                        event_id     = event_id,
+                    )
+                    _workload_confidence_tier = _wl.confidence_tier
+                    # ── Layer 1: workload scale (innings-adjusted) ────────────
+                    _k_scale = get_k_workload_scale(_wl)
+                    if _k_scale != 1.0:
+                        _orig = weighted_proj
+                        weighted_proj = round(weighted_proj * _k_scale, 2)
+                        logger.debug(
+                            f"[player_props] K workload scale {player_name}: "
+                            f"{_orig:.2f} → {weighted_proj:.2f} "
+                            f"(×{_k_scale:.3f}, IP={_wl.expected_ip:.1f}, "
+                            f"conf={_wl.confidence:.0f}%)"
+                        )
+                    # ── Layers 2–7: matchup scale (splits, lineup, SwStr%, CSW%, velo)
+                    _matchup_scale = get_k_matchup_scale(
+                        pitcher_name = player_name,
+                        opp_abbr     = _wl.opp_abbr,
+                        pitcher_id   = _wl.pitcher_id,
+                        game_date    = _wl.game_date,
+                        expected_ip  = _wl.expected_ip,
+                        team_abbr    = _wl.team_abbr,
+                    )
+                    if _matchup_scale != 1.0:
+                        _orig_m = weighted_proj
+                        weighted_proj = round(weighted_proj * _matchup_scale, 2)
+                        logger.debug(
+                            f"[player_props] K matchup scale {player_name}: "
+                            f"{_orig_m:.2f} → {weighted_proj:.2f} "
+                            f"(×{_matchup_scale:.4f})"
+                        )
+                    # ── Ramp-up / workload-limitation check (models/ramp_detection.py) ──
+                    _ramp = get_ramp_signal(_wl)
+                    if _ramp.get("ramp_flag") and _ramp.get("baseline_mean", 0) > 0:
+                        _ramp_scale = max(0.85, _ramp["adjusted_value"] / _ramp["baseline_mean"])
+                        _orig_r = weighted_proj
+                        weighted_proj = round(weighted_proj * _ramp_scale, 2)
+                        logger.debug(
+                            f"[player_props] K ramp-up flag {player_name}: "
+                            f"{_orig_r:.2f} → {weighted_proj:.2f} (×{_ramp_scale:.3f}, "
+                            f"L3 IP={_ramp['recent_mean']:.1f} vs "
+                            f"baseline={_ramp['baseline_mean']:.1f}, "
+                            f"drop={_ramp['drop_pct']:.0f}%)"
+                        )
+
+                    # ── CSW%/SwStr% blend (models/advanced_metrics.py) ────────────
+                    # process stats (how often a pitcher generates whiffs/called
+                    # strikes per pitch) predict forward K% better than recent
+                    # outcome-based K% alone, which can be inflated/deflated by
+                    # sequencing luck. Distinct from the workload/matchup scales
+                    # above: those adjust expected OPPORTUNITIES (innings,
+                    # lineup quality); this adjusts the underlying RATE.
+                    try:
+                        from data.fetch import get_savant_pitcher_advanced_stats
+                        from models.advanced_metrics import project_k_pct_advanced
+                        _season_yr = int(_wl.game_date[:4]) if _wl.game_date else datetime.now(timezone.utc).year
+                        _savant_row = get_savant_pitcher_advanced_stats(player_name, _season_yr)
+                        if _savant_row is not None and not _savant_row.empty:
+                            _raw_k_pct = _savant_row.iloc[0].get("K%")
+                            _csw_pct   = _savant_row.iloc[0].get("CSW%")
+                            _swstr_pct = _savant_row.iloc[0].get("SwStr%")
+                            if _raw_k_pct and _raw_k_pct > 0 and (_csw_pct is not None or _swstr_pct is not None):
+                                _blended_k_pct = project_k_pct_advanced(_csw_pct, _swstr_pct, _raw_k_pct)
+                                _k_pct_scale = max(0.85, min(1.15, _blended_k_pct / _raw_k_pct))
+                                if _k_pct_scale != 1.0:
+                                    _orig_a = weighted_proj
+                                    weighted_proj = round(weighted_proj * _k_pct_scale, 2)
+                                    logger.debug(
+                                        f"[player_props] K CSW%/SwStr% blend {player_name}: "
+                                        f"{_orig_a:.2f} → {weighted_proj:.2f} (×{_k_pct_scale:.3f}, "
+                                        f"raw K%={_raw_k_pct:.3f} → blended={_blended_k_pct:.3f})"
+                                    )
+                    except Exception as _adv_exc:
+                        logger.debug(
+                            f"[player_props] advanced_metrics K% blend failed for "
+                            f"{player_name}: {_adv_exc}"
+                        )
+                except Exception as _wl_exc:
+                    logger.debug(
+                        f"[player_props] workload/matchup K scale failed for "
+                        f"{player_name}: {_wl_exc}"
+                    )
+
+            # ── Injury risk adjustment (WNBA player props only) ───────────────
+            # (models/injury_intel.py) -- distinct from wnba_opp_intel.py's
+            # teammate-out REALLOCATION signal above (which boosts this
+            # player's own projection when a TEAMMATE is ruled out): this
+            # checks whether the SUBJECT player themselves carries a live
+            # game-status flag (questionable/doubtful/day-to-day) that the
+            # box-score-only model has no way to see. data/fetch.py's
+            # get_wnba_team_injuries() was already built with this exact
+            # caller in mind (RotoWire primary, ESPN fallback).
+            if sport_up == "WNBA":
+                try:
+                    from data.fetch import get_wnba_team_injuries
+                    from models.injury_intel import compute_injury_adjustment
+                    _own_abbr, _ = _wnba_resolve_player_team(
+                        player_name, home_team, away_team, as_of_date=as_of_date,
+                    )
+                    _team_inj = get_wnba_team_injuries(_own_abbr) if _own_abbr else None
+                    _subject_rows = [
+                        r for r in (_team_inj or {}).get("injuries", [])
+                        if (r.get("athlete", {}).get("shortName") or "").strip().lower()
+                           == player_name.strip().lower()
+                    ]
+                    if _subject_rows:
+                        _inj = compute_injury_adjustment(
+                            {"injuries": _subject_rows}, subject_team_is_backed=True,
+                        )
+                        if _inj["edge_adjustment"] < 0:
+                            # Risk flag, not a hard override -- max impact
+                            # (-6.0) maps to a 12% haircut on the projection.
+                            _injury_scale = max(0.88, 1.0 + _inj["edge_adjustment"] * 0.02)
+                            _orig_i = weighted_proj
+                            weighted_proj = round(weighted_proj * _injury_scale, 2)
+                            logger.debug(
+                                f"[player_props] injury risk {player_name}: "
+                                f"{_orig_i:.2f} → {weighted_proj:.2f} "
+                                f"(×{_injury_scale:.3f}) — {_inj['factor_text']}"
+                            )
+                except Exception as _inj_exc:
+                    logger.debug(
+                        f"[player_props] injury_intel check failed for "
+                        f"{player_name}: {_inj_exc}"
+                    )
+
+            hist_mean = weighted_proj
+            seed_val  = float(sum(ord(c) for c in (player_name + mkt_key)[:16]))
+
+            # For WNBA: use real per-game logs from the ESPN cache when available
+            # instead of synthetic data drawn from league_std. The synthetic fallback
+            # over-states variance for consistent players (e.g. Kelsey Plum's real
+            # σ=1.26 vs league_std=2.0), causing unnecessary stability rejections and
+            # collapsing confidence to 58–63% even on high-edge candidates.
+            # With real logs, NUTS infers the player's actual game-to-game sigma.
+            if sport_up == "WNBA":
+                _box_col   = _WNBA_BOX_COL.get(mkt_key)
+                _real_logs = (
+                    _WNBA_STATS_CACHE.get(as_of_date, {}).get(player_name.lower(), {}).get(_box_col, [])
+                    if _box_col else []
+                )
+                if len(_real_logs) >= 5:
+                    hist = [float(v) for v in _real_logs]
+                    # Use player's actual game-to-game SD as the sigma prior so NUTS
+                    # starts from a realistic scale (still refined from the data).
+                    league_std = max(0.3, round(_stats.stdev(_real_logs), 3))
+                else:
+                    hist = _synthetic_history(hist_mean, league_std, n=15, seed=seed_val)
+            else:
+                hist = _synthetic_history(hist_mean, league_std, n=15, seed=seed_val)
+
+            display_market = _MARKET_DISPLAY.get(mkt_key, mkt_key.replace("_", " ").title())
+
+            for direction, info in sides.items():
+                line      = info["best_line"]
+                odds      = info["best_odds"]
+                book      = info["best_book"]
+                book_cnt  = info["book_count"]
+                all_lines = info["all_lines"]
+                # Opposing side's per-book (book, line, odds) list — needed by
+                # core/devig.py to pair each book's own/opposing price and
+                # devig them together. Empty list if that book only quoted
+                # one direction (or the direction wasn't fetched at all).
+                _opposite_dir   = "under" if direction == "over" else "over"
+                opposing_book_lines = sides.get(_opposite_dir, {}).get("book_lines", [])
+
+                # ── Rule 2: Cross-bookmaker consensus validation ───────────────
+                consensus_line = _stats.median(all_lines)
+                drift = abs(line - consensus_line)
+                if drift > _LINE_CONSENSUS_MAX_DRIFT:
+                    if raw_mode:
+                        line = consensus_line
+                        logger.debug(
+                            f"[player_props] raw_mode: Rule 2 bypassed for "
+                            f"{player_name} {mkt_key} {direction} — using "
+                            f"consensus {consensus_line:.1f}"
+                        )
+                    else:
+                        logger.warning(
+                            f"[player_props] LINE VALIDATION FAILED (Rule 2) — "
+                            f"{player_name} {mkt_key} {direction}: best line {line} "
+                            f"deviates {drift:.2f} from consensus {consensus_line:.1f} "
+                            f"(threshold: {_LINE_CONSENSUS_MAX_DRIFT}). Skipping."
+                        )
+                        continue
+
+                # ── Market Influence Score ────────────────────────────────────
+                mis_score, mis_lbl = compute_mis(
+                    all_lines=all_lines,
+                    book_count=book_cnt,
+                    best_line=line,
+                    consensus_line=consensus_line,
+                    sport=sport_up,
+                )
+
+                # ── Data Reliability Score ────────────────────────────────────
+                drs = compute_data_reliability(
+                    has_real_stats=data_available,
+                    book_count=book_cnt,
+                    has_l5=(l5_avg is not None),
+                    has_l10=(l10_avg is not None),
+                )
+
+                # ── Phase 2: Sharp action, steam, RLM detection ───────────────
+                _book_lines_dir = info.get("book_lines", [])
+                _sharp_action   = detect_sharp_action(_book_lines_dir, direction)
+                _steam_detected = detect_steam_move(all_lines, book_cnt, sport_up)
+                _rlm_detected   = detect_reverse_line_movement(
+                    _sharp_action.get("sharp_consensus_line"),
+                    _sharp_action.get("rec_consensus_line"),
+                    direction,
+                )
+                _sharp_signal   = _sharp_action["signal_type"]
+
+                d_label     = "O" if direction == "over" else "U"
+                safe_player = player_name.replace(" ", "_").replace("'", "").replace(".", "")
+                bet_id      = f"prop_{safe_player}_{mkt_key}_{direction}_{event_id[:8]}"
+                game_label  = (
+                    f"{away_team.replace(' ','_')}@{home_team.replace(' ','_')}"
+                    f"_{sport_up}"
+                )
+
+                # Build factor text with projection provenance
+                proj_note = f"Season avg: {season_avg:.1f}"
+                if l5_avg is not None:
+                    proj_note += f" | L5: {l5_avg:.1f}"
+                if l10_avg is not None:
+                    proj_note += f" | L10: {l10_avg:.1f}"
+                proj_note += f" | Proj: {weighted_proj:.1f}"
+                if sport_up == "WNBA" and _min_stability != "unknown":
+                    proj_note += (
+                        f" | Min: {_proj_minutes:.0f} ({_min_stability}"
+                        f", range {_min_range:.0f}min, {_role_label})"
+                    )
+                if _realloc_note:
+                    proj_note += f" | {_realloc_note}"
+                if _matchup_note:
+                    proj_note += f" | {_matchup_note}"
+
+                factor = (
+                    f"{player_name} — {display_market} {d_label}{line} "
+                    f"({book_cnt} book{'s' if book_cnt != 1 else ''}, best: {book}, "
+                    f"consensus: {consensus_line:.1f}). "
+                    f"{proj_note}. MIS: {mis_score}/100 ({mis_lbl}). "
+                    f"Verified: {_verified_at}."
+                )
+
+                # ── Store metadata for pre-publish re-verification ────────────
+                _PROP_META[bet_id] = {
+                    "event_id":      event_id,
+                    "api_sport":     api_sport,
+                    "player":        player_name,
+                    "market_key":    mkt_key,
+                    "direction":     direction,
+                    "opening_line":  line,
+                    "consensus_line": consensus_line,
+                    "verified_at":   _verified_at,
+                }
+
+                candidates.append({
+                    "bet_id":                  bet_id,
+                    "game_id":                 game_label,
+                    "away_team":               away_team,
+                    "home_team":               home_team,
+                    "full_team_name":          player_name,
+                    "team":                    _prop_matchup_key(
+                                                   away_team, home_team, sport_up
+                                               ),
+                    "market":                  display_market,
+                    "player":                  player_name,
+                    "direction":               direction,
+                    "sportsbook_line":         line,
+                    "opening_line":            line,
+                    "consensus_line":          consensus_line,
+                    "verified_at":             _verified_at,
+                    "american_odds":           odds,
+                    "bookmaker_source":        book,
+                    "book_count":              book_cnt,
+                    "historical_data":         hist,
+                    "league_mean":             hist_mean,
+                    "league_std":              league_std,
+                    "context":                 "regular",
+                    "volatility_index":        None,
+                    "recent_n":                5,
+                    "factor":                  factor,
+                    "game_time_utc":           game_time_utc,
+                    # Phase 1 + MIS fields
+                    "data_available":          data_available,
+                    "data_reliability_score":  drs,
+                    "mis_score":               mis_score,
+                    "weighted_projection":     weighted_proj,
+                    "season_avg":              season_avg,
+                    "l5_avg":                  l5_avg,
+                    "l10_avg":                 l10_avg,
+                    "fallback_used":           False,
+                    # WNBA per-minute model fields (read by gatekeeper Step 1b2 + 1b3)
+                    "minutes_stability":       _min_stability,
+                    "projected_minutes":       _proj_minutes,
+                    "minutes_range":           _min_range,
+                    "role_label":              _role_label,
+                    "blowout_level":           _blowout_level,
+                    # Returning-from-injury / workload-ramp flag (models/ramp_detection.py
+                    # + live game-status check) -- read by gatekeeper Step 0.5b as a hard
+                    # entry gate for player_assists/player_rebounds.
+                    "ramp_flag":               _ramp_flag_out,
+                    # Teammate-out reallocation / positional matchup (Layer 4/5,
+                    # wnba_opp_intel.py) -- empty string means neither fired.
+                    "reallocation_note":       _realloc_note,
+                    "matchup_note":            _matchup_note,
+                    # Workload risk (read by gatekeeper Step 1b4 — K OVER hook-risk penalty)
+                    "workload_confidence_tier": _workload_confidence_tier,
+                    # Phase 2 — market intelligence signals
+                    "sharp_signal":            _sharp_signal,
+                    "sharp_label":             _sharp_action["signal_label"],
+                    "sharp_book_count":        _sharp_action["sharp_book_count"],
+                    "steam_detected":          _steam_detected,
+                    "rlm_detected":            _rlm_detected,
+                    "book_lines":              _book_lines_dir,
+                    "opposing_book_lines":     opposing_book_lines,
+                })
+
+    # Cap to the most-liquid props (highest book count) to keep engine runtime
+    # manageable.  Both Over and Under for each player+market are included in
+    # the sort so the engine can pick the better-valued direction.
+    candidates.sort(key=lambda c: c["book_count"], reverse=True)
+    capped = candidates[:_MAX_CANDIDATES_PER_SPORT]
+
+    logger.info(
+        f"[player_props] {sport_up}: {events_today} event(s) → "
+        f"{len(candidates)} raw candidates → {len(capped)} after cap."
+    )
+    return capped
+
+
+# ---------------------------------------------------------------------------
+# Pre-publish re-verification helpers (used by core/line_validator.py)
+# ---------------------------------------------------------------------------
+
+def get_prop_meta(bet_id: str) -> dict | None:
+    """Return stored line metadata for a prop pick, or None if not found."""
+    return _PROP_META.get(bet_id)
+
+
+def refresh_prop_line(
+    api_sport: str,
+    event_id: str,
+    player: str,
+    market_key: str,
+    direction: str,
+) -> float | None:
+    """
+    Re-fetch the current sportsbook line for a specific player prop.
+
+    Returns the median line across all bookmakers that carry the market,
+    or None if the line cannot be retrieved.
+    """
+    props_data = _fetch_event_props(api_sport, event_id, market_key)
+    if not props_data:
+        return None
+
+    lines: list[float] = []
+    player_lower    = player.lower()
+    direction_lower = direction.lower()
+
+    for bk in props_data.get("bookmakers", []):
+        for mkt in bk.get("markets", []):
+            if mkt.get("key", "") != market_key:
+                continue
+            for outcome in mkt.get("outcomes", []):
+                if (
+                    outcome.get("description", "").strip().lower() == player_lower
+                    and outcome.get("name", "").lower() == direction_lower
+                ):
+                    point = outcome.get("point")
+                    if point is not None:
+                        lines.append(float(point))
+
+    if not lines:
+        return None
+    return _stats.median(lines)

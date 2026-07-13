@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-07-12T21:23:34.769872+00:00",
+  "generated_at": "2026-07-13T01:47:52.433785+00:00",
   "n_total_picks": 139,
-  "n_graded": 120,
-  "n_usable_for_search": 120,
+  "n_graded": 135,
+  "n_usable_for_search": 135,
   "min_sample_size": 15,
   "min_sample_size_nuke": 8,
   "gold_roi_floor": 0.0,
@@ -128,6 +128,29 @@
         "Nuke": null
       },
       "note": "No Diamond cutoff beat Gold's ROI by the required margin -- recommend collapsing Diamond into Gold for this group. consensus_not_evaluated: only 2 picks had side_agreement_frac populated (need >= 15)."
+    },
+    {
+      "sport": "WNBA",
+      "market_class": "prop",
+      "n_graded": 15,
+      "status": "insufficient_data",
+      "consensus_evaluated": false,
+      "current_thresholds": {
+        "Nuke": {
+          "edge_pct": 3.5,
+          "confidence": 85.0
+        },
+        "Diamond": {
+          "edge_pct": 2.0,
+          "confidence": 78.0
+        },
+        "Gold": {
+          "edge_pct": 1.0,
+          "confidence": 68.0
+        }
+      },
+      "recommended": null,
+      "note": "No edge/confidence cutoff in this group cleared breakeven ROI with n >= 15. Keeping existing thresholds."
     }
   ]
 }

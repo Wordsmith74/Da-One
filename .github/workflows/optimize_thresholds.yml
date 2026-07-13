@@ -10,13 +10,22 @@ name: Grade, Calibrate, and Optimize Tier Thresholds
 #                                                    (core.threshold_optimizer)
 # via run_grading_workflow.py, which just calls the three modules above in
 # order and prints all of it to this job's log.
+#   6.   Grade REJECTED picks from output/shadow_log.jsonl (candidates the
+#        gatekeeper turned down but still scored an edge/confidence for),
+#        writing output/shadow_log_graded.jsonl -- answers "would this
+#        rejected pick have won?" for threshold review, using the same
+#        grader dispatch/stat fetchers as step 1-3 so it can't disagree
+#        with how a published pick would have been graded.
+#                                                    (core.shadow_grader)
 #
 # This DOES commit new grades to pick_history.jsonl (steps 1-3 write back),
 # but only ever adds actual_result/profit_units/etc. to existing rows or
 # leaves them untouched -- it never invents or removes picks. Step 5's
 # output/threshold_recommendations.json is a report for a human to review
 # before manually editing core/decision_gatekeeper.py's
-# SPORT_TIER_THRESHOLDS -- nothing here auto-applies a new threshold.
+# SPORT_TIER_THRESHOLDS -- nothing here auto-applies a new threshold. Step
+# 6's output/shadow_log_graded.jsonl is the same kind of report -- nothing
+# reads it automatically either.
 on:
   schedule:
     # 11:00 UTC daily -- after the 09:00 UTC grade-picks run in
@@ -51,6 +60,12 @@ jobs:
             --reject-log output/grading_rejects.jsonl \
             --threshold-output output/threshold_recommendations.json
 
+      - name: Grade rejected picks (shadow log)
+        run: |
+          python3 -m core.shadow_grader \
+            --shadow-log output/shadow_log.jsonl \
+            --output output/shadow_log_graded.jsonl
+
       - name: Upload grading rejects as artifact
         # grading_rejects.jsonl is gitignored (ephemeral debug info) --
         # this is the file to check for *why* a specific pick is still
@@ -70,6 +85,15 @@ jobs:
         with:
           name: threshold-recommendations-${{ github.run_id }}
           path: output/threshold_recommendations.json
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Upload graded shadow log as artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: shadow-log-graded-${{ github.run_id }}
+          path: output/shadow_log_graded.jsonl
           if-no-files-found: warn
           retention-days: 30
 
@@ -112,13 +136,13 @@ jobs:
           print(f"pick_history.jsonl reconciled: {len(local)} local + {len(remote)} remote -> {len(merged)} merged rows")
           PYEOF
 
-      - name: Commit graded pick_history.jsonl and threshold recommendations
+      - name: Commit graded pick_history.jsonl, threshold recommendations, and graded shadow log
         if: always()
         run: |
           git config user.name "threshold-optimizer-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add -f output/pick_history.jsonl output/threshold_recommendations.json
-          git diff --quiet --cached || git commit -m "Grade + calibrate + threshold search $(date -u +%Y-%m-%d)"
+          git add -f output/pick_history.jsonl output/threshold_recommendations.json output/shadow_log_graded.jsonl
+          git diff --quiet --cached || git commit -m "Grade + calibrate + threshold search + shadow grading $(date -u +%Y-%m-%d)"
           git merge -X ours origin/main --no-edit --allow-unrelated-histories
           git push
           

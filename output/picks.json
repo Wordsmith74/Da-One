@@ -1,43 +1,4 @@
 {
-  "generated_at": "2026-07-12T18:54:33.694231+00:00",
-  "picks": [
-    {
-      "sport": "WNBA",
-      "bet_id": "prop_Shakira_Austin_player_rebounds_over_a82c548d",
-      "player": "Shakira Austin",
-      "team": "SEAvWSH",
-      "matchup": "Seattle_Storm@Washington_Mystics_WNBA",
-      "away_team": "Seattle Storm",
-      "home_team": "Washington Mystics",
-      "market": "player_rebounds",
-      "market_type": "player_rebounds",
-      "side": "over",
-      "pick": "Shakira Austin player_rebounds over 8.5",
-      "pick_time_line": 8.5,
-      "pick_time_odds": 105.0,
-      "current_line": 8.5,
-      "current_odds": 105.0,
-      "line": 8.5,
-      "model_number": 89.6,
-      "edge_pct": 11.82,
-      "confidence": 79.0,
-      "model_prob": 89.6,
-      "tier": "Nuke",
-      "game_id": "Seattle_Storm@Washington_Mystics_WNBA",
-      "steam_move_threshold_pct": 10.0,
-      "moneyline_steam_cents": 20,
-      "side_agreement_frac": 0.0,
-      "posterior_std": 1.177878957528043,
-      "posterior_mean": 11.728951859366937,
-      "relative_sigma_pct": 10.04,
-      "stake_pct_bankroll": 15.94,
-      "ccs_score": 76.0,
-      "robustness": "robust",
-      "line_move_pct": 0.0,
-      "pick_id": "ef33b8911191",
-      "actual_result": null,
-      "closing_line": null,
-      "clv_pct": null
-    }
-  ]
+  "generated_at": "2026-07-13T03:15:38.256628+00:00",
+  "picks": []
 }

@@ -1,5 +1,5 @@
 {
-  "run_at": "2026-07-13T04:11:35.138298+00:00",
+  "run_at": "2026-07-13T04:17:21.825509+00:00",
   "n_errors": 0,
   "n_warnings": 0,
   "n_picks_generated": 0,
@@ -242,22 +242,22 @@
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Dearica_Hamby_player_rebounds_over_59e806dd: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=73.1 market=player_rebounds | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (68.1\u219273.1); Market entry floor [player_rebounds]: edge 0.00% < floor 4.3%"
+      "message": "prop_Dearica_Hamby_player_rebounds_over_59e806dd: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=73.0 market=player_rebounds | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (68.0\u219273.0); Market entry floor [player_rebounds]: edge 0.00% < floor 4.3%"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Dearica_Hamby_player_rebounds_under_59e806dd: GATEKEEPER FLAGGED -- tier=None edge=4.20% conf=68.2 market=player_rebounds | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (63.2\u219268.2); Market entry floor [player_rebounds]: edge 4.20% < floor 4.3%"
+      "message": "prop_Dearica_Hamby_player_rebounds_under_59e806dd: GATEKEEPER FLAGGED -- tier=None edge=4.14% conf=68.1 market=player_rebounds | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (63.1\u219268.1); Market entry floor [player_rebounds]: edge 4.14% < floor 4.3%"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Rhyne_Howard_player_rebounds_over_59e806dd: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=61.4 market=player_rebounds | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (56.4\u219261.4); Market entry floor [player_rebounds]: edge 0.00% < floor 4.3%; conf 61.4 < floor 68"
+      "message": "prop_Rhyne_Howard_player_rebounds_over_59e806dd: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=61.7 market=player_rebounds | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (56.7\u219261.7); Market entry floor [player_rebounds]: edge 0.00% < floor 4.3%; conf 61.7 < floor 68"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Rhyne_Howard_player_rebounds_under_59e806dd: GATEKEEPER FLAGGED -- tier=None edge=2.71% conf=61.6 market=player_rebounds | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (56.6\u219261.6); Market entry floor [player_rebounds]: edge 2.71% < floor 4.3%; conf 61.6 < floor 68"
+      "message": "prop_Rhyne_Howard_player_rebounds_under_59e806dd: GATEKEEPER FLAGGED -- tier=None edge=2.72% conf=61.7 market=player_rebounds | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (56.7\u219261.7); Market entry floor [player_rebounds]: edge 2.72% < floor 4.3%; conf 61.7 < floor 68"
     },
     {
       "level": "info",
@@ -267,32 +267,32 @@
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Allisha_Gray_player_rebounds_under_59e806dd: GATEKEEPER FLAGGED -- tier=None edge=4.98% conf=63.6 market=player_rebounds | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (58.6\u219263.6); Market entry floor [player_rebounds]: conf 63.6 < floor 68"
+      "message": "prop_Allisha_Gray_player_rebounds_under_59e806dd: GATEKEEPER FLAGGED -- tier=None edge=4.97% conf=63.5 market=player_rebounds | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (58.5\u219263.5); Market entry floor [player_rebounds]: conf 63.5 < floor 68"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Nneka_Ogwumike_player_rebounds_over_59e806dd: GATEKEEPER FLAGGED -- tier=None edge=2.22% conf=62.0 market=player_rebounds | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (57.0\u219262.0); Market entry floor [player_rebounds]: edge 2.22% < floor 4.3%; conf 62.0 < floor 68"
+      "message": "prop_Nneka_Ogwumike_player_rebounds_over_59e806dd: GATEKEEPER FLAGGED -- tier=None edge=2.18% conf=61.9 market=player_rebounds | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (56.9\u219261.9); Market entry floor [player_rebounds]: edge 2.18% < floor 4.3%; conf 61.9 < floor 68"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Nneka_Ogwumike_player_rebounds_under_59e806dd: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=62.0 market=player_rebounds | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (57.0\u219262.0); Market entry floor [player_rebounds]: edge 0.00% < floor 4.3%; conf 62.0 < floor 68"
+      "message": "prop_Nneka_Ogwumike_player_rebounds_under_59e806dd: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=62.4 market=player_rebounds | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (57.4\u219262.4); Market entry floor [player_rebounds]: edge 0.00% < floor 4.3%; conf 62.4 < floor 68"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Alyssa_Thomas_player_assists_over_089163a3: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=82.1 market=player_assists | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (77.1\u219282.1); Market entry floor [player_assists]: edge 0.00% < floor 1.0%"
+      "message": "prop_Alyssa_Thomas_player_assists_over_089163a3: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=81.1 market=player_assists | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (76.1\u219281.1); Market entry floor [player_assists]: edge 0.00% < floor 1.0%"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Alyssa_Thomas_player_assists_under_089163a3: GATEKEEPER FLAGGED -- tier=None edge=6.64% conf=69.0 market=player_assists | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (70.0\u219275.0); WNBA blowout [moderate]: conf \u22126pts (75.0\u219269.0); Prop confidence floor: player_assists requires conf \u2265 75 for broadcast eligibility, got 69.0"
+      "message": "prop_Alyssa_Thomas_player_assists_under_089163a3: GATEKEEPER FLAGGED -- tier=None edge=6.59% conf=68.9 market=player_assists | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (69.9\u219274.9); WNBA blowout [moderate]: conf \u22126pts (74.9\u219268.9); Prop confidence floor: player_assists requires conf \u2265 75 for broadcast eligibility, got 68.9"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Olivia_Miles_player_assists_over_089163a3: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=55.0 market=player_assists | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (50.0\u219255.0); Market entry floor [player_assists]: edge 0.00% < floor 1.0%; conf 55.0 < floor 60"
+      "message": "prop_Olivia_Miles_player_assists_over_089163a3: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=55.4 market=player_assists | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (50.4\u219255.4); Market entry floor [player_assists]: edge 0.00% < floor 1.0%; conf 55.4 < floor 60"
     },
     {
       "level": "info",
@@ -302,12 +302,12 @@
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Courtney_Williams_player_assists_over_089163a3: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=55.9 market=player_assists | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (50.9\u219255.9); Market entry floor [player_assists]: edge 0.00% < floor 1.0%; conf 55.9 < floor 60"
+      "message": "prop_Courtney_Williams_player_assists_over_089163a3: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=55.6 market=player_assists | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (50.6\u219255.6); Market entry floor [player_assists]: edge 0.00% < floor 1.0%; conf 55.6 < floor 60"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Courtney_Williams_player_assists_under_089163a3: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=61.8 market=player_assists | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (56.8\u219261.8); Market entry floor [player_assists]: edge 0.00% < floor 1.0%"
+      "message": "prop_Courtney_Williams_player_assists_under_089163a3: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=61.7 market=player_assists | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (56.7\u219261.7); Market entry floor [player_assists]: edge 0.00% < floor 1.0%"
     },
     {
       "level": "info",

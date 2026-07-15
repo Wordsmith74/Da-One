@@ -1,4 +1,43 @@
 {
-  "generated_at": "2026-07-14T13:39:56.051970+00:00",
-  "picks": []
+  "generated_at": "2026-07-15T04:53:30.376666+00:00",
+  "picks": [
+    {
+      "sport": "WNBA",
+      "bet_id": "CHI_total_over_dd23179c",
+      "player": null,
+      "team": "Chicago Sky",
+      "matchup": "SEA@CHI_WNBA_2026-07-15",
+      "away_team": "Seattle Storm",
+      "home_team": "Chicago Sky",
+      "market": "game_total",
+      "market_type": "game_total",
+      "side": "over",
+      "pick": "Chicago Sky game_total over 171.0",
+      "pick_time_line": 171.0,
+      "pick_time_odds": -111.0,
+      "current_line": 171.0,
+      "current_odds": -111.0,
+      "line": 171.0,
+      "model_number": 71.5,
+      "edge_pct": 3.37,
+      "confidence": 73.0,
+      "model_prob": 71.5,
+      "tier": "Nuke",
+      "game_id": "SEA@CHI_WNBA_2026-07-15",
+      "steam_move_threshold_pct": 10.0,
+      "moneyline_steam_cents": 20,
+      "side_agreement_frac": 0.25,
+      "posterior_std": 3.703254021679175,
+      "posterior_mean": 174.95501631595812,
+      "relative_sigma_pct": 2.12,
+      "stake_pct_bankroll": 7.97,
+      "ccs_score": 50.99,
+      "robustness": "fragile",
+      "line_move_pct": 0.0,
+      "pick_id": "385a02773bf7",
+      "actual_result": null,
+      "closing_line": null,
+      "clv_pct": null
+    }
+  ]
 }

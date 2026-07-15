@@ -1,8 +1,8 @@
 {
-  "run_at": "2026-07-14T13:39:56.052225+00:00",
+  "run_at": "2026-07-15T04:53:30.381164+00:00",
   "n_errors": 0,
   "n_warnings": 0,
-  "n_picks_generated": 0,
+  "n_picks_generated": 1,
   "entries": [
     {
       "level": "info",
@@ -57,317 +57,317 @@
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "4 expanded game market candidate(s) added."
+      "message": "6 expanded game market candidate(s) added."
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "33 total candidate(s) (game totals + player props)."
+      "message": "37 total candidate(s) (game totals + player props)."
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "CON_total_over_c2ecfa7d: devig fair_prob=50.4% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
+      "message": "CHI_total_over_dd23179c: devig fair_prob=50.1% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "CON_total_under_c2ecfa7d: devig fair_prob=49.6% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
+      "message": "CHI_total_under_dd23179c: devig fair_prob=49.9% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "TOR_total_over_d6adc93a: devig fair_prob=50.0% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
+      "message": "MIN_total_over_4db11d33: devig fair_prob=50.0% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "TOR_total_under_d6adc93a: devig fair_prob=50.0% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
+      "message": "MIN_total_under_4db11d33: devig fair_prob=50.0% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Carla_Leite_player_assists_over_c2ecfa7d: devig fair_prob=50.6% books=['FanDuel'] weight_covered=0.40"
+      "message": "IND_total_over_8eace0d4: devig fair_prob=50.2% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Olivia_Nelson-Ododa_player_rebounds_over_c2ecfa7d: devig fair_prob=50.0% books=['FanDuel'] weight_covered=0.40"
+      "message": "IND_total_under_8eace0d4: devig fair_prob=49.8% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Brittney_Griner_player_rebounds_over_c2ecfa7d: devig fair_prob=48.1% books=['FanDuel'] weight_covered=0.40"
+      "message": "prop_Natisha_Hiedeman_player_assists_over_dd23179c: devig fair_prob=46.8% books=['FanDuel'] weight_covered=0.40"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Bridget_Carleton_player_rebounds_over_c2ecfa7d: devig fair_prob=51.0% books=['FanDuel'] weight_covered=0.40"
+      "message": "prop_Natisha_Hiedeman_player_assists_under_dd23179c: devig fair_prob=53.2% books=['FanDuel'] weight_covered=0.40"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Aaliyah_Edwards_player_rebounds_over_c2ecfa7d: devig fair_prob=47.6% books=['FanDuel'] weight_covered=0.40"
+      "message": "prop_Dominique_Malonga_player_rebounds_over_dd23179c: devig fair_prob=46.0% books=['FanDuel'] weight_covered=0.40"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Marina_Mabrey_player_assists_over_d6adc93a: devig fair_prob=53.2% books=['FanDuel'] weight_covered=0.40"
+      "message": "prop_Dominique_Malonga_player_rebounds_under_dd23179c: devig fair_prob=54.0% books=['FanDuel'] weight_covered=0.40"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Kiki_Iriafen_player_rebounds_over_d6adc93a: devig fair_prob=49.4% books=['FanDuel'] weight_covered=0.40"
+      "message": "prop_Flaujae_Johnson_player_rebounds_over_dd23179c: devig fair_prob=48.1% books=['FanDuel'] weight_covered=0.40"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Shakira_Austin_player_rebounds_over_d6adc93a: devig fair_prob=49.4% books=['FanDuel'] weight_covered=0.40"
+      "message": "prop_Flaujae_Johnson_player_rebounds_under_dd23179c: devig fair_prob=51.9% books=['FanDuel'] weight_covered=0.40"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Nyara_Sabally_player_rebounds_over_d6adc93a: devig fair_prob=52.8% books=['FanDuel'] weight_covered=0.40"
+      "message": "prop_Olivia_Miles_player_assists_over_4db11d33: devig fair_prob=43.7% books=['FanDuel'] weight_covered=0.40"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Maria_Conde_player_rebounds_over_d6adc93a: devig fair_prob=46.8% books=['FanDuel'] weight_covered=0.40"
+      "message": "prop_Olivia_Miles_player_assists_under_4db11d33: devig fair_prob=56.3% books=['FanDuel'] weight_covered=0.40"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Carla_Leite_player_assists_under_c2ecfa7d: devig fair_prob=49.4% books=['FanDuel'] weight_covered=0.40"
+      "message": "prop_Erica_Wheeler_player_assists_over_4db11d33: devig fair_prob=48.1% books=['FanDuel'] weight_covered=0.40"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Olivia_Nelson-Ododa_player_rebounds_under_c2ecfa7d: devig fair_prob=50.0% books=['FanDuel'] weight_covered=0.40"
+      "message": "prop_Erica_Wheeler_player_assists_under_4db11d33: devig fair_prob=51.9% books=['FanDuel'] weight_covered=0.40"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Brittney_Griner_player_rebounds_under_c2ecfa7d: devig fair_prob=51.9% books=['FanDuel'] weight_covered=0.40"
+      "message": "prop_Natasha_Howard_player_rebounds_over_4db11d33: devig fair_prob=47.2% books=['FanDuel'] weight_covered=0.40"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Bridget_Carleton_player_rebounds_under_c2ecfa7d: devig fair_prob=49.0% books=['FanDuel'] weight_covered=0.40"
+      "message": "prop_Natasha_Howard_player_rebounds_under_4db11d33: devig fair_prob=52.8% books=['FanDuel'] weight_covered=0.40"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Aaliyah_Edwards_player_rebounds_under_c2ecfa7d: devig fair_prob=52.4% books=['FanDuel'] weight_covered=0.40"
+      "message": "prop_Dearica_Hamby_player_rebounds_over_4db11d33: devig fair_prob=46.2% books=['FanDuel'] weight_covered=0.40"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Marina_Mabrey_player_assists_under_d6adc93a: devig fair_prob=46.8% books=['FanDuel'] weight_covered=0.40"
+      "message": "prop_Dearica_Hamby_player_rebounds_under_4db11d33: devig fair_prob=53.8% books=['FanDuel'] weight_covered=0.40"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Kiki_Iriafen_player_rebounds_under_d6adc93a: devig fair_prob=50.6% books=['FanDuel'] weight_covered=0.40"
+      "message": "prop_Courtney_Williams_player_rebounds_over_4db11d33: devig fair_prob=44.5% books=['FanDuel'] weight_covered=0.40"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Shakira_Austin_player_rebounds_under_d6adc93a: devig fair_prob=50.6% books=['FanDuel'] weight_covered=0.40"
+      "message": "prop_Courtney_Williams_player_rebounds_under_4db11d33: devig fair_prob=55.5% books=['FanDuel'] weight_covered=0.40"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Nyara_Sabally_player_rebounds_under_d6adc93a: devig fair_prob=47.2% books=['FanDuel'] weight_covered=0.40"
+      "message": "prop_Olivia_Miles_player_rebounds_over_4db11d33: devig fair_prob=46.8% books=['FanDuel'] weight_covered=0.40"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Maria_Conde_player_rebounds_under_d6adc93a: devig fair_prob=53.2% books=['FanDuel'] weight_covered=0.40"
+      "message": "prop_Olivia_Miles_player_rebounds_under_4db11d33: devig fair_prob=53.2% books=['FanDuel'] weight_covered=0.40"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Sonia_Citron_player_rebounds_over_d6adc93a: devig fair_prob=45.8% books=['FanDuel'] weight_covered=0.40"
+      "message": "prop_Kayla_McBride_player_rebounds_over_4db11d33: devig fair_prob=53.2% books=['FanDuel'] weight_covered=0.40"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Marina_Mabrey_player_rebounds_over_d6adc93a: devig fair_prob=43.3% books=['FanDuel'] weight_covered=0.40"
+      "message": "prop_Kayla_McBride_player_rebounds_under_4db11d33: devig fair_prob=46.8% books=['FanDuel'] weight_covered=0.40"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Carla_Leite_player_rebounds_over_c2ecfa7d: devig fair_prob=47.2% books=['FanDuel'] weight_covered=0.40"
+      "message": "prop_Caitlin_Clark_player_assists_over_8eace0d4: devig fair_prob=51.6% books=['FanDuel'] weight_covered=0.40"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Sonia_Citron_player_rebounds_under_d6adc93a: devig fair_prob=54.2% books=['FanDuel'] weight_covered=0.40"
+      "message": "prop_Caitlin_Clark_player_assists_under_8eace0d4: devig fair_prob=48.4% books=['FanDuel'] weight_covered=0.40"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Marina_Mabrey_player_rebounds_under_d6adc93a: devig fair_prob=56.7% books=['FanDuel'] weight_covered=0.40"
+      "message": "prop_Veronica_Burton_player_assists_over_8eace0d4: devig fair_prob=43.3% books=['FanDuel'] weight_covered=0.40"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "Game Truth Protocol: 33 candidate(s) in -> 25 out (8 suppressed -- see 'betting_bot' logger for per-game reasoning)."
+      "message": "prop_Veronica_Burton_player_assists_under_8eace0d4: devig fair_prob=56.7% books=['FanDuel'] weight_covered=0.40"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "Gatekeeper: 0 approved / 24 flagged / 1 discarded"
+      "message": "prop_Monique_Billings_player_rebounds_over_8eace0d4: devig fair_prob=53.2% books=['FanDuel'] weight_covered=0.40"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "CON_moneyline_home: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=79.1 market=moneyline | Market entry floor [moneyline]: edge 0.00% < floor 4.7%"
+      "message": "Game Truth Protocol: 37 candidate(s) in -> 21 out (16 suppressed -- see 'betting_bot' logger for per-game reasoning)."
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "POR_moneyline_away: GATEKEEPER FLAGGED -- tier=None edge=5.89% conf=79.1 market=moneyline | Market signal filter: sharp_signal='sharp_contrary' \u2014 confirmed sharp money is against this pick"
+      "message": "Gatekeeper: 1 approved / 19 flagged / 1 discarded"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "TOR_moneyline_home: GATEKEEPER FLAGGED -- tier=None edge=10.00% conf=80.2 market=moneyline | Market edge ceiling [moneyline]: edge 10.00% > ceiling 8.2%"
+      "message": "MIN_moneyline_home: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=78.3 market=moneyline | Market entry floor [moneyline]: edge 0.00% < floor 4.7%"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "WAS_moneyline_away: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=80.2 market=moneyline | Market entry floor [moneyline]: edge 0.00% < floor 4.7%"
+      "message": "LAS_moneyline_away: GATEKEEPER FLAGGED -- tier=None edge=10.00% conf=78.3 market=moneyline | Market edge ceiling [moneyline]: edge 10.00% > ceiling 8.2%"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Olivia_Nelson-Ododa_player_rebounds_over_c2ecfa7d: GATEKEEPER FLAGGED -- tier=None edge=1.18% conf=58.1 market=player_rebounds | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (53.1\u219258.1); Market entry floor [player_rebounds]: edge 1.18% < floor 4.0%; conf 58.1 < floor 60"
+      "message": "IND_moneyline_home: GATEKEEPER FLAGGED -- tier=None edge=9.23% conf=81.7 market=moneyline | Market edge ceiling [moneyline]: edge 9.23% > ceiling 8.2%"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Brittney_Griner_player_rebounds_over_c2ecfa7d: GATEKEEPER FLAGGED -- tier=None edge=4.25% conf=63.5 market=player_rebounds | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (58.5\u219263.5); Near-miss: edge=4.2% (need \u22651.0%, gap=-3.2); conf=63.5 (need \u226568.0, gap=+4.5) \u2014 secondary analysis recommended (check injury reports & line movement)."
+      "message": "GSV_moneyline_away: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=81.7 market=moneyline | Market entry floor [moneyline]: edge 0.00% < floor 4.7%"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Bridget_Carleton_player_rebounds_over_c2ecfa7d: GATEKEEPER FLAGGED -- tier=None edge=5.13% conf=67.3 market=player_rebounds | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (62.3\u219267.3); Near-miss: edge=5.1% (need \u22651.0%, gap=-4.1); conf=67.3 (need \u226568.0, gap=+0.7) \u2014 secondary analysis recommended (check injury reports & line movement)."
+      "message": "prop_Dominique_Malonga_player_rebounds_over_dd23179c: GATEKEEPER FLAGGED -- tier=None edge=0.51% conf=55.8 market=player_rebounds | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (50.8\u219255.8); Market entry floor [player_rebounds]: edge 0.51% < floor 4.0%; conf 55.8 < floor 60"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Aaliyah_Edwards_player_rebounds_over_c2ecfa7d: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=57.9 market=player_rebounds | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (52.9\u219257.9); Market entry floor [player_rebounds]: edge 0.00% < floor 4.0%; conf 57.9 < floor 60"
+      "message": "prop_Dominique_Malonga_player_rebounds_under_dd23179c: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=59.5 market=player_rebounds | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (54.5\u219259.5); Market entry floor [player_rebounds]: edge 0.00% < floor 4.0%; conf 59.5 < floor 60"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Olivia_Nelson-Ododa_player_rebounds_under_c2ecfa7d: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=58.0 market=player_rebounds | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (53.0\u219258.0); Market entry floor [player_rebounds]: edge 0.00% < floor 4.0%; conf 58.0 < floor 60"
+      "message": "prop_Flaujae_Johnson_player_rebounds_over_dd23179c: GATEKEEPER FLAGGED -- tier=None edge=4.52% conf=64.1 market=player_rebounds | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (59.1\u219264.1); Near-miss: edge=4.5% (need \u22651.0%, gap=-3.5); conf=64.1 (need \u226568.0, gap=+3.9) \u2014 secondary analysis recommended (check injury reports & line movement)."
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Brittney_Griner_player_rebounds_under_c2ecfa7d: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=63.6 market=player_rebounds | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (58.6\u219263.6); Market entry floor [player_rebounds]: edge 0.00% < floor 4.0%"
+      "message": "prop_Flaujae_Johnson_player_rebounds_under_dd23179c: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=63.8 market=player_rebounds | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (58.8\u219263.8); Market entry floor [player_rebounds]: edge 0.00% < floor 4.0%"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Bridget_Carleton_player_rebounds_under_c2ecfa7d: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=67.6 market=player_rebounds | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (62.6\u219267.6); Market entry floor [player_rebounds]: edge 0.00% < floor 4.0%"
+      "message": "prop_Natasha_Howard_player_rebounds_over_4db11d33: GATEKEEPER FLAGGED -- tier=None edge=1.85% conf=58.0 market=player_rebounds | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (53.0\u219258.0); Market entry floor [player_rebounds]: edge 1.85% < floor 4.0%; conf 58.0 < floor 60"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Aaliyah_Edwards_player_rebounds_under_c2ecfa7d: GATEKEEPER FLAGGED -- tier=None edge=0.64% conf=57.7 market=player_rebounds | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (52.7\u219257.7); Market entry floor [player_rebounds]: edge 0.64% < floor 4.0%; conf 57.7 < floor 60"
+      "message": "prop_Natasha_Howard_player_rebounds_under_4db11d33: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=63.6 market=player_rebounds | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (58.6\u219263.6); Market entry floor [player_rebounds]: edge 0.00% < floor 4.0%"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Carla_Leite_player_rebounds_over_c2ecfa7d: GATEKEEPER FLAGGED -- tier=None edge=2.07% conf=58.6 market=player_rebounds | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (53.6\u219258.6); Market entry floor [player_rebounds]: edge 2.07% < floor 4.0%; conf 58.6 < floor 60"
+      "message": "prop_Dearica_Hamby_player_rebounds_over_4db11d33: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=66.9 market=player_rebounds | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (61.9\u219266.9); Market entry floor [player_rebounds]: edge 0.00% < floor 4.0%"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Kiki_Iriafen_player_rebounds_over_d6adc93a: GATEKEEPER FLAGGED -- tier=None edge=3.28% conf=62.3 market=player_rebounds | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (57.3\u219262.3); Market entry floor [player_rebounds]: edge 3.28% < floor 4.0%"
+      "message": "prop_Dearica_Hamby_player_rebounds_under_4db11d33: GATEKEEPER FLAGGED -- tier=None edge=1.86% conf=61.8 market=player_rebounds | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (56.8\u219261.8); Market entry floor [player_rebounds]: edge 1.86% < floor 4.0%"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Shakira_Austin_player_rebounds_over_d6adc93a: GATEKEEPER FLAGGED -- tier=None edge=9.78% conf=79.0 market=player_rebounds | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (74.0\u219279.0); Market edge ceiling [player_rebounds]: edge 9.78% > ceiling 8.0%"
+      "message": "prop_Courtney_Williams_player_rebounds_over_4db11d33: GATEKEEPER FLAGGED -- tier=None edge=5.54% conf=63.9 market=player_rebounds | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (58.9\u219263.9); Near-miss: edge=5.5% (need \u22651.0%, gap=-4.5); conf=63.9 (need \u226568.0, gap=+4.1) \u2014 secondary analysis recommended (check injury reports & line movement)."
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Nyara_Sabally_player_rebounds_over_d6adc93a: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=56.0 market=player_rebounds | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (51.0\u219256.0); Market entry floor [player_rebounds]: edge 0.00% < floor 4.0%; conf 56.0 < floor 60"
+      "message": "prop_Courtney_Williams_player_rebounds_under_4db11d33: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=68.0 market=player_rebounds | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (63.0\u219268.0); Market entry floor [player_rebounds]: edge 0.00% < floor 4.0%"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Maria_Conde_player_rebounds_over_d6adc93a: GATEKEEPER FLAGGED -- tier=None edge=3.09% conf=60.3 market=player_rebounds | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (55.3\u219260.3); Market entry floor [player_rebounds]: edge 3.09% < floor 4.0%"
+      "message": "prop_Olivia_Miles_player_rebounds_over_4db11d33: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=60.3 market=player_rebounds | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (55.3\u219260.3); Market entry floor [player_rebounds]: edge 0.00% < floor 4.0%"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Kiki_Iriafen_player_rebounds_under_d6adc93a: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=62.2 market=player_rebounds | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (57.2\u219262.2); Market entry floor [player_rebounds]: edge 0.00% < floor 4.0%"
+      "message": "prop_Olivia_Miles_player_rebounds_under_4db11d33: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=55.2 market=player_rebounds | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (50.2\u219255.2); Market entry floor [player_rebounds]: edge 0.00% < floor 4.0%; conf 55.2 < floor 60"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Shakira_Austin_player_rebounds_under_d6adc93a: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=79.2 market=player_rebounds | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (74.2\u219279.2); Market entry floor [player_rebounds]: edge 0.00% < floor 4.0%"
+      "message": "prop_Kayla_McBride_player_rebounds_over_4db11d33: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=55.0 market=player_rebounds | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (50.0\u219255.0); Market entry floor [player_rebounds]: edge 0.00% < floor 4.0%; conf 55.0 < floor 60"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Nyara_Sabally_player_rebounds_under_d6adc93a: GATEKEEPER FLAGGED -- tier=None edge=0.50% conf=55.9 market=player_rebounds | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (50.9\u219255.9); Market entry floor [player_rebounds]: edge 0.50% < floor 4.0%; conf 55.9 < floor 60"
+      "message": "prop_Kayla_McBride_player_rebounds_under_4db11d33: GATEKEEPER FLAGGED -- tier=None edge=0.88% conf=55.2 market=player_rebounds | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (50.2\u219255.2); Market entry floor [player_rebounds]: edge 0.88% < floor 4.0%; conf 55.2 < floor 60"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Maria_Conde_player_rebounds_under_d6adc93a: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=65.7 market=player_rebounds | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (60.7\u219265.7); Market entry floor [player_rebounds]: edge 0.00% < floor 4.0%"
+      "message": "prop_Monique_Billings_player_rebounds_over_8eace0d4: GATEKEEPER FLAGGED -- tier=None edge=5.74% conf=70.6 market=player_rebounds | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (65.6\u219270.6); Plus-money confidence floor: odds=+100 requires conf \u2265 71 even at Gold Standard, got 70.6"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "prop_Marina_Mabrey_player_rebounds_over_d6adc93a: GATEKEEPER FLAGGED -- tier=None edge=3.38% conf=58.9 market=player_rebounds | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (53.9\u219258.9); Market entry floor [player_rebounds]: edge 3.38% < floor 4.0%; conf 58.9 < floor 60"
-    },
-    {
-      "level": "info",
-      "stage": "WNBA",
-      "message": "prop_Sonia_Citron_player_rebounds_under_d6adc93a: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=62.0 market=player_rebounds | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (57.0\u219262.0); Market entry floor [player_rebounds]: edge 0.00% < floor 4.0%"
-    },
-    {
-      "level": "info",
-      "stage": "WNBA",
-      "message": "prop_Marina_Mabrey_player_rebounds_under_d6adc93a: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=59.3 market=player_rebounds | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (54.3\u219259.3); Market entry floor [player_rebounds]: edge 0.00% < floor 4.0%; conf 59.3 < floor 60"
-    },
-    {
-      "level": "info",
-      "stage": "WNBA",
-      "message": "prop_Sonia_Citron_player_rebounds_over_d6adc93a: GATEKEEPER DISCARD -- edge=4.40% conf=62.3 market=player_rebounds | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (57.3\u219262.3)"
+      "message": "CHI_total_under_dd23179c: GATEKEEPER DISCARD -- edge=0.00% conf=76.5 market=game_total | below threshold, no specific reason recorded"
     },
     {
       "level": "info",
       "stage": "pipeline",
-      "message": "0 raw picks generated. Running contradiction check..."
+      "message": "CCS ranking: 1 pick(s) scored -- top assigned Nuke, runner-up Diamond, rest Gold Standard."
     },
     {
       "level": "info",
       "stage": "pipeline",
-      "message": "0 picks after contradiction check. Running line movement check..."
+      "message": "1 raw picks generated. Running contradiction check..."
     },
     {
       "level": "info",
       "stage": "pipeline",
-      "message": "0 picks after line movement check. Applying per-sport daily caps..."
+      "message": "1 picks after contradiction check. Running line movement check..."
     },
     {
       "level": "info",
       "stage": "pipeline",
-      "message": "0 picks after daily caps."
+      "message": "1 picks after line movement check. Applying per-sport daily caps..."
     },
     {
       "level": "info",
       "stage": "pipeline",
-      "message": "0 picks after publication whitelist."
+      "message": "1 picks after daily caps."
+    },
+    {
+      "level": "info",
+      "stage": "pipeline",
+      "message": "1 picks after publication whitelist."
+    },
+    {
+      "level": "info",
+      "stage": "pipeline",
+      "message": "1 picks after pre-publish line verification (0 dropped)."
+    },
+    {
+      "level": "info",
+      "stage": "pipeline",
+      "message": "appended 1 pick(s) to output/pick_history.jsonl (0 skipped as same-day duplicates)"
     }
   ]
 }

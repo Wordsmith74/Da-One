@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-07-18T11:57:18.415686+00:00",
-  "n_total_picks": 150,
-  "n_graded": 141,
-  "n_usable_for_search": 141,
+  "generated_at": "2026-07-19T12:02:50.786246+00:00",
+  "n_total_picks": 158,
+  "n_graded": 145,
+  "n_usable_for_search": 145,
   "min_sample_size": 15,
   "min_sample_size_nuke": 8,
   "gold_roi_floor": 0.0,
@@ -34,7 +34,7 @@
     {
       "sport": "MLB",
       "market_class": "prop",
-      "n_graded": 63,
+      "n_graded": 67,
       "status": "ok",
       "consensus_evaluated": true,
       "current_thresholds": {
@@ -56,37 +56,37 @@
           "edge_threshold": 3.72,
           "confidence_threshold": 70.0,
           "consensus_threshold": null,
-          "n": 63,
-          "wins": 37,
+          "n": 67,
+          "wins": 41,
           "losses": 25,
           "pushes": 1,
-          "win_pct": 0.5968,
-          "roi": 0.183,
-          "profit_units": 1.18
+          "win_pct": 0.6212,
+          "roi": 0.2881,
+          "profit_units": 2.12
         },
         "Diamond": {
           "edge_threshold": 3.72,
           "confidence_threshold": 72.9,
           "consensus_threshold": 0.5333,
-          "n": 24,
-          "wins": 15,
+          "n": 27,
+          "wins": 18,
           "losses": 8,
           "pushes": 1,
-          "win_pct": 0.6522,
-          "roi": 0.2555,
-          "profit_units": 1.14
+          "win_pct": 0.6923,
+          "roi": 0.3539,
+          "profit_units": 1.82
         },
         "Nuke": {
           "edge_threshold": 3.72,
-          "confidence_threshold": 74.0,
-          "consensus_threshold": 0.97,
-          "n": 19,
+          "confidence_threshold": 74.1,
+          "consensus_threshold": 1.0,
+          "n": 18,
           "wins": 12,
-          "losses": 6,
+          "losses": 5,
           "pushes": 1,
-          "win_pct": 0.6667,
-          "roi": 0.3105,
-          "profit_units": 1.15
+          "win_pct": 0.7059,
+          "roi": 0.4115,
+          "profit_units": 1.56
         }
       },
       "note": "OK"

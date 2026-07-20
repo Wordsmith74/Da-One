@@ -1,0 +1,87 @@
+name: Bucket Analysis Report
+
+# Runs core/bucket_analysis.py and surfaces the win-rate-by-bucket report:
+#   1. As plain text in this job's log
+#   2. Rendered into the workflow run's Job Summary (Actions tab -> this
+#      run -> Summary), so you don't have to open logs to read it
+#   3. As a downloadable .txt artifact
+#
+# Read-only: this script never writes to any file in the repo (it only
+# reads output/shadow_log_graded.jsonl and output/pick_history.jsonl), so
+# unlike optimize_thresholds.yml there's nothing to commit or reconcile.
+#
+# Manual-only: trigger from the Actions tab -> Bucket Analysis Report ->
+# Run workflow, with inputs for sport/markets/source/min sample size.
+on:
+  workflow_dispatch:
+    inputs:
+      sport:
+        description: 'Sport (e.g. WNBA, MLB)'
+        required: true
+        default: 'WNBA'
+      markets:
+        description: 'Space-separated market keys (blank = all markets for the sport)'
+        required: false
+        default: 'player_assists player_rebounds'
+      source:
+        description: 'Data source'
+        required: true
+        default: 'shadow_log'
+        type: choice
+        options:
+          - shadow_log
+          - pick_history
+      min_n:
+        description: 'Flag buckets below this sample size as low-confidence'
+        required: false
+        default: '20'
+
+permissions:
+  contents: read
+
+jobs:
+  bucket-report:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: python3 -m pip install -r requirements.txt
+
+      - name: Run bucket analysis
+        id: report
+        run: |
+          SPORT="${{ github.event.inputs.sport || 'WNBA' }}"
+          MARKETS="${{ github.event.inputs.markets || 'player_assists player_rebounds' }}"
+          SOURCE="${{ github.event.inputs.source || 'shadow_log' }}"
+          MIN_N="${{ github.event.inputs.min_n || '20' }}"
+
+          python3 -m core.bucket_analysis \
+            --sport "$SPORT" \
+            --market $MARKETS \
+            --source "$SOURCE" \
+            --min-n "$MIN_N" \
+            | tee bucket_report.txt
+
+      - name: Write job summary
+        if: always()
+        run: |
+          echo '## Bucket Analysis Report' >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          cat bucket_report.txt >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload report as artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bucket-report-${{ github.run_id }}
+          path: bucket_report.txt
+          if-no-files-found: warn
+          retention-days: 30

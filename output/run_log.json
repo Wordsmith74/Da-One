@@ -1,5 +1,5 @@
 {
-  "run_at": "2026-07-21T06:38:23.494003+00:00",
+  "run_at": "2026-07-21T11:46:43.807654+00:00",
   "n_errors": 0,
   "n_warnings": 0,
   "n_picks_generated": 4,
@@ -52,207 +52,147 @@
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Justin_Wrobleski_pitcher_strikeouts_over_41aa20c5: devig fair_prob=45.9% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
+      "message": "prop_Justin_Wrobleski_pitcher_strikeouts_over_41aa20c5: devig fair_prob=45.8% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Justin_Wrobleski_pitcher_strikeouts_under_41aa20c5: devig fair_prob=54.1% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
+      "message": "prop_Justin_Wrobleski_pitcher_strikeouts_under_41aa20c5: devig fair_prob=54.2% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Drew_Rasmussen_pitcher_strikeouts_over_267dae01: devig fair_prob=47.1% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
+      "message": "prop_Bubba_Chandler_pitcher_strikeouts_over_4b39d95f: devig fair_prob=55.0% books=['BetOnline', 'FanDuel'] weight_covered=0.65"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Drew_Rasmussen_pitcher_strikeouts_under_267dae01: devig fair_prob=52.9% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
+      "message": "prop_Kyle_Bradish_pitcher_strikeouts_over_ded16338: devig fair_prob=44.9% books=['BetOnline', 'FanDuel'] weight_covered=0.65"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Kevin_Gausman_pitcher_strikeouts_over_267dae01: devig fair_prob=44.7% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
+      "message": "prop_Walker_Buehler_pitcher_strikeouts_over_ebe684b6: devig fair_prob=53.0% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Kevin_Gausman_pitcher_strikeouts_under_267dae01: devig fair_prob=55.3% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
+      "message": "prop_Luinder_Avila_pitcher_strikeouts_over_a33e3895: STABILITY REJECT -- relative \u03c3=22.2% > 15% threshold (MLB  \u03c3=0.628  proj=2.83)"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Zack_Wheeler_pitcher_strikeouts_over_41aa20c5: devig fair_prob=53.8% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
+      "message": "prop_Noah_Schultz_pitcher_strikeouts_over_29917987: devig fair_prob=44.2% books=['BetOnline', 'FanDuel'] weight_covered=0.65"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Zack_Wheeler_pitcher_strikeouts_under_41aa20c5: devig fair_prob=46.2% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
+      "message": "prop_Will_Warren_pitcher_strikeouts_over_4b39d95f: devig fair_prob=48.5% books=['BetOnline', 'FanDuel'] weight_covered=0.65"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Kyle_Bradish_pitcher_strikeouts_over_ded16338: devig fair_prob=44.9% books=['FanDuel'] weight_covered=0.40"
+      "message": "prop_Bubba_Chandler_pitcher_strikeouts_under_4b39d95f: devig fair_prob=45.0% books=['BetOnline', 'FanDuel'] weight_covered=0.65"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Kyle_Bradish_pitcher_strikeouts_under_ded16338: devig fair_prob=55.1% books=['FanDuel'] weight_covered=0.40"
+      "message": "prop_Kyle_Bradish_pitcher_strikeouts_under_ded16338: devig fair_prob=55.1% books=['BetOnline', 'FanDuel'] weight_covered=0.65"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Walker_Buehler_pitcher_strikeouts_over_ebe684b6: devig fair_prob=52.3% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
+      "message": "prop_Walker_Buehler_pitcher_strikeouts_under_ebe684b6: devig fair_prob=47.0% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Walker_Buehler_pitcher_strikeouts_under_ebe684b6: devig fair_prob=47.7% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
+      "message": "prop_Luinder_Avila_pitcher_strikeouts_under_a33e3895: STABILITY REJECT -- relative \u03c3=22.2% > 15% threshold (MLB  \u03c3=0.626  proj=2.83)"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Framber_Valdez_pitcher_strikeouts_over_38b96dae: devig fair_prob=50.4% books=['FanDuel'] weight_covered=0.40"
+      "message": "prop_Brandon_Sproat_pitcher_strikeouts_over_aac7942a: devig fair_prob=52.8% books=['BetOnline', 'FanDuel'] weight_covered=0.65"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Framber_Valdez_pitcher_strikeouts_under_38b96dae: devig fair_prob=49.6% books=['FanDuel'] weight_covered=0.40"
+      "message": "prop_Framber_Valdez_pitcher_strikeouts_over_38b96dae: devig fair_prob=50.9% books=['BetOnline', 'FanDuel'] weight_covered=0.65"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Bubba_Chandler_pitcher_strikeouts_over_4b39d95f: devig fair_prob=54.7% books=['FanDuel'] weight_covered=0.40"
+      "message": "prop_Noah_Schultz_pitcher_strikeouts_under_29917987: devig fair_prob=55.8% books=['BetOnline', 'FanDuel'] weight_covered=0.65"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Bubba_Chandler_pitcher_strikeouts_under_4b39d95f: devig fair_prob=45.3% books=['FanDuel'] weight_covered=0.40"
+      "message": "prop_Tyler_Phillips_pitcher_strikeouts_over_8a1eca9b: devig fair_prob=46.6% books=['BetOnline', 'FanDuel'] weight_covered=0.65"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Luinder_Avila_pitcher_strikeouts_over_a33e3895: STABILITY REJECT -- relative \u03c3=21.4% > 15% threshold (MLB  \u03c3=0.610  proj=2.84)"
+      "message": "prop_Zack_Wheeler_pitcher_strikeouts_over_41aa20c5: devig fair_prob=54.0% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Luinder_Avila_pitcher_strikeouts_under_a33e3895: STABILITY REJECT -- relative \u03c3=21.8% > 15% threshold (MLB  \u03c3=0.617  proj=2.83)"
+      "message": "prop_Will_Warren_pitcher_strikeouts_under_4b39d95f: devig fair_prob=51.5% books=['BetOnline', 'FanDuel'] weight_covered=0.65"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Will_Warren_pitcher_strikeouts_over_4b39d95f: devig fair_prob=49.6% books=['FanDuel'] weight_covered=0.40"
+      "message": "prop_Drew_Rasmussen_pitcher_strikeouts_over_267dae01: devig fair_prob=46.7% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Will_Warren_pitcher_strikeouts_under_4b39d95f: devig fair_prob=50.4% books=['FanDuel'] weight_covered=0.40"
+      "message": "prop_Drew_Rasmussen_pitcher_strikeouts_under_267dae01: devig fair_prob=53.3% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Ranger_Suarez_pitcher_strikeouts_over_ded16338: devig fair_prob=50.0% books=['FanDuel'] weight_covered=0.40"
+      "message": "prop_Brandon_Sproat_pitcher_strikeouts_under_aac7942a: devig fair_prob=47.2% books=['BetOnline', 'FanDuel'] weight_covered=0.65"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Ranger_Suarez_pitcher_strikeouts_under_ded16338: devig fair_prob=50.0% books=['FanDuel'] weight_covered=0.40"
+      "message": "prop_Framber_Valdez_pitcher_strikeouts_under_38b96dae: devig fair_prob=49.1% books=['BetOnline', 'FanDuel'] weight_covered=0.65"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Chase_Burns_pitcher_strikeouts_over_3c82e5f5: devig fair_prob=57.5% books=['BetOnline', 'FanDuel'] weight_covered=0.65"
+      "message": "prop_Kumar_Rocker_pitcher_strikeouts_over_29917987: devig fair_prob=57.0% books=['BetOnline', 'FanDuel'] weight_covered=0.65"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Chase_Burns_pitcher_strikeouts_under_3c82e5f5: devig fair_prob=42.5% books=['BetOnline', 'FanDuel'] weight_covered=0.65"
+      "message": "prop_Tyler_Phillips_pitcher_strikeouts_under_8a1eca9b: devig fair_prob=53.4% books=['BetOnline', 'FanDuel'] weight_covered=0.65"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Tatsuya_Imai_pitcher_strikeouts_over_8a1eca9b: devig fair_prob=58.6% books=['FanDuel'] weight_covered=0.40"
+      "message": "prop_Michael_Lorenzen_pitcher_strikeouts_over_0d8a1012: STABILITY REJECT -- relative \u03c3=20.1% > 15% threshold (MLB  \u03c3=0.563  proj=2.80)"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "Gatekeeper: 4 approved / 19 flagged / 0 discarded"
+      "message": "Gatekeeper: 4 approved / 18 flagged / 0 discarded"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Justin_Wrobleski_pitcher_strikeouts_over_41aa20c5: GATEKEEPER FLAGGED -- tier=None edge=3.48% conf=60.5 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (55.5\u219260.5); Market entry floor [pitcher_strikeouts]: conf 60.5 < floor 70"
+      "message": "prop_Justin_Wrobleski_pitcher_strikeouts_over_41aa20c5: GATEKEEPER FLAGGED -- tier=None edge=3.39% conf=60.3 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (55.3\u219260.3); Market entry floor [pitcher_strikeouts]: conf 60.3 < floor 70"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Justin_Wrobleski_pitcher_strikeouts_under_41aa20c5: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=60.5 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (55.5\u219260.5); Market entry floor [pitcher_strikeouts]: edge 0.00% < floor 3.0%; conf 60.5 < floor 70"
+      "message": "prop_Justin_Wrobleski_pitcher_strikeouts_under_41aa20c5: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=60.3 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (55.3\u219260.3); Market entry floor [pitcher_strikeouts]: edge 0.00% < floor 3.0%; conf 60.3 < floor 70"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Zack_Wheeler_pitcher_strikeouts_under_41aa20c5: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=100.0 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (99.0\u2192100.0); Market entry floor [pitcher_strikeouts]: edge 0.00% < floor 3.0%"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "prop_Drew_Rasmussen_pitcher_strikeouts_over_267dae01: GATEKEEPER FLAGGED -- tier=None edge=6.30% conf=67.3 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (62.3\u219267.3); Market entry floor [pitcher_strikeouts]: conf 67.3 < floor 70"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "prop_Drew_Rasmussen_pitcher_strikeouts_under_267dae01: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=67.4 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (62.4\u219267.4); Market entry floor [pitcher_strikeouts]: edge 0.00% < floor 3.0%; conf 67.4 < floor 70"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "prop_Kevin_Gausman_pitcher_strikeouts_under_267dae01: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=89.1 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (84.1\u219289.1); Market entry floor [pitcher_strikeouts]: edge 0.00% < floor 3.0%"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "prop_Kyle_Bradish_pitcher_strikeouts_over_ded16338: GATEKEEPER FLAGGED -- tier=None edge=11.08% conf=73.8 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (73.8\u219278.8); MLB K OVER hook-risk [workload=Medium]: conf \u22125pts (78.8\u219273.8)"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "prop_Kyle_Bradish_pitcher_strikeouts_under_ded16338: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=78.7 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (73.7\u219278.7); Market entry floor [pitcher_strikeouts]: edge 0.00% < floor 3.0%"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "prop_Ranger_Suarez_pitcher_strikeouts_under_ded16338: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=96.8 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (91.8\u219296.8); Market entry floor [pitcher_strikeouts]: edge 0.00% < floor 3.0%"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "prop_Walker_Buehler_pitcher_strikeouts_over_ebe684b6: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=55.6 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (50.6\u219255.6); Market entry floor [pitcher_strikeouts]: edge 0.00% < floor 3.0%; conf 55.6 < floor 70"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "prop_Walker_Buehler_pitcher_strikeouts_under_ebe684b6: GATEKEEPER FLAGGED -- tier=None edge=0.45% conf=55.6 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (50.6\u219255.6); Market entry floor [pitcher_strikeouts]: edge 0.45% < floor 3.0%; conf 55.6 < floor 70"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "prop_Framber_Valdez_pitcher_strikeouts_over_38b96dae: GATEKEEPER FLAGGED -- tier=None edge=9.30% conf=73.5 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (73.5\u219278.5); MLB K OVER hook-risk [workload=Medium]: conf \u22125pts (78.5\u219273.5)"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "prop_Framber_Valdez_pitcher_strikeouts_under_38b96dae: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=78.6 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (73.6\u219278.6); Market entry floor [pitcher_strikeouts]: edge 0.00% < floor 3.0%"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "prop_Bubba_Chandler_pitcher_strikeouts_over_4b39d95f: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=55.4 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (50.4\u219255.4); Market entry floor [pitcher_strikeouts]: edge 0.00% < floor 3.0%; conf 55.4 < floor 70"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "prop_Bubba_Chandler_pitcher_strikeouts_under_4b39d95f: GATEKEEPER FLAGGED -- tier=None edge=1.10% conf=55.5 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (50.5\u219255.5); Market entry floor [pitcher_strikeouts]: edge 1.10% < floor 3.0%; conf 55.5 < floor 70"
+      "message": "prop_Bubba_Chandler_pitcher_strikeouts_over_4b39d95f: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=55.5 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (50.5\u219255.5); Market entry floor [pitcher_strikeouts]: edge 0.00% < floor 3.0%; conf 55.5 < floor 70"
     },
     {
       "level": "info",
@@ -262,17 +202,72 @@
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Chase_Burns_pitcher_strikeouts_over_3c82e5f5: GATEKEEPER FLAGGED -- tier=None edge=6.86% conf=74.5 market=pitcher_strikeouts | L5 cold-streak brake [reduced \u2014 L5 in NUTS posterior]: L5=6.00 < line=7.00 \u2014 recent form contradicts OVER; confidence \u22123pts"
+      "message": "prop_Bubba_Chandler_pitcher_strikeouts_under_4b39d95f: GATEKEEPER FLAGGED -- tier=None edge=1.17% conf=55.5 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (50.5\u219255.5); Market entry floor [pitcher_strikeouts]: edge 1.17% < floor 3.0%; conf 55.5 < floor 70"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Chase_Burns_pitcher_strikeouts_under_3c82e5f5: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=84.6 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (79.6\u219284.6); Market entry floor [pitcher_strikeouts]: edge 0.00% < floor 3.0%"
+      "message": "prop_Kyle_Bradish_pitcher_strikeouts_over_ded16338: GATEKEEPER FLAGGED -- tier=None edge=11.13% conf=73.9 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (73.9\u219278.9); MLB K OVER hook-risk [workload=Medium]: conf \u22125pts (78.9\u219273.9)"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Tatsuya_Imai_pitcher_strikeouts_over_8a1eca9b: GATEKEEPER FLAGGED -- tier=None edge=1.45% conf=64.2 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (59.2\u219264.2); Market entry floor [pitcher_strikeouts]: edge 1.45% < floor 3.0%; conf 64.2 < floor 70"
+      "message": "prop_Kyle_Bradish_pitcher_strikeouts_under_ded16338: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=78.7 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (73.7\u219278.7); Market entry floor [pitcher_strikeouts]: edge 0.00% < floor 3.0%"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "prop_Walker_Buehler_pitcher_strikeouts_over_ebe684b6: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=55.6 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (50.6\u219255.6); Market entry floor [pitcher_strikeouts]: edge 0.00% < floor 3.0%; conf 55.6 < floor 70"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "prop_Walker_Buehler_pitcher_strikeouts_under_ebe684b6: GATEKEEPER FLAGGED -- tier=None edge=0.70% conf=55.5 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (50.5\u219255.5); Market entry floor [pitcher_strikeouts]: edge 0.70% < floor 3.0%; conf 55.5 < floor 70"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "prop_Noah_Schultz_pitcher_strikeouts_over_29917987: GATEKEEPER FLAGGED -- tier=None edge=0.42% conf=57.1 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (52.1\u219257.1); Market entry floor [pitcher_strikeouts]: edge 0.42% < floor 3.0%; conf 57.1 < floor 70"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "prop_Noah_Schultz_pitcher_strikeouts_under_29917987: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=59.8 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (54.8\u219259.8); Market entry floor [pitcher_strikeouts]: edge 0.00% < floor 3.0%; conf 59.8 < floor 70"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "prop_Kumar_Rocker_pitcher_strikeouts_over_29917987: GATEKEEPER FLAGGED -- tier=None edge=8.13% conf=76.1 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (76.1\u219281.1); MLB K OVER hook-risk [workload=Medium]: conf \u22125pts (81.1\u219276.1)"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "prop_Brandon_Sproat_pitcher_strikeouts_under_aac7942a: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=88.6 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (83.6\u219288.6); Market entry floor [pitcher_strikeouts]: edge 0.00% < floor 3.0%"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "prop_Framber_Valdez_pitcher_strikeouts_over_38b96dae: GATEKEEPER FLAGGED -- tier=None edge=9.23% conf=73.7 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (73.7\u219278.7); MLB K OVER hook-risk [workload=Medium]: conf \u22125pts (78.7\u219273.7)"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "prop_Framber_Valdez_pitcher_strikeouts_under_38b96dae: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=78.7 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (73.7\u219278.7); Market entry floor [pitcher_strikeouts]: edge 0.00% < floor 3.0%"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "prop_Tyler_Phillips_pitcher_strikeouts_over_8a1eca9b: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=87.5 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (82.5\u219287.5); Market entry floor [pitcher_strikeouts]: edge 0.00% < floor 3.0%"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "prop_Drew_Rasmussen_pitcher_strikeouts_over_267dae01: GATEKEEPER FLAGGED -- tier=None edge=6.52% conf=67.6 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (62.6\u219267.6); Market entry floor [pitcher_strikeouts]: conf 67.6 < floor 70"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "prop_Drew_Rasmussen_pitcher_strikeouts_under_267dae01: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=67.3 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (62.3\u219267.3); Market entry floor [pitcher_strikeouts]: edge 0.00% < floor 3.0%; conf 67.3 < floor 70"
     },
     {
       "level": "info",
@@ -322,7 +317,7 @@
     {
       "level": "info",
       "stage": "pipeline",
-      "message": "appended 4 pick(s) to output/pick_history.jsonl (0 skipped as same-day duplicates)"
+      "message": "appended 3 pick(s) to output/pick_history.jsonl (1 skipped as same-day duplicates)"
     }
   ]
 }

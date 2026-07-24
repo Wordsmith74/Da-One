@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-07-23T12:28:07.033646+00:00",
-  "n_total_picks": 179,
-  "n_graded": 169,
-  "n_usable_for_search": 169,
+  "generated_at": "2026-07-24T12:23:56.844109+00:00",
+  "n_total_picks": 181,
+  "n_graded": 173,
+  "n_usable_for_search": 173,
   "min_sample_size": 15,
   "min_sample_size_nuke": 8,
   "gold_roi_floor": 0.0,
@@ -34,7 +34,7 @@
     {
       "sport": "MLB",
       "market_class": "prop",
-      "n_graded": 88,
+      "n_graded": 92,
       "status": "ok",
       "consensus_evaluated": true,
       "current_thresholds": {
@@ -56,37 +56,37 @@
           "edge_threshold": 3.72,
           "confidence_threshold": 70.0,
           "consensus_threshold": null,
-          "n": 88,
-          "wins": 53,
-          "losses": 34,
+          "n": 92,
+          "wins": 55,
+          "losses": 36,
           "pushes": 1,
-          "win_pct": 0.6092,
-          "roi": 0.2072,
-          "profit_units": 2.38
+          "win_pct": 0.6044,
+          "roi": 0.1935,
+          "profit_units": 2.39
         },
         "Diamond": {
           "edge_threshold": 3.72,
           "confidence_threshold": 72.9,
-          "consensus_threshold": 0.5333,
-          "n": 39,
-          "wins": 25,
-          "losses": 13,
+          "consensus_threshold": 0.25,
+          "n": 43,
+          "wins": 27,
+          "losses": 15,
           "pushes": 1,
-          "win_pct": 0.6579,
-          "roi": 0.278,
-          "profit_units": 2.13
+          "win_pct": 0.6429,
+          "roi": 0.2477,
+          "profit_units": 2.12
         },
         "Nuke": {
           "edge_threshold": 3.72,
-          "confidence_threshold": 84.2,
-          "consensus_threshold": 0.5333,
-          "n": 15,
-          "wins": 10,
-          "losses": 4,
+          "confidence_threshold": 84.1,
+          "consensus_threshold": 0.35,
+          "n": 17,
+          "wins": 11,
+          "losses": 5,
           "pushes": 1,
-          "win_pct": 0.7143,
-          "roi": 0.3698,
-          "profit_units": 1.23
+          "win_pct": 0.6875,
+          "roi": 0.3283,
+          "profit_units": 1.25
         }
       },
       "note": "OK"

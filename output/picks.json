@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-26T10:59:24.589400+00:00",
+  "generated_at": "2026-07-26T11:18:15.598024+00:00",
   "picks": [
     {
       "sport": "MLB",
@@ -34,7 +34,7 @@
       "ccs_score": 77.95,
       "robustness": "robust",
       "line_move_pct": 0.0,
-      "pick_id": "6478a4c1ea30",
+      "pick_id": "9e91aa26beb3",
       "actual_result": null,
       "closing_line": null,
       "clv_pct": null
@@ -69,10 +69,10 @@
       "posterior_mean": null,
       "relative_sigma_pct": null,
       "stake_pct_bankroll": 6.8,
-      "ccs_score": 68.91,
+      "ccs_score": 67.82,
       "robustness": "moderate",
       "line_move_pct": 0.0,
-      "pick_id": "2e55fad652b8",
+      "pick_id": "5c375455d93a",
       "actual_result": null,
       "closing_line": null,
       "clv_pct": null
@@ -110,7 +110,7 @@
       "ccs_score": 58.34,
       "robustness": "fragile",
       "line_move_pct": 0.0,
-      "pick_id": "ca778505de40",
+      "pick_id": "f7e32a6c83f7",
       "actual_result": null,
       "closing_line": null,
       "clv_pct": null
@@ -148,7 +148,7 @@
       "ccs_score": 74.7,
       "robustness": "robust",
       "line_move_pct": 0.0,
-      "pick_id": "c8099b1c545f",
+      "pick_id": "21be50505c0a",
       "actual_result": null,
       "closing_line": null,
       "clv_pct": null
@@ -166,12 +166,12 @@
       "side": "under",
       "pick": "Andrew Abbott pitcher_strikeouts under 3.5",
       "pick_time_line": 3.5,
-      "pick_time_odds": 144.0,
+      "pick_time_odds": 143.0,
       "current_line": 3.5,
-      "current_odds": 144.0,
+      "current_odds": 143.0,
       "line": 3.5,
       "model_number": 52.4,
-      "edge_pct": 3.05,
+      "edge_pct": 3.0,
       "confidence": 70.5,
       "model_prob": 52.4,
       "tier": "Gold Standard",
@@ -182,11 +182,11 @@
       "posterior_std": null,
       "posterior_mean": null,
       "relative_sigma_pct": null,
-      "stake_pct_bankroll": 4.84,
-      "ccs_score": 57.58,
+      "stake_pct_bankroll": 4.78,
+      "ccs_score": 57.54,
       "robustness": "fragile",
       "line_move_pct": 0.0,
-      "pick_id": "784836d48d6f",
+      "pick_id": "affc8a9d46fb",
       "actual_result": null,
       "closing_line": null,
       "clv_pct": null
@@ -224,7 +224,7 @@
       "ccs_score": 72.56,
       "robustness": "robust",
       "line_move_pct": 0.0,
-      "pick_id": "feda718ecc33",
+      "pick_id": "5bf608362a22",
       "actual_result": null,
       "closing_line": null,
       "clv_pct": null

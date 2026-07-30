@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-07-29T13:05:21.208684+00:00",
-  "n_total_picks": 211,
-  "n_graded": 199,
-  "n_usable_for_search": 199,
+  "generated_at": "2026-07-30T12:48:55.635217+00:00",
+  "n_total_picks": 218,
+  "n_graded": 205,
+  "n_usable_for_search": 205,
   "min_sample_size": 15,
   "min_sample_size_nuke": 8,
   "gold_roi_floor": 0.0,
@@ -34,7 +34,7 @@
     {
       "sport": "MLB",
       "market_class": "prop",
-      "n_graded": 117,
+      "n_graded": 122,
       "status": "ok",
       "consensus_evaluated": true,
       "current_thresholds": {
@@ -56,37 +56,37 @@
           "edge_threshold": 1.79,
           "confidence_threshold": 70.0,
           "consensus_threshold": null,
-          "n": 117,
-          "wins": 64,
-          "losses": 52,
+          "n": 122,
+          "wins": 68,
+          "losses": 53,
           "pushes": 1,
-          "win_pct": 0.5517,
-          "roi": 0.1235,
-          "profit_units": 1.85
+          "win_pct": 0.562,
+          "roi": 0.1386,
+          "profit_units": 2.13
         },
         "Diamond": {
           "edge_threshold": 1.79,
           "confidence_threshold": 72.9,
-          "consensus_threshold": 0.25,
-          "n": 48,
+          "consensus_threshold": 0.35,
+          "n": 47,
           "wins": 28,
-          "losses": 19,
+          "losses": 18,
           "pushes": 1,
-          "win_pct": 0.5957,
-          "roi": 0.1851,
-          "profit_units": 1.75
+          "win_pct": 0.6087,
+          "roi": 0.2138,
+          "profit_units": 1.97
         },
         "Nuke": {
           "edge_threshold": 1.79,
           "confidence_threshold": 83.5,
-          "consensus_threshold": 0.25,
-          "n": 20,
+          "consensus_threshold": 0.35,
+          "n": 19,
           "wins": 12,
-          "losses": 7,
+          "losses": 6,
           "pushes": 1,
-          "win_pct": 0.6316,
-          "roi": 0.2424,
-          "profit_units": 1.09
+          "win_pct": 0.6667,
+          "roi": 0.3075,
+          "profit_units": 1.31
         }
       },
       "note": "OK"
@@ -132,7 +132,7 @@
     {
       "sport": "WNBA",
       "market_class": "prop",
-      "n_graded": 17,
+      "n_graded": 18,
       "status": "insufficient_data",
       "consensus_evaluated": false,
       "current_thresholds": {

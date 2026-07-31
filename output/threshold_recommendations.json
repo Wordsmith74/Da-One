@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-07-30T12:48:55.635217+00:00",
-  "n_total_picks": 218,
-  "n_graded": 205,
-  "n_usable_for_search": 205,
+  "generated_at": "2026-07-31T13:01:10.098359+00:00",
+  "n_total_picks": 225,
+  "n_graded": 212,
+  "n_usable_for_search": 212,
   "min_sample_size": 15,
   "min_sample_size_nuke": 8,
   "gold_roi_floor": 0.0,
@@ -34,7 +34,7 @@
     {
       "sport": "MLB",
       "market_class": "prop",
-      "n_graded": 122,
+      "n_graded": 128,
       "status": "ok",
       "consensus_evaluated": true,
       "current_thresholds": {
@@ -56,37 +56,37 @@
           "edge_threshold": 1.79,
           "confidence_threshold": 70.0,
           "consensus_threshold": null,
-          "n": 122,
-          "wins": 68,
-          "losses": 53,
+          "n": 128,
+          "wins": 69,
+          "losses": 58,
           "pushes": 1,
-          "win_pct": 0.562,
-          "roi": 0.1386,
-          "profit_units": 2.13
+          "win_pct": 0.5433,
+          "roi": 0.1138,
+          "profit_units": 1.81
         },
         "Diamond": {
           "edge_threshold": 1.79,
           "confidence_threshold": 72.9,
-          "consensus_threshold": 0.35,
-          "n": 47,
+          "consensus_threshold": 0.25,
+          "n": 48,
           "wins": 28,
-          "losses": 18,
+          "losses": 19,
           "pushes": 1,
-          "win_pct": 0.6087,
-          "roi": 0.2138,
-          "profit_units": 1.97
+          "win_pct": 0.5957,
+          "roi": 0.1851,
+          "profit_units": 1.75
         },
         "Nuke": {
           "edge_threshold": 1.79,
-          "confidence_threshold": 83.5,
+          "confidence_threshold": 79.3,
           "consensus_threshold": 0.35,
-          "n": 19,
-          "wins": 12,
-          "losses": 6,
+          "n": 34,
+          "wins": 21,
+          "losses": 12,
           "pushes": 1,
-          "win_pct": 0.6667,
-          "roi": 0.3075,
-          "profit_units": 1.31
+          "win_pct": 0.6364,
+          "roi": 0.2448,
+          "profit_units": 1.79
         }
       },
       "note": "OK"
@@ -94,7 +94,7 @@
     {
       "sport": "WNBA",
       "market_class": "game",
-      "n_graded": 34,
+      "n_graded": 35,
       "status": "ok",
       "consensus_evaluated": false,
       "current_thresholds": {
@@ -116,18 +116,18 @@
           "edge_threshold": 1.19,
           "confidence_threshold": 69.9,
           "consensus_threshold": null,
-          "n": 34,
+          "n": 35,
           "wins": 17,
-          "losses": 17,
+          "losses": 18,
           "pushes": 0,
-          "win_pct": 0.5,
-          "roi": 0.2096,
-          "profit_units": 0.41
+          "win_pct": 0.4857,
+          "roi": 0.1267,
+          "profit_units": 0.27
         },
         "Diamond": null,
         "Nuke": null
       },
-      "note": "No Diamond cutoff beat Gold's ROI by the required margin -- recommend collapsing Diamond into Gold for this group. consensus_not_evaluated: only 9 picks had side_agreement_frac populated (need >= 15)."
+      "note": "No Diamond cutoff beat Gold's ROI by the required margin -- recommend collapsing Diamond into Gold for this group. consensus_not_evaluated: only 10 picks had side_agreement_frac populated (need >= 15)."
     },
     {
       "sport": "WNBA",

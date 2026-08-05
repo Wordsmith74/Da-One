@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-08-04T13:06:06.882408+00:00",
-  "n_total_picks": 256,
-  "n_graded": 242,
-  "n_usable_for_search": 242,
+  "generated_at": "2026-08-05T12:59:06.585016+00:00",
+  "n_total_picks": 269,
+  "n_graded": 250,
+  "n_usable_for_search": 250,
   "min_sample_size": 15,
   "min_sample_size_nuke": 8,
   "gold_roi_floor": 0.0,
@@ -34,7 +34,7 @@
     {
       "sport": "MLB",
       "market_class": "prop",
-      "n_graded": 155,
+      "n_graded": 163,
       "status": "ok",
       "consensus_evaluated": true,
       "current_thresholds": {
@@ -53,40 +53,40 @@
       },
       "recommended": {
         "Gold": {
-          "edge_threshold": 1.55,
+          "edge_threshold": 1.33,
           "confidence_threshold": 70.0,
           "consensus_threshold": null,
-          "n": 155,
-          "wins": 83,
-          "losses": 71,
+          "n": 163,
+          "wins": 85,
+          "losses": 77,
           "pushes": 1,
-          "win_pct": 0.539,
-          "roi": 0.1061,
-          "profit_units": 1.89
+          "win_pct": 0.5247,
+          "roi": 0.0862,
+          "profit_units": 1.57
         },
         "Diamond": {
-          "edge_threshold": 1.55,
-          "confidence_threshold": 73.0,
-          "consensus_threshold": 0.25,
-          "n": 47,
-          "wins": 27,
-          "losses": 19,
+          "edge_threshold": 1.33,
+          "confidence_threshold": 72.9,
+          "consensus_threshold": 0.0,
+          "n": 63,
+          "wins": 35,
+          "losses": 27,
           "pushes": 1,
-          "win_pct": 0.587,
-          "roi": 0.1737,
-          "profit_units": 1.62
+          "win_pct": 0.5645,
+          "roi": 0.1477,
+          "profit_units": 1.83
         },
         "Nuke": {
-          "edge_threshold": 1.55,
-          "confidence_threshold": 79.3,
+          "edge_threshold": 1.33,
+          "confidence_threshold": 77.3,
           "consensus_threshold": 0.35,
-          "n": 34,
-          "wins": 21,
-          "losses": 12,
+          "n": 38,
+          "wins": 22,
+          "losses": 15,
           "pushes": 1,
-          "win_pct": 0.6364,
-          "roi": 0.2448,
-          "profit_units": 1.79
+          "win_pct": 0.5946,
+          "roi": 0.1996,
+          "profit_units": 1.58
         }
       },
       "note": "OK"

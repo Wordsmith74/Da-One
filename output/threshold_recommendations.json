@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-08-06T13:00:35.319211+00:00",
-  "n_total_picks": 273,
-  "n_graded": 263,
-  "n_usable_for_search": 263,
+  "generated_at": "2026-08-07T11:50:44.872109+00:00",
+  "n_total_picks": 276,
+  "n_graded": 267,
+  "n_usable_for_search": 267,
   "min_sample_size": 15,
   "min_sample_size_nuke": 8,
   "gold_roi_floor": 0.0,
@@ -34,7 +34,7 @@
     {
       "sport": "MLB",
       "market_class": "prop",
-      "n_graded": 171,
+      "n_graded": 175,
       "status": "ok",
       "consensus_evaluated": true,
       "current_thresholds": {
@@ -56,37 +56,37 @@
           "edge_threshold": 1.21,
           "confidence_threshold": 70.0,
           "consensus_threshold": null,
-          "n": 171,
-          "wins": 90,
-          "losses": 80,
+          "n": 175,
+          "wins": 91,
+          "losses": 83,
           "pushes": 1,
-          "win_pct": 0.5294,
-          "roi": 0.0864,
-          "profit_units": 1.62
+          "win_pct": 0.523,
+          "roi": 0.0802,
+          "profit_units": 1.52
         },
         "Diamond": {
           "edge_threshold": 1.21,
-          "confidence_threshold": 72.9,
+          "confidence_threshold": 72.7,
           "consensus_threshold": 0.0,
-          "n": 63,
-          "wins": 35,
+          "n": 64,
+          "wins": 36,
           "losses": 27,
           "pushes": 1,
-          "win_pct": 0.5645,
-          "roi": 0.1477,
-          "profit_units": 1.83
+          "win_pct": 0.5714,
+          "roi": 0.1565,
+          "profit_units": 1.96
         },
         "Nuke": {
           "edge_threshold": 1.21,
-          "confidence_threshold": 77.4,
-          "consensus_threshold": 0.35,
-          "n": 38,
-          "wins": 22,
-          "losses": 15,
+          "confidence_threshold": 79.3,
+          "consensus_threshold": 0.25,
+          "n": 35,
+          "wins": 21,
+          "losses": 13,
           "pushes": 1,
-          "win_pct": 0.5946,
-          "roi": 0.1996,
-          "profit_units": 1.58
+          "win_pct": 0.6176,
+          "roi": 0.2079,
+          "profit_units": 1.56
         }
       },
       "note": "OK"

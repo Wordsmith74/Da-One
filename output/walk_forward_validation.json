@@ -1,0 +1,176 @@
+{
+  "generated_at": "2026-08-11T21:28:25.239813+00:00",
+  "method": "chronological_split walk-forward (train_frac=0.6)",
+  "min_sample_size_train": 15,
+  "min_sample_size_test": 8,
+  "groups": [
+    {
+      "sport": "MLB",
+      "market_class": "game",
+      "n_graded": 30,
+      "status": "ok",
+      "train_window": [
+        "2026-07-07T11:02:14.113522+00:00",
+        "2026-07-09T08:58:26.440956+00:00"
+      ],
+      "test_window": [
+        "2026-07-09T08:58:26.440956+00:00",
+        "2026-07-11T01:10:48.780600+00:00"
+      ],
+      "train_n": 18,
+      "test_n": 12,
+      "tiers": {
+        "Gold": {
+          "status": "no_train_candidate"
+        },
+        "Diamond": {
+          "status": "no_train_candidate"
+        },
+        "Nuke": {
+          "status": "no_train_candidate"
+        }
+      }
+    },
+    {
+      "sport": "MLB",
+      "market_class": "prop",
+      "n_graded": 175,
+      "status": "ok",
+      "train_window": [
+        "2026-07-03T02:00:28.176366+00:00",
+        "2026-07-30T11:52:15.766461+00:00"
+      ],
+      "test_window": [
+        "2026-07-30T11:52:15.766461+00:00",
+        "2026-08-11T20:59:27.534972+00:00"
+      ],
+      "train_n": 105,
+      "test_n": 70,
+      "tiers": {
+        "Gold": {
+          "status": "failed_walk_forward",
+          "train": {
+            "edge_threshold": 1.79,
+            "confidence_threshold": 70.0,
+            "consensus_threshold": null,
+            "n": 105,
+            "wins": 56,
+            "losses": 48,
+            "pushes": 1,
+            "win_pct": 0.5385,
+            "roi": 0.1194,
+            "profit_units": 1.76
+          },
+          "test": {
+            "edge_threshold": 1.79,
+            "confidence_threshold": 70.0,
+            "consensus_threshold": null,
+            "n": 60,
+            "wins": 29,
+            "losses": 31,
+            "pushes": 0,
+            "win_pct": 0.4833,
+            "roi": -0.0515,
+            "profit_units": -0.2
+          },
+          "roi_drop": 0.1709,
+          "note": "FAILED: train ROI +11.9% did not hold up out-of-sample (test ROI -5.1% on n=60) -- likely overfit to the training window. Do not deploy this cutoff."
+        },
+        "Diamond": {
+          "status": "insufficient_test_volume",
+          "train": {
+            "edge_threshold": 1.79,
+            "confidence_threshold": 72.7,
+            "consensus_threshold": 0.25,
+            "n": 43,
+            "wins": 25,
+            "losses": 17,
+            "pushes": 1,
+            "win_pct": 0.5952,
+            "roi": 0.1957,
+            "profit_units": 1.69
+          },
+          "test_n": 0,
+          "note": "Only 0 test-fold picks cleared this cutoff (need >= 8) -- can't validate either way."
+        },
+        "Nuke": {
+          "status": "insufficient_test_volume",
+          "train": {
+            "edge_threshold": 1.79,
+            "confidence_threshold": 85.2,
+            "consensus_threshold": 0.25,
+            "n": 16,
+            "wins": 10,
+            "losses": 5,
+            "pushes": 1,
+            "win_pct": 0.6667,
+            "roi": 0.3193,
+            "profit_units": 1.19
+          },
+          "test_n": 0,
+          "note": "Only 0 test-fold picks cleared this cutoff (need >= 8) -- can't validate either way."
+        }
+      }
+    },
+    {
+      "sport": "WNBA",
+      "market_class": "game",
+      "n_graded": 46,
+      "status": "ok",
+      "train_window": [
+        "2026-07-03T05:29:39.845949+00:00",
+        "2026-07-12T11:11:08.934849+00:00"
+      ],
+      "test_window": [
+        "2026-07-15T04:53:30.376666+00:00",
+        "2026-08-09T09:13:05.977991+00:00"
+      ],
+      "train_n": 27,
+      "test_n": 19,
+      "tiers": {
+        "Gold": {
+          "status": "validated",
+          "train": {
+            "edge_threshold": 1.19,
+            "confidence_threshold": 70.1,
+            "consensus_threshold": null,
+            "n": 27,
+            "wins": 12,
+            "losses": 15,
+            "pushes": 0,
+            "win_pct": 0.4444,
+            "roi": 0.2176,
+            "profit_units": 0.28
+          },
+          "test": {
+            "edge_threshold": 1.19,
+            "confidence_threshold": 70.1,
+            "consensus_threshold": null,
+            "n": 17,
+            "wins": 9,
+            "losses": 8,
+            "pushes": 0,
+            "win_pct": 0.5294,
+            "roi": 0.0101,
+            "profit_units": 0.01
+          },
+          "roi_drop": 0.2075,
+          "note": "Train ROI +21.8% -> Test ROI +1.0% on n=17 picks the search never saw."
+        },
+        "Diamond": {
+          "status": "no_train_candidate"
+        },
+        "Nuke": {
+          "status": "no_train_candidate"
+        }
+      }
+    },
+    {
+      "sport": "WNBA",
+      "market_class": "prop",
+      "n_graded": 17,
+      "status": "insufficient_data_for_walk_forward",
+      "note": "Need >= 23 graded picks to split into a trainable train fold and an evaluable test fold (have 17)."
+    }
+  ]
+}

@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-08-10T11:53:02.541561+00:00",
-  "n_total_picks": 295,
-  "n_graded": 286,
-  "n_usable_for_search": 286,
+  "generated_at": "2026-08-11T11:49:27.809560+00:00",
+  "n_total_picks": 298,
+  "n_graded": 289,
+  "n_usable_for_search": 289,
   "min_sample_size": 15,
   "min_sample_size_nuke": 8,
   "gold_roi_floor": 0.0,
@@ -34,7 +34,7 @@
     {
       "sport": "MLB",
       "market_class": "prop",
-      "n_graded": 190,
+      "n_graded": 193,
       "status": "ok",
       "consensus_evaluated": true,
       "current_thresholds": {
@@ -54,19 +54,19 @@
       "recommended": {
         "Gold": {
           "edge_threshold": 1.21,
-          "confidence_threshold": 70.0,
+          "confidence_threshold": 69.89999999999999,
           "consensus_threshold": null,
-          "n": 190,
-          "wins": 99,
-          "losses": 90,
+          "n": 193,
+          "wins": 100,
+          "losses": 92,
           "pushes": 1,
-          "win_pct": 0.5238,
-          "roi": 0.0826,
-          "profit_units": 1.63
+          "win_pct": 0.5208,
+          "roi": 0.0806,
+          "profit_units": 1.6
         },
         "Diamond": {
           "edge_threshold": 1.21,
-          "confidence_threshold": 72.7,
+          "confidence_threshold": 72.4,
           "consensus_threshold": 0.0,
           "n": 64,
           "wins": 36,
@@ -78,7 +78,7 @@
         },
         "Nuke": {
           "edge_threshold": 1.21,
-          "confidence_threshold": 78.9,
+          "confidence_threshold": 78.8,
           "consensus_threshold": 0.25,
           "n": 35,
           "wins": 21,

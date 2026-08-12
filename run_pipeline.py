@@ -1284,6 +1284,25 @@ def run_pipeline():
                 )
             except Exception as exc:
                 log("warn", "pipeline", f"{_p.get('pick_id','?')}: failed to lock pick in results.db (non-fatal): {exc}")
+            try:
+                # CLV wiring (was written into core/score_grader.py's "Fix 6"
+                # but that module is never actually invoked by anything CI
+                # runs -- see core/historical_grader.py's _close_bet_in_db
+                # docstring for the same dead-code pattern with the `bets`
+                # table). This is the opening half of the pair: snapshot the
+                # published price now, at generation time, so
+                # historical_grader.py has something to diff the eventual
+                # closing price against.
+                from core.intelligence.clv_tracker import snapshot_odds
+                snapshot_odds(
+                    bet_id=_p["pick_id"],
+                    opening_odds=int(_p.get("pick_time_odds", 0) or 0),
+                    opening_line=float(_p.get("pick_time_line", 0.0) or 0.0),
+                    sport=_p.get("sport", ""),
+                    market=_p.get("market", ""),
+                )
+            except Exception as exc:
+                log("warn", "pipeline", f"{_p.get('pick_id','?')}: CLV snapshot_odds failed (non-fatal): {exc}")
         try:
             mark_picks_published(list({p["game_id"] for p in final if p.get("game_id")}))
         except Exception as exc:

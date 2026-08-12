@@ -141,14 +141,9 @@ ENABLE_LEVERAGE_AVAILABILITY = False
 # the statSplits sitCodes response shape is unverified. Off by default.
 ENABLE_HANDEDNESS_SPLIT = False
 
-_MLB_TEAM_IDS: dict[str, int] = {
-    "ARI": 109, "ATL": 144, "BAL": 110, "BOS": 111, "CHC": 112,
-    "CWS": 145, "CIN": 113, "CLE": 114, "COL": 115, "DET": 116,
-    "HOU": 117, "KC":  118, "LAA": 108, "LAD": 119, "MIA": 146,
-    "MIL": 158, "MIN": 142, "NYM": 121, "NYY": 147, "OAK": 133,
-    "PHI": 143, "PIT": 134, "SD":  135, "SF":  137, "SEA": 136,
-    "STL": 138, "TB":  139, "TEX": 140, "TOR": 141, "WSH": 120,
-}
+# Shared with core/mlb.py -- see core/mlb_team_ids.py's module docstring for
+# why this used to be a hand-duplicated copy (drift risk, now consolidated).
+from core.mlb_team_ids import MLB_TEAM_IDS as _MLB_TEAM_IDS
 
 
 # ---------------------------------------------------------------------------

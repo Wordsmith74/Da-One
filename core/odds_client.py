@@ -872,6 +872,48 @@ def fetch_todays_candidates(
                             _a_mean = sum(away_hist_rg) / len(away_hist_rg)
                             _residuals.extend(v - _a_mean for v in away_hist_rg)
 
+                        # Head-to-head: this season's meetings between
+                        # THESE two teams specifically, not either team's
+                        # general form. A genuinely different signal --
+                        # two teams can produce totals against each other
+                        # that neither team's overall average would
+                        # predict (pace mismatch, a defense that
+                        # specifically struggles with one team's style,
+                        # etc). Real example from this season: Indiana/
+                        # New York played a 158-point game in one meeting
+                        # and a 196-point game in another -- a 38-point
+                        # swing between the same two teams that a
+                        # generic recent-form average completely misses.
+                        # Blend into the mean (small, sample-size-scaled
+                        # weight -- WNBA teams only meet a handful of
+                        # times a season, so this should nudge, not
+                        # override, the broader-form CET) and fold h2h
+                        # deviations into the same variance pool, since a
+                        # matchup that's swung wildly against itself is
+                        # exactly the kind of thing that should widen
+                        # (not narrow) how confident the model is.
+                        _h2h_totals: list[float] | None = None
+                        try:
+                            from data.game_logs import get_head_to_head_totals
+                            _h2h_totals = get_head_to_head_totals(
+                                sport_up, home_abbr, away_abbr, as_of_date=as_of_date,
+                            )
+                        except Exception as _h2h_exc:
+                            print(
+                                f"[odds_client] h2h lookup failed for "
+                                f"{away_abbr}@{home_abbr}: {_h2h_exc}",
+                                flush=True,
+                            )
+
+                        _h2h_weight = 0.0
+                        if _h2h_totals:
+                            _h2h_mean = sum(_h2h_totals) / len(_h2h_totals)
+                            _h2h_weight = min(0.40, 0.15 * len(_h2h_totals))
+                            effective_league_mean = round(
+                                (1 - _h2h_weight) * _cet + _h2h_weight * _h2h_mean, 2
+                            )
+                            _residuals.extend(v - _h2h_mean for v in _h2h_totals)
+
                         if len(_residuals) >= 5:
                             import statistics as _stats
                             _empirical_std = _stats.pstdev(_residuals)
@@ -885,6 +927,9 @@ def fetch_todays_candidates(
                             f"{away_abbr}@{home_abbr}  "
                             f"cet={_cet}  regime={_regime}  "
                             f"vol_mult={_vol_mult}  std={_wnba_league_std}  "
+                            f"h2h_n={len(_h2h_totals) if _h2h_totals else 0}  "
+                            f"h2h_weight={_h2h_weight}  "
+                            f"mean={effective_league_mean}  "
                             f"(prior mean was {prior['mean']}, prior std was {prior['std']}, "
                             f"n_residuals={len(_residuals)})",
                             flush=True,

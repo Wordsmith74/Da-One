@@ -111,17 +111,19 @@ def _espn_schedule(sport_path: str, team_id: int, season: int) -> list[dict] | N
         return None
 
 
-def _extract_totals(events: list[dict]) -> list[tuple[str, float]]:
+def _extract_totals(events: list[dict]) -> list[tuple[str, float, int | None]]:
     """
-    Walk event dicts and return (date, total) pairs for completed games
-    (home + away score) in chronological order.
+    Walk event dicts and return (date, total, opponent_team_id) tuples for
+    completed games (home + away score) in chronological order.
 
     The date string is carried alongside each total so callers can filter
     to games played on-or-before a given `as_of_date` — without it, a
     replay run has no way to exclude games that haven't happened yet as
-    of the date being replayed.
+    of the date being replayed. opponent_team_id is carried so
+    get_head_to_head_totals() can filter to a specific matchup without a
+    second network call per team.
     """
-    totals: list[tuple[str, float]] = []
+    totals: list[tuple[str, float, int | None]] = []
     for ev in events:
         ev_date = ev.get("date", "")  # ISO 8601, e.g. "2026-06-14T23:00Z"
         ev_date_str = ev_date[:10] if ev_date else ""
@@ -135,6 +137,7 @@ def _extract_totals(events: list[dict]) -> list[tuple[str, float]]:
                 continue
             competitors = comp.get("competitors", [])
             scores: list[float] = []
+            team_ids: list[int] = []
             for c in competitors:
                 raw = c.get("score")
                 if raw is None:
@@ -147,8 +150,16 @@ def _extract_totals(events: list[dict]) -> list[tuple[str, float]]:
                     scores.append(float(raw))  # type: ignore[arg-type]
                 except (TypeError, ValueError):
                     break
+                try:
+                    team_ids.append(int(c.get("team", {}).get("id")))
+                except (TypeError, ValueError):
+                    pass
             if len(scores) == 2:
-                totals.append((ev_date_str, round(sum(scores), 1)))
+                totals.append((
+                    ev_date_str,
+                    round(sum(scores), 1),
+                    tuple(team_ids) if team_ids else None,
+                ))
     return totals
 
 
@@ -230,7 +241,7 @@ def get_team_game_totals(
 
     all_totals = _extract_totals(events)
     if as_of_date is not None:
-        all_totals = [(d, total) for d, total in all_totals if d and d <= as_of_date]
+        all_totals = [(d, total, opp) for d, total, opp in all_totals if d and d <= as_of_date]
     if not all_totals:
         logger.debug(
             f"[game_logs] No completed games for {sport_up}/{team_abbr} "
@@ -238,7 +249,7 @@ def get_team_game_totals(
         )
         return None
 
-    recent = [total for _, total in all_totals[-n:]]
+    recent = [total for _, total, _ in all_totals[-n:]]
     _HISTORY_CACHE[cache_key] = recent
 
     mean_val = round(sum(recent) / len(recent), 2)
@@ -247,3 +258,101 @@ def get_team_game_totals(
         f"{len(recent)} real game totals, mean={mean_val}"
     )
     return recent
+
+
+# ---------------------------------------------------------------------------
+# Head-to-head (this season, this specific matchup)
+# ---------------------------------------------------------------------------
+
+_H2H_CACHE: dict[tuple[str, str, str, str | None], list[float]] = {}
+
+
+def get_head_to_head_totals(
+    sport: str,
+    team_a_abbr: str,
+    team_b_abbr: str,
+    as_of_date: str | None = None,
+) -> list[float] | None:
+    """
+    Return this season's completed game totals (both teams combined) for
+    meetings specifically between *team_a_abbr* and *team_b_abbr* --
+    e.g. if two teams have played twice already this season, this returns
+    both of those two games' totals, chronological order.
+
+    This is a genuinely different signal from get_team_game_totals(): a
+    team's overall recent scoring average blends in how it plays against
+    everyone, but two specific teams can produce very different totals
+    against each other than either does against the league generally
+    (pace mismatches, a defense that struggles specifically with one
+    team's style, etc.) -- e.g. Indiana/New York produced a 158-point
+    game in one meeting and 196 in another meeting this same season, a
+    gap neither team's general season average would have flagged.
+
+    Fetches team_a's full-season schedule once (one network call, same
+    endpoint/cache pattern as get_team_game_totals) and filters to events
+    where team_b's ESPN team id appears among the competitors -- no
+    second network call needed.
+
+    Parameters mirror get_team_game_totals(); see that function's
+    docstring for as_of_date's replay-mode behavior.
+
+    Returns
+    -------
+    list[float]
+        Game totals from head-to-head meetings this season, chronological
+        order (most recent last). Empty/None if the teams haven't played
+        yet this season or on any lookup failure -- caller should treat
+        this as "no h2h signal available" and fall back to
+        get_team_game_totals()-only, not as an error.
+    """
+    sport_up = sport.upper()
+    a_key = team_a_abbr.upper()
+    b_key = team_b_abbr.upper()
+    # Order-independent cache key -- "team_a vs team_b" and "team_b vs
+    # team_a" are the same set of games.
+    cache_key = (sport_up, *sorted((a_key, b_key)), as_of_date)
+    if cache_key in _H2H_CACHE:
+        return _H2H_CACHE[cache_key]
+
+    sport_path = _ESPN_SPORT_PATH.get(sport_up)
+    id_map     = _TEAM_ID_MAP.get(sport_up, {})
+    team_a_id  = id_map.get(a_key)
+    team_b_id  = id_map.get(b_key)
+
+    if not sport_path or not team_a_id or not team_b_id:
+        logger.debug(
+            f"[game_logs] No ESPN config for {sport_up}/{a_key}-{b_key} h2h — "
+            "no h2h signal available."
+        )
+        return None
+
+    season = date.fromisoformat(as_of_date).year if as_of_date else date.today().year
+    # Only need one side's schedule -- team_a's games already include
+    # every meeting against team_b.
+    events = _espn_schedule(sport_path, team_a_id, season)
+    if events is None:
+        return None
+
+    all_totals = _extract_totals(events)
+    h2h = [
+        (d, total) for d, total, opp_ids in all_totals
+        if opp_ids and team_b_id in opp_ids
+    ]
+    if as_of_date is not None:
+        h2h = [(d, total) for d, total in h2h if d and d <= as_of_date]
+
+    if not h2h:
+        logger.debug(
+            f"[game_logs] No h2h meetings yet this season for "
+            f"{sport_up}/{a_key}-{b_key} (as_of={as_of_date})."
+        )
+        _H2H_CACHE[cache_key] = []
+        return None
+
+    values = [total for _, total in h2h]
+    _H2H_CACHE[cache_key] = values
+    logger.debug(
+        f"[game_logs] {sport_up}/{a_key}-{b_key} h2h: "
+        f"{len(values)} meeting(s) this season, totals={values}"
+    )
+    return values

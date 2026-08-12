@@ -1,5 +1,5 @@
 {
-  "run_at": "2026-08-12T07:28:45.283180+00:00",
+  "run_at": "2026-08-12T07:54:56.048496+00:00",
   "n_errors": 0,
   "n_warnings": 0,
   "n_picks_generated": 4,
@@ -132,6 +132,11 @@
     {
       "level": "info",
       "stage": "MLB",
+      "message": "prop_Carmen_Mlodzinski_pitcher_strikeouts_over_f6f17db1: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=65.2 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (60.2\u219265.2); Market entry floor [pitcher_strikeouts]: edge 0.00% < floor 1.0%"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
       "message": "prop_David_Peterson_pitcher_strikeouts_over_ef658492: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=70.2 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (65.2\u219270.2); Market entry floor [pitcher_strikeouts]: edge 0.00% < floor 1.0%"
     },
     {
@@ -148,11 +153,6 @@
       "level": "info",
       "stage": "MLB",
       "message": "prop_Ranger_Suarez_pitcher_strikeouts_under_275215c7: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=69.0 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (64.0\u219269.0); Market entry floor [pitcher_strikeouts]: edge 0.00% < floor 3.0%"
-    },
-    {
-      "level": "info",
-      "stage": "MLB",
-      "message": "prop_Carmen_Mlodzinski_pitcher_strikeouts_over_f6f17db1: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=65.8 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (60.8\u219265.8); Market entry floor [pitcher_strikeouts]: edge 0.00% < floor 1.0%"
     },
     {
       "level": "info",
@@ -242,7 +242,7 @@
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "DAL_total_over_744d7516: GATEKEEPER DISCARD -- edge=0.00% conf=49.5 market=game_total | below threshold, no specific reason recorded"
+      "message": "DAL_total_over_744d7516: GATEKEEPER DISCARD -- edge=0.00% conf=46.9 market=game_total | below threshold, no specific reason recorded"
     },
     {
       "level": "info",
@@ -282,7 +282,7 @@
     {
       "level": "info",
       "stage": "pipeline",
-      "message": "appended 4 pick(s) to output/pick_history.jsonl (0 skipped as same-day duplicates)"
+      "message": "appended 0 pick(s) to output/pick_history.jsonl (4 skipped as same-day duplicates)"
     }
   ]
 }

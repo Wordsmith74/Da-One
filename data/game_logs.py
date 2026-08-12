@@ -155,9 +155,33 @@ def _extract_totals(events: list[dict]) -> list[tuple[str, float, int | None]]:
                 except (TypeError, ValueError):
                     pass
             if len(scores) == 2:
+                total = round(sum(scores), 1)
+                # SANITY FILTER (2026-08-12): found via replay -- ESPN
+                # sometimes marks a postponed/rescheduled game as
+                # "completed" with no score recorded, which _extract_totals
+                # previously took as a literal 0.0 combined total. A real
+                # WNBA/NBA game can never end 0-0, but a single 0.0 sitting
+                # in a team's history barely moves the mean (invisible
+                # there) while catastrophically inflating any variance
+                # calculation built on this data -- one bad zero produced a
+                # ~175-point residual, which alone explained every std
+                # outlier (30-50) in a replay run, while every unaffected
+                # team landed in a believable ~15-27 range. Floor chosen
+                # conservatively: real WNBA/NBA combined totals are
+                # essentially never below 100 even in a defensive slog, so
+                # anything at or under 50 is corrupted data, not a real
+                # final score.
+                if total <= 50.0:
+                    logger.debug(
+                        f"[game_logs] Dropping implausible game total "
+                        f"{total} on {ev_date_str} (likely a postponed/"
+                        f"rescheduled game ESPN marked completed with no "
+                        f"score) -- not a real final score."
+                    )
+                    continue
                 totals.append((
                     ev_date_str,
-                    round(sum(scores), 1),
+                    total,
                     tuple(team_ids) if team_ids else None,
                 ))
     return totals

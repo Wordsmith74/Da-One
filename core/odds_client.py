@@ -914,14 +914,33 @@ def fetch_todays_candidates(
                             )
                             _residuals.extend(v - _h2h_mean for v in _h2h_totals)
 
+                        _std_outlier = False
                         if len(_residuals) >= 5:
                             import statistics as _stats
                             _empirical_std = _stats.pstdev(_residuals)
                             _wnba_league_std = round(
                                 max(_empirical_std, prior["std"]) * _vol_mult, 2
                             )
+                            _std_outlier = _empirical_std > 28
                         else:
                             _wnba_league_std = round(prior["std"] * _vol_mult, 2)
+
+                        # DIAGNOSTIC (2026-08-12): replay showed most
+                        # matchups landing at a believable ~15-27 raw pooled
+                        # std, but every matchup involving DAL or NYL specifically
+                        # spiked to 33-51 -- dump the raw per-team history
+                        # whenever pooled std looks anomalous so the actual
+                        # outlier value(s) are visible in the log instead of
+                        # having to guess blind.
+                        if _std_outlier:
+                            print(
+                                f"[odds_client] WNBA STD OUTLIER {away_abbr}@{home_abbr}: "
+                                f"raw_pooled_std={round(_empirical_std, 2)}  "
+                                f"home_hist({home_abbr})={home_hist_rg}  "
+                                f"away_hist({away_abbr})={away_hist_rg}  "
+                                f"h2h={_h2h_totals}",
+                                flush=True,
+                            )
                         print(
                             f"[odds_client] WNBA CET: "
                             f"{away_abbr}@{home_abbr}  "

@@ -19,22 +19,12 @@ from typing import Any, Optional
 
 import requests
 
+from core.mlb_team_ids import MLB_TEAM_IDS as _MLB_TEAM_IDS
+
 logger = logging.getLogger("historical_grader.mlb")
 
 BASE_URL = "https://statsapi.mlb.com/api/v1"
 REQUEST_TIMEOUT_SECS = 10
-
-# Same map used in core/intelligence/bullpen_intel.py -- kept in sync
-# manually since that module isn't safely importable here (it pulls in
-# the full intelligence stack). team_abbr -> MLB Stats API team id.
-_MLB_TEAM_IDS: dict[str, int] = {
-    "ARI": 109, "ATL": 144, "BAL": 110, "BOS": 111, "CHC": 112,
-    "CWS": 145, "CIN": 113, "CLE": 114, "COL": 115, "DET": 116,
-    "HOU": 117, "KC":  118, "LAA": 108, "LAD": 119, "MIA": 146,
-    "MIL": 158, "MIN": 142, "NYM": 121, "NYY": 147, "OAK": 133,
-    "PHI": 143, "PIT": 134, "SD":  135, "SF":  137, "SEA": 136,
-    "STL": 138, "TB":  139, "TEX": 140, "TOR": 141, "WSH": 120,
-}
 
 
 def _get(url: str, params: Optional[dict] = None) -> Optional[dict]:

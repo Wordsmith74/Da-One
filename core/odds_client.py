@@ -832,13 +832,43 @@ def fetch_todays_candidates(
                         _a_rg = away_hist_rg or []
                         _cet, _regime, _vol_mult = compute_wnba_cet(_h_rg, _a_rg)
                         effective_league_mean = _cet
-                        _wnba_league_std = round(prior["std"] * _vol_mult, 2)
+
+                        # AUDIT (2026-08-12): _wnba_league_std used to be
+                        # prior["std"] (a hardcoded 8.0) * _vol_mult (0.85-
+                        # 1.15) -- i.e. it NEVER reflected the actual
+                        # game-to-game volatility of real WNBA totals, only
+                        # a fixed guess nudged slightly by regime. Checked
+                        # against 18 graded WNBA game_total picks: empirical
+                        # std of actual outcomes was ~16.2, roughly double
+                        # what the model assumed (~6.8-9.2). An
+                        # under-estimated sigma makes the Bayesian engine
+                        # overconfident -- routine variance reads as a
+                        # strong statistical edge, which both over-selects
+                        # unders and means the misses, when they happen,
+                        # blow past the line by a lot rather than being
+                        # close. Compute std from the same real
+                        # `shared_history` used for the mean instead, so
+                        # variance is learned from data like the mean
+                        # already is. Still apply the regime vol_mult on
+                        # top (a mixed/uncertain regime should still widen
+                        # uncertainty further), and keep prior["std"] only
+                        # as the floor/fallback for thin history, not the
+                        # default.
+                        if len(shared_history) >= 5:
+                            import statistics as _stats
+                            _empirical_std = _stats.stdev(shared_history)
+                            _wnba_league_std = round(
+                                max(_empirical_std, prior["std"]) * _vol_mult, 2
+                            )
+                        else:
+                            _wnba_league_std = round(prior["std"] * _vol_mult, 2)
                         print(
                             f"[odds_client] WNBA CET: "
                             f"{away_abbr}@{home_abbr}  "
                             f"cet={_cet}  regime={_regime}  "
                             f"vol_mult={_vol_mult}  std={_wnba_league_std}  "
-                            f"(prior mean was {prior['mean']})",
+                            f"(prior mean was {prior['mean']}, prior std was {prior['std']}, "
+                            f"n={len(shared_history)})",
                             flush=True,
                         )
                     else:

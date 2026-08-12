@@ -108,12 +108,27 @@ _MARKET_DISPLAY: dict[str, str] = {
     "yrfi":         "YRFI",
 }
 
-# Full game total priors per sport
-_GAME_TOTAL_PRIOR: dict[str, dict[str, float]] = {
-    "MLB":  {"mean": 8.5,   "std": 1.5},
-    "NBA":  {"mean": 222.0, "std": 12.0},
-    "WNBA": {"mean": 165.0, "std": 8.0},
-}
+# Full game total priors per sport.
+#
+# AUDIT (2026-08-12): this used to be a second, hand-typed copy of the same
+# mean/std literals that live in core/odds_client.py's _GAME_TOTAL_PRIOR
+# (nested one level deeper there, keyed by market: "totals" vs
+# "team_total"). Two independent copies of the same numbers is exactly how
+# the WNBA std=8.0 staleness bug got missed for as long as it did -- fixing
+# it in odds_client.py wouldn't have touched this file's copy, so any
+# consumer of *this* dict would have kept using the old numbers. Deriving
+# from odds_client's "totals" sub-dict instead so there is exactly one
+# place these numbers are ever written.
+def _load_game_total_prior() -> dict[str, dict[str, float]]:
+    from core.odds_client import _GAME_TOTAL_PRIOR as _ODDS_CLIENT_PRIOR
+    return {
+        sport: cfg["totals"]
+        for sport, cfg in _ODDS_CLIENT_PRIOR.items()
+        if "totals" in cfg
+    }
+
+
+_GAME_TOTAL_PRIOR: dict[str, dict[str, float]] = _load_game_total_prior()
 
 # Home-field advantage (raw win-prob boost for home team)
 _HOME_ADV: dict[str, float] = {

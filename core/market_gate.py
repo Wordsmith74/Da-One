@@ -9,7 +9,9 @@ gatekeeper entry, no audit trail beyond a brief rejection log.
 
 Allowed scope
 ─────────────
-MLB:  Moneyline · Run Line (Spread) · Game Total · Pitcher Strikeouts
+MLB:  Pitcher Strikeouts only. Moneyline / Run Line (Spread) / Game Total
+      were removed from scope 2026-07-10 (see ALLOWED_MARKETS below for the
+      graded-sample evidence) -- kept out here, not just floored high.
 WNBA: Game Total · Player Assists · Player Rebounds · Moneyline  (unchanged)
 
 NBA:  (no markets in scope — all candidates blocked before modeling)

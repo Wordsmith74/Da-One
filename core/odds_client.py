@@ -846,17 +846,35 @@ def fetch_todays_candidates(
                         # strong statistical edge, which both over-selects
                         # unders and means the misses, when they happen,
                         # blow past the line by a lot rather than being
-                        # close. Compute std from the same real
-                        # `shared_history` used for the mean instead, so
-                        # variance is learned from data like the mean
-                        # already is. Still apply the regime vol_mult on
-                        # top (a mixed/uncertain regime should still widen
-                        # uncertainty further), and keep prior["std"] only
-                        # as the floor/fallback for thin history, not the
-                        # default.
-                        if len(shared_history) >= 5:
+                        # close.
+                        #
+                        # CORRECTION (2026-08-12, after replay validation):
+                        # the first version of this fix computed
+                        # stdev(shared_history) -- the stdev of *both*
+                        # teams' game-total histories interleaved together.
+                        # That's wrong: if the two teams have different
+                        # baseline scoring environments (e.g. one team's
+                        # games have averaged 165, the other's 185), mixing
+                        # their series and taking one stdev partly measures
+                        # the gap *between* the two teams' baselines, not
+                        # actual game-to-game variance -- confirmed by
+                        # replay showing std blow out to 22-55 (LAS@DAL hit
+                        # 44.41), nonsensically wide for a single game
+                        # total. Center each team's history on its OWN mean
+                        # first, then pool the residuals -- that isolates
+                        # real single-game variability without the
+                        # cross-team mean gap contaminating it.
+                        _residuals: list[float] = []
+                        if home_hist_rg:
+                            _h_mean = sum(home_hist_rg) / len(home_hist_rg)
+                            _residuals.extend(v - _h_mean for v in home_hist_rg)
+                        if away_hist_rg:
+                            _a_mean = sum(away_hist_rg) / len(away_hist_rg)
+                            _residuals.extend(v - _a_mean for v in away_hist_rg)
+
+                        if len(_residuals) >= 5:
                             import statistics as _stats
-                            _empirical_std = _stats.stdev(shared_history)
+                            _empirical_std = _stats.pstdev(_residuals)
                             _wnba_league_std = round(
                                 max(_empirical_std, prior["std"]) * _vol_mult, 2
                             )
@@ -868,7 +886,7 @@ def fetch_todays_candidates(
                             f"cet={_cet}  regime={_regime}  "
                             f"vol_mult={_vol_mult}  std={_wnba_league_std}  "
                             f"(prior mean was {prior['mean']}, prior std was {prior['std']}, "
-                            f"n={len(shared_history)})",
+                            f"n_residuals={len(_residuals)})",
                             flush=True,
                         )
                     else:

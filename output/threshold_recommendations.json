@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-08-11T21:28:25.224929+00:00",
-  "n_total_picks": 301,
-  "n_graded": 268,
+  "generated_at": "2026-08-12T11:38:40.982918+00:00",
+  "n_total_picks": 305,
+  "n_graded": 271,
   "n_quarantined_pre_fix": 24,
   "edge_pct_trusted_since": "2026-07-03T00:00:00+00:00",
-  "n_usable_for_search": 268,
+  "n_usable_for_search": 271,
   "min_sample_size": 15,
   "min_sample_size_nuke": 8,
   "gold_roi_floor": 0.0,
@@ -36,7 +36,7 @@
     {
       "sport": "MLB",
       "market_class": "prop",
-      "n_graded": 175,
+      "n_graded": 176,
       "status": "ok",
       "consensus_evaluated": true,
       "current_thresholds": {
@@ -58,13 +58,13 @@
           "edge_threshold": 1.21,
           "confidence_threshold": 69.5,
           "consensus_threshold": null,
-          "n": 175,
-          "wins": 90,
+          "n": 176,
+          "wins": 91,
           "losses": 84,
           "pushes": 1,
-          "win_pct": 0.5172,
-          "roi": 0.0837,
-          "profit_units": 1.59
+          "win_pct": 0.52,
+          "roi": 0.0861,
+          "profit_units": 1.64
         },
         "Diamond": {
           "edge_threshold": 1.21,
@@ -96,7 +96,7 @@
     {
       "sport": "WNBA",
       "market_class": "game",
-      "n_graded": 46,
+      "n_graded": 48,
       "status": "ok",
       "consensus_evaluated": true,
       "current_thresholds": {
@@ -118,25 +118,25 @@
           "edge_threshold": 1.19,
           "confidence_threshold": 69.8,
           "consensus_threshold": null,
-          "n": 46,
+          "n": 48,
           "wins": 23,
-          "losses": 23,
+          "losses": 25,
           "pushes": 0,
-          "win_pct": 0.5,
-          "roi": 0.1544,
-          "profit_units": 0.44
+          "win_pct": 0.4792,
+          "roi": 0.1149,
+          "profit_units": 0.34
         },
         "Diamond": {
-          "edge_threshold": 1.19,
-          "confidence_threshold": 70.1,
+          "edge_threshold": 3.47,
+          "confidence_threshold": 69.8,
           "consensus_threshold": 0.0,
           "n": 16,
-          "wins": 11,
-          "losses": 5,
+          "wins": 10,
+          "losses": 6,
           "pushes": 0,
-          "win_pct": 0.6875,
-          "roi": 0.2319,
-          "profit_units": 0.36
+          "win_pct": 0.625,
+          "roi": 0.1973,
+          "profit_units": 0.3
         },
         "Nuke": null
       },

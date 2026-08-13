@@ -27,7 +27,7 @@ from __future__ import annotations
 import math
 import os
 import statistics
-from typing import Any
+from typing import Any, Optional
 
 from core.market_intelligence import (
     detect_sharp_action,
@@ -798,6 +798,92 @@ def _process_moneyline(
         candidates.append(cand)
 
 
+def _build_nrfi_tier_inputs(home_abbr: str, away_abbr: str, game_date) -> tuple:
+    """
+    Gathers real per-side tier inputs for
+    models.nrfi_handicapper.project_combined_first_inning_lambda and
+    returns (home_team_inputs, away_team_inputs, home_reliability,
+    away_reliability) in exactly the shape that function expects.
+
+    Reminder of the convention project_combined_first_inning_lambda's own
+    docstring specifies: home_team_inputs describes what the HOME LINEUP
+    does against the AWAY starter (pitcher sub-dict = away starter's
+    first-inning profile; lineup sub-dict = home top-4 vs. away starter's
+    handedness), and away_team_inputs is the mirror image.
+
+    Any single data source failing independently degrades that source's
+    sub-dict to {} (neutral), per each module's own fail-safe contract --
+    this function itself doesn't add extra try/except per call, trusting
+    those contracts, but IS itself wrapped by its caller
+    (_process_nrfi_yrfi) as a last-resort net.
+    """
+    from data.mlb_probable_pitchers import get_probable_pitchers
+    from data.statcast_first_inning import get_first_inning_splits, splits_as_tier_kwargs
+    from data.statcast_lineup_platoon import get_confirmed_top4, get_top4_platoon_splits
+    from core.intelligence.umpire_intel import get_umpire_zone_size, resolve_game_pk
+    from models.weather_intel import get_nrfi_environment_inputs
+    from models.nrfi_handicapper import nrfi_reliability_gate
+
+    pitchers = get_probable_pitchers(home_abbr, away_abbr, game_date)
+    lineups = get_confirmed_top4(home_abbr, away_abbr, game_date)
+
+    game_pk = resolve_game_pk(home_abbr, away_abbr, game_date)
+    umpire_zone_size, umpire_volatility = get_umpire_zone_size(game_pk)
+
+    # Same single park hosts both sides' first-inning half, so one
+    # environment read is reused for both -- no separate "away_env" needed.
+    env_inputs = get_nrfi_environment_inputs(home_abbr, away_abbr, game_date.isoformat())
+
+    def _side_reliability(pitcher) -> tuple:
+        if not pitcher.is_known:
+            return nrfi_reliability_gate(career_starts=None)
+        return nrfi_reliability_gate(
+            career_starts=pitcher.career_starts,
+            is_debut=pitcher.is_debut,
+            is_injury_return_start=pitcher.is_injury_return_start,
+            is_opener_or_bullpen_game=pitcher.is_opener_or_bullpen_game,
+        )
+
+    def _side_inputs(opposing_pitcher, batting_side_lineup) -> dict:
+        pitcher_kwargs = {}
+        if opposing_pitcher.is_known and opposing_pitcher.pitcher_id:
+            splits = get_first_inning_splits(opposing_pitcher.pitcher_id, as_of=game_date)
+            pitcher_kwargs = splits_as_tier_kwargs(splits)
+
+        lineup_kwargs = {}
+        if batting_side_lineup.confirmed and opposing_pitcher.throws:
+            platoon = get_top4_platoon_splits(
+                batting_side_lineup.batter_ids, opposing_pitcher.throws, season=game_date.year,
+            )
+            if platoon.batters_with_data > 0:
+                lineup_kwargs = {
+                    "top4_wrc_plus_vs_hand": platoon.top4_wrc_plus_vs_hand,
+                    "top4_obp_vs_hand": platoon.top4_obp_vs_hand,
+                    "top4_iso_vs_hand": platoon.top4_iso_vs_hand,
+                    "missing_key_bat": batting_side_lineup.missing_key_bat,
+                }
+
+        environment_kwargs = {
+            **env_inputs,
+            "umpire_zone_size": umpire_zone_size,
+            "umpire_volatility": umpire_volatility,
+        }
+
+        return {
+            "pitcher": pitcher_kwargs,
+            "lineup": lineup_kwargs,
+            "environment": environment_kwargs,
+        }
+
+    # Home team's lambda = home lineup batting against the AWAY starter.
+    home_team_inputs = _side_inputs(pitchers.away, lineups["home"])
+    away_team_inputs = _side_inputs(pitchers.home, lineups["away"])
+    home_reliability = _side_reliability(pitchers.away)
+    away_reliability = _side_reliability(pitchers.home)
+
+    return home_team_inputs, away_team_inputs, home_reliability, away_reliability
+
+
 def _process_nrfi_yrfi(
     candidates: list[dict[str, Any]],
     book_outcomes_list: list,
@@ -819,19 +905,34 @@ def _process_nrfi_yrfi(
 
     Lambda projection: models.nrfi_handicapper.project_combined_first_inning_lambda()
     implements the tiered framework (pitcher / lineup / environment) from
-    NRFI_YRFI_F5_Elite_Handicapping_Reference.md. No first-inning-specific
-    splits feed (FBF OBP, first-inning ERA, platoon top-4 stats, umpire
-    zone history) is wired into this repo yet -- see that module's docstring
-    for why those tiers are left at their honest neutral default rather than
-    faked from season-long stats. Until that feed exists, the ONLY
-    real per-game differentiator applied here is a coarse, clearly-labeled
-    fallback: each team's own full-game run-scoring history, scaled down to
-    a first-inning share and shrunk toward the league baseline via
-    models.bayesian.shrink_mlb_nrfi_lambda -- structurally the same
-    "scale the full-game number down" approach _process_scaled_total uses
-    for F5, at the much smaller first-inning share of scoring.
+    NRFI_YRFI_F5_Elite_Handicapping_Reference.md.
+
+    UPDATE: the pitcher / lineup / environment tiers are now wired to real
+    data (see _build_nrfi_tier_inputs() below) via:
+      - data/mlb_probable_pitchers.py       (starter id, handedness, career starts)
+      - data/statcast_first_inning.py       (FBF OBP, 1st-inning ERA/K%/BB%)
+      - data/statcast_lineup_platoon.py     (confirmed top-4, platoon OBP/ISO/wRC+ proxy)
+      - core/intelligence/umpire_intel.py   (self-computed zone tendency)
+      - models/weather_intel.py             (direction-resolved wind, park factor)
+    Each of those sources independently fails NEUTRAL (returns None / empty
+    / 1.0x) rather than raising or fabricating, per each module's own
+    docstring -- so _build_nrfi_tier_inputs() is wrapped in a single
+    try/except here as a last-resort safety net, not because the individual
+    calls are expected to raise. If tier-input gathering fails entirely
+    (e.g. pybaseball not installed, no network), this silently degrades to
+    the ORIGINAL fallback-only behavior: each team's own full-game
+    run-scoring history, scaled down to a first-inning share and shrunk
+    toward the league baseline via models.bayesian.shrink_mlb_nrfi_lambda --
+    structurally the same "scale the full-game number down" approach
+    _process_scaled_total uses for F5, at the much smaller first-inning
+    share of scoring. That fallback lambda is ALWAYS computed and is always
+    what seeds project_combined_first_inning_lambda's league_combined_lambda,
+    regardless of whether the tier inputs were available -- the tiers
+    nudge that anchor, they don't replace it (module docstring's own
+    "dampened, weighted multiplier" design principle).
     """
     import math
+    from datetime import date as _date
 
     from core.odds_client import _best_side  # type: ignore[attr-defined]
     from models.bayesian import shrink_mlb_nrfi_lambda
@@ -839,7 +940,6 @@ def _process_nrfi_yrfi(
         NRFI_COMBINED_LAMBDA_BASELINE,
         project_combined_first_inning_lambda,
     )
-    from models.sport_config import MLB as _MLB_CFG
 
     league_prior_per_team = NRFI_COMBINED_LAMBDA_BASELINE / 2.0
     full_game_half_mean = _GAME_TOTAL_PRIOR.get(sport, {"mean": 8.5, "std": 1.5})["mean"] * 0.5
@@ -863,14 +963,30 @@ def _process_nrfi_yrfi(
     home_fallback_lambda = _team_first_inning_lambda_fallback(home_hist)
     away_fallback_lambda = _team_first_inning_lambda_fallback(away_hist)
 
-    # project_combined_first_inning_lambda's tier inputs are left empty
-    # (see docstring above) -- but we seed the league prior per side with
-    # the fallback lambda so the tiered framework's dampening band still
-    # applies around a real, per-game-varying anchor rather than a flat
-    # league constant every night.
+    home_team_inputs: Optional[dict] = None
+    away_team_inputs: Optional[dict] = None
+    home_reliability = None
+    away_reliability = None
+
+    if sport.upper() == "MLB":
+        try:
+            home_team_inputs, away_team_inputs, home_reliability, away_reliability = (
+                _build_nrfi_tier_inputs(home_abbr, away_abbr, _date.today())
+            )
+        except Exception as exc:
+            print(
+                f"[game_markets] NRFI tier-input gathering failed for "
+                f"{away_abbr}@{home_abbr}, falling back to baseline-only "
+                f"projection: {exc!r}",
+                flush=True,
+            )
+            home_team_inputs = away_team_inputs = None
+            home_reliability = away_reliability = None
+
     projection = project_combined_first_inning_lambda(
-        home_team_inputs=None, away_team_inputs=None,
+        home_team_inputs=home_team_inputs, away_team_inputs=away_team_inputs,
         league_combined_lambda=home_fallback_lambda + away_fallback_lambda,
+        home_reliability=home_reliability, away_reliability=away_reliability,
     )
     home_lambda = projection["home_lambda"]
     away_lambda = projection["away_lambda"]
@@ -914,11 +1030,13 @@ def _process_nrfi_yrfi(
         confidence = _precomp_confidence(n_books, len(home_hist) + len(away_hist), model_prob)
 
         bet_id = f"{home_abbr}_{side}"
+        tiers_used = "real" if (home_team_inputs or away_team_inputs) else "fallback_only"
         factor = (
             f"{away_team} @ {home_team} — {side.upper()} "
             f"({best_odds:+d}, {n_books} books, best: {best_book}) "
             f"| model={model_prob:.1%} combined_lambda={combined_lambda:.3f} "
-            f"(home={home_lambda:.3f}, away={away_lambda:.3f})"
+            f"(home={home_lambda:.3f}, away={away_lambda:.3f}) "
+            f"| tiers={tiers_used}"
         )
         cand = _base_candidate(
             bet_id=bet_id, game_label=game_label,

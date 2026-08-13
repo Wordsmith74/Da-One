@@ -1,7 +1,7 @@
 {
-  "run_at": "2026-08-13T21:11:37.268969+00:00",
+  "run_at": "2026-08-13T21:29:57.436174+00:00",
   "n_errors": 0,
-  "n_warnings": 0,
+  "n_warnings": 1,
   "n_picks_generated": 2,
   "entries": [
     {
@@ -47,12 +47,22 @@
     {
       "level": "info",
       "stage": "MLB",
-      "message": "12 total candidate(s) (game totals + player props)."
+      "message": "6 expanded game market candidate(s) added."
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "Gatekeeper: 2 approved / 10 flagged / 0 discarded"
+      "message": "18 total candidate(s) (game totals + player props)."
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "Game Truth Protocol: 18 candidate(s) in -> 15 out (3 suppressed -- see 'betting_bot' logger for per-game reasoning)."
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "Gatekeeper: 4 approved / 11 flagged / 0 discarded"
     },
     {
       "level": "info",
@@ -87,7 +97,7 @@
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Roki_Sasaki_pitcher_strikeouts_under_40715667: GATEKEEPER FLAGGED -- tier=None edge=3.19% conf=63.5 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (68.5\u219273.5); Market uniqueness conflict (pitcher_strikeouts): UNDER opposes stronger OVER (edge 4.30%) in game Milwaukee_Brewers@Los_Angeles_Dodgers_MLB"
+      "message": "prop_Roki_Sasaki_pitcher_strikeouts_under_40715667: GATEKEEPER FLAGGED -- tier=None edge=3.39% conf=63.5 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (68.5\u219273.5); Market uniqueness conflict (pitcher_strikeouts): UNDER opposes stronger OVER (edge 4.30%) in game Milwaukee_Brewers@Los_Angeles_Dodgers_MLB"
     },
     {
       "level": "info",
@@ -103,6 +113,11 @@
       "level": "info",
       "stage": "MLB",
       "message": "prop_Aaron_Nola_pitcher_strikeouts_under_9fa039b0: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=68.0 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (63.0\u219268.0); Market entry floor [pitcher_strikeouts]: edge 0.00% < floor 3.0%"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "LAA_nrfi: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=80.7 market=nrfi | Market entry floor [nrfi]: edge 0.00% < floor 4.0%"
     },
     {
       "level": "info",
@@ -122,12 +137,12 @@
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "CON_total_over_9a2fa5d2: devig fair_prob=50.7% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
+      "message": "CON_total_over_9a2fa5d2: devig fair_prob=50.8% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "CON_total_under_9a2fa5d2: devig fair_prob=49.3% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
+      "message": "CON_total_under_9a2fa5d2: devig fair_prob=49.2% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
     },
     {
       "level": "info",
@@ -182,7 +197,7 @@
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "LVA_total_over_b7f37fe3: GATEKEEPER DISCARD -- edge=1.22% conf=55.8 market=game_total | below threshold, no specific reason recorded"
+      "message": "LVA_total_over_b7f37fe3: GATEKEEPER DISCARD -- edge=1.36% conf=58.2 market=game_total | below threshold, no specific reason recorded"
     },
     {
       "level": "info",
@@ -192,27 +207,32 @@
     {
       "level": "info",
       "stage": "pipeline",
-      "message": "CCS ranking: 2 pick(s) scored -- top assigned Nuke, runner-up Diamond, rest Gold Standard."
+      "message": "CCS ranking: 4 pick(s) scored -- top assigned Nuke, runner-up Diamond, rest Gold Standard."
     },
     {
       "level": "info",
       "stage": "pipeline",
-      "message": "2 raw picks generated. Running contradiction check..."
+      "message": "4 raw picks generated. Running contradiction check..."
     },
     {
       "level": "info",
       "stage": "pipeline",
-      "message": "2 picks after contradiction check. Running line movement check..."
+      "message": "4 picks after contradiction check. Running line movement check..."
     },
     {
       "level": "info",
       "stage": "pipeline",
-      "message": "2 picks after line movement check. Applying per-sport daily caps..."
+      "message": "4 picks after line movement check. Applying per-sport daily caps..."
     },
     {
       "level": "info",
       "stage": "pipeline",
-      "message": "2 picks after daily caps."
+      "message": "4 picks after daily caps."
+    },
+    {
+      "level": "warn",
+      "stage": "pipeline",
+      "message": "dropped 2 pick(s) not in publication whitelist: [('MLB', 'yrfi'), ('MLB', 'yrfi')]"
     },
     {
       "level": "info",

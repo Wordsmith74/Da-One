@@ -16,7 +16,7 @@ MARKET_PRIORITY
     Nuke / Diamond slots.
 
 Approved markets (normalized internal keys):
-    MLB  : pitcher_strikeouts only
+    MLB  : pitcher_strikeouts, nrfi, yrfi
            -- moneyline, run_line, game_total removed from scope 2026-08-05.
               First cut 2026-07-10 on thin evidence (run_line 37.5% win n=8,
               moneyline called weakest market overall); confirmed by
@@ -26,10 +26,24 @@ Approved markets (normalized internal keys):
               breakeven ROI at n >= 15. Final graded numbers by then:
               moneyline 35.3% win / -0.52 units (n=34), run_line 25.0% win /
               -0.16 units (n=12), game_total never grew past its original n=2.
-              first_5_total, first_5_ml, first_5_rl, nrfi, yrfi remain OUT of
-              scope too (see core/market_gate.py). pitcher_strikeouts uses its
-              own tier thresholds (core/decision_gatekeeper.py's
+              first_5_total, first_5_ml, first_5_rl remain OUT of scope too
+              (see core/market_gate.py). pitcher_strikeouts uses its own tier
+              thresholds (core/decision_gatekeeper.py's
               _MARKET_TIER_THRESHOLDS), not the sport-wide MLB thresholds.
+              nrfi/yrfi were re-added to scope alongside the first-inning
+              tiered-handicapping wiring (models/nrfi_handicapper.py,
+              data/statcast_first_inning.py, etc.) -- see
+              core/market_gate.py's ALLOWED_MARKETS comment for why they were
+              caught by the 2026-07-10/08-05 removal in the first place even
+              though that removal's own evidence never covered first-inning
+              markets. This whitelist has to be updated in lockstep with
+              ALLOWED_MARKETS -- a market can clear the scope gate, generate
+              a real candidate, survive the gatekeeper's edge/confidence
+              floors, and still get silently dropped right here at the very
+              last step if this table isn't kept in sync (this is exactly
+              what happened before this update: real, approved MLB yrfi
+              picks were generated and then dropped at publication with no
+              error, just a one-line warning easy to miss in a long log).
     WNBA : player_assists, player_rebounds, moneyline, game_total  (unchanged)
 
 Priority order (per spec):
@@ -37,6 +51,8 @@ Priority order (per spec):
     5  WNBA player_assists
     6  WNBA player_rebounds
     7  WNBA moneyline
+    8  MLB  nrfi
+    9  MLB  yrfi
     11 WNBA game_total
 """
 
@@ -47,14 +63,19 @@ from core.decision_gatekeeper import market_normalized
 # ---------------------------------------------------------------------------
 
 PUBLICATION_MARKETS: dict[str, frozenset[str]] = {
-    # F5, NRFI/YRFI remain out of scope (see core/market_gate.py).
-    # MLB moneyline / run_line / game_total removed from scope 2026-08-05 --
-    # see this module's docstring for the evidence. market_gate.py's
-    # ALLOWED_MARKETS is the authoritative scope check (blocks these three
-    # before simulation); this whitelist is kept in sync with it so it can't
-    # silently re-open publication for a market that scope no longer allows.
+    # F5 remains out of scope (see core/market_gate.py). MLB moneyline /
+    # run_line / game_total removed from scope 2026-08-05 -- see this
+    # module's docstring for the evidence. market_gate.py's ALLOWED_MARKETS
+    # is the authoritative scope check (blocks these before simulation);
+    # this whitelist is kept in sync with it so it can't silently re-open
+    # publication for a market that scope no longer allows, OR silently
+    # keep blocking a market that scope now allows (see docstring's note on
+    # nrfi/yrfi -- the latter failure mode is exactly what happened here
+    # until this update).
     "MLB": frozenset({
         "pitcher_strikeouts",
+        "nrfi",
+        "yrfi",
     }),
     "WNBA": frozenset({
         "player_assists",
@@ -74,6 +95,8 @@ MARKET_PRIORITY: dict[tuple[str, str], int] = {
     ("WNBA", "player_assists"):     5,
     ("WNBA", "player_rebounds"):    6,
     ("WNBA", "moneyline"):          7,
+    ("MLB",  "nrfi"):               8,
+    ("MLB",  "yrfi"):               9,
     ("WNBA", "game_total"):         11,
 }
 

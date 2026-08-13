@@ -166,10 +166,15 @@ _MARKET_TIER_THRESHOLDS_BY_SIDE: dict[tuple[str, str], list[tuple[Tier, float, f
 # Key:   normalized market name (market_normalized() output)
 # Value: (min_edge_pct, min_confidence)   — 0.0 means "no floor on that axis"
 #
-# NOTE: first_5_total / first_5_ml / first_5_rl / nrfi / yrfi remain
-# unreachable -- MLB scope does not include F5 or NRFI/YRFI markets (see
-# core/market_gate.py's ALLOWED_MARKETS["MLB"]). pitcher_strikeouts IS
-# reachable -- MLB scope includes it, using the market-specific floor/tier
+# NOTE: first_5_total / first_5_ml / first_5_rl remain unreachable -- MLB
+# scope does not include F5 markets (see core/market_gate.py's
+# ALLOWED_MARKETS["MLB"]). pitcher_strikeouts, nrfi, and yrfi ARE reachable
+# -- MLB scope includes all three; nrfi/yrfi use the market-specific floor
+# below (was previously unreachable before nrfi/yrfi were re-added to scope
+# alongside the first-inning tiered-handicapping wiring -- see
+# core/market_gate.py's ALLOWED_MARKETS comment and
+# core/market_governance.py's PUBLICATION_MARKETS docstring for that
+# history). pitcher_strikeouts uses the market-specific floor/tier
 # thresholds below rather than the sport-wide default.
 _MARKET_ENTRY_FLOORS: dict[str, tuple[float, float]] = {
     "pitcher_strikeouts": (3.0, 70.0),   # MLB Ks — FALLBACK ONLY, used when bet.direction is

@@ -29,17 +29,21 @@ So this module is split into two honest halves:
      what's assumed below — same caveat bullpen_intel.py already carries
      for its heuristic sections).
   2. UMPIRE_ZONE_TENDENCY — a lookup table from umpire name to a
-     league_mean_adjustment, DELIBERATELY EMPTY at ship time. Filling it
-     with invented numbers would be worse than leaving it empty: a
-     fabricated "this umpire runs a wide zone" adjustment would silently
-     bias the model on made-up data. Populate this table yourself from a
-     real source (UmpScorecards, or MLB's own ABS-era CSAA stats once
-     public) on whatever cadence you refresh other reference data at --
-     see the docstring on the table below for the exact format expected.
+     league_mean_adjustment. AS OF THIS UPDATE, this is no longer
+     hardcoded empty: core/intelligence/umpire_zone_compute.py self-computes
+     it from real Statcast called-ball/called-strike data joined to Bill
+     Petti's public umpire-ID file (see that module's docstring for the
+     full derivation and its own honesty caveats). This module lazily loads
+     that computed table on first use via _get_zone_tendency_table() rather
+     than eagerly at import time, since building it (when the cache is
+     stale) triggers a real, possibly-slow Statcast pull -- import time is
+     the wrong place for that.
 
-Until the table is populated, get_umpire_intel() always returns a zero
-adjustment — this module is currently pure infrastructure, not yet a
-live signal. That's an honest state, not a bug.
+If umpire_zone_compute's table is empty (pybaseball not installed, network
+unavailable, or the Petti join failed), get_umpire_intel() still returns a
+zero adjustment exactly as before -- degrading to the prior honest-infra
+state rather than raising, matching this module's original fail-safe
+contract.
 """
 from __future__ import annotations
 
@@ -55,23 +59,58 @@ logger = logging.getLogger("betting_bot")
 STATSAPI_BASE = "https://statsapi.mlb.com/api/v1"
 
 # ---------------------------------------------------------------------------
-# Zone tendency lookup — POPULATE FROM A REAL SOURCE, DO NOT INVENT VALUES.
+# Zone tendency lookup.
 #
 # Format: "Full Umpire Name" -> league_mean_adjustment (float, runs for
 # totals / fractional strikeouts for K props -- same unit pitcher_intel.py
 # and bullpen_intel.py already use, so it composes additively with them).
 # A positive adjustment = tighter zone / hitter-friendly (raises the total,
 # lowers expected Ks). A negative adjustment = wider zone / pitcher-friendly
-# (lowers the total, raises expected Ks). Pick the sign convention to match
-# whatever source you're pulling from -- UmpScorecards' "zone size" is
-# already expressed relative to 1.000 league average, so
-# adj = (1.000 - zone_size) * SOME_SCALE is a reasonable way to derive
-# this table from their public scorecards without needing an API.
+# (lowers the total, raises expected Ks).
 #
-# Example format (NOT real data -- delete once you've populated this for
-# real, this is here only to show the expected shape):
-#   "Example Ump": -0.3,
+# Populated lazily from core.intelligence.umpire_zone_compute's self-
+# computed, cached table (see module docstring above) -- NOT hardcoded here
+# anymore. Falls back to an empty dict (same as before) if that module
+# can't produce real data, so behavior degrades honestly rather than
+# fabricating values.
 # ---------------------------------------------------------------------------
+_ZONE_TABLE_CACHE: Optional[dict[str, float]] = None
+
+
+def _get_zone_tendency_table() -> dict[str, float]:
+    """
+    Lazily loads and flattens umpire_zone_compute's
+    {name: {"league_mean_adjustment": float, ...}} table down to the
+    {name: float} shape this module's own get_umpire_intel() consumes.
+    Cached at process level after first successful load so repeated calls
+    within one pipeline run don't re-touch disk/network.
+    """
+    global _ZONE_TABLE_CACHE
+    if _ZONE_TABLE_CACHE is not None:
+        return _ZONE_TABLE_CACHE
+
+    try:
+        from core.intelligence.umpire_zone_compute import load_or_build_umpire_zone_tendency_table
+        raw = load_or_build_umpire_zone_tendency_table()
+        flattened = {
+            name: entry.get("league_mean_adjustment", 0.0)
+            for name, entry in raw.items()
+            if "league_mean_adjustment" in entry
+        }
+    except Exception as exc:
+        logger.debug(f"[umpire_intel] zone-tendency table load failed: {exc!r}")
+        flattened = {}
+
+    _ZONE_TABLE_CACHE = flattened
+    return flattened
+
+
+# Backwards-compatible module attribute (some callers/tests may still refer
+# to UMPIRE_ZONE_TENDENCY directly) -- kept as a live property-like lookup
+# by resolving it once at first access via get_umpire_intel() below rather
+# than at import time. If you need the raw dict directly, call
+# _get_zone_tendency_table() instead of relying on this name being populated
+# at import.
 UMPIRE_ZONE_TENDENCY: dict[str, float] = {}
 
 # Below this many umpire-identified games in the table, don't trust it to
@@ -192,11 +231,13 @@ def get_umpire_intel(game_pk: Optional[int]) -> UmpireIntelFactor:
     calling convention: never raises, always returns a usable factor with
     zero adjustment on any failure or missing data.
 
-    Currently returns zero adjustment for every umpire until
-    UMPIRE_ZONE_TENDENCY is populated from a real source (see module
-    docstring) -- the umpire_name field is still filled in for real when
-    resolvable, so the factor_text at least surfaces "who's behind the
-    plate today" even before the tendency table has real numbers in it.
+    Zone-tendency table is loaded lazily from
+    core.intelligence.umpire_zone_compute (see module docstring) -- returns
+    zero adjustment if that table is empty or too small to trust, same
+    fail-safe posture as before this was wired up. The umpire_name field is
+    still filled in for real whenever resolvable, so the factor_text at
+    least surfaces "who's behind the plate today" even with no tendency
+    data loaded.
     """
     if game_pk is None:
         return UmpireIntelFactor()
@@ -205,7 +246,8 @@ def get_umpire_intel(game_pk: Optional[int]) -> UmpireIntelFactor:
     if name is None:
         return UmpireIntelFactor()
 
-    if len(UMPIRE_ZONE_TENDENCY) < MIN_TABLE_ENTRIES_TO_TRUST:
+    table = _get_zone_tendency_table()
+    if len(table) < MIN_TABLE_ENTRIES_TO_TRUST:
         # Table not populated (or not populated enough) yet -- identify the
         # umpire for visibility, but don't act on an untrusted/empty table.
         return UmpireIntelFactor(
@@ -214,7 +256,7 @@ def get_umpire_intel(game_pk: Optional[int]) -> UmpireIntelFactor:
             factor_text=f"HP umpire: {name} (no zone-tendency data loaded)",
         )
 
-    adj = UMPIRE_ZONE_TENDENCY.get(name)
+    adj = table.get(name)
     if adj is None:
         return UmpireIntelFactor(
             umpire_name=name,
@@ -228,3 +270,36 @@ def get_umpire_intel(game_pk: Optional[int]) -> UmpireIntelFactor:
         league_mean_adjustment=adj,
         factor_text=f"HP umpire: {name} ({direction}, {adj:+.2f} adj)",
     )
+
+
+def get_umpire_zone_size(game_pk: Optional[int]) -> tuple[Optional[str], Optional[str]]:
+    """
+    NRFI-tier convenience wrapper: returns (umpire_zone_size, umpire_volatility)
+    in the exact "wide"/"narrow"/"average" vocabulary
+    models.nrfi_handicapper.environment_tier_multiplier expects, derived
+    from the same computed zone-tendency table get_umpire_intel() uses.
+
+    umpire_volatility is NOT computed by umpire_zone_compute (that would
+    require pitch-to-pitch call-consistency variance, a separate
+    computation this module doesn't attempt yet) -- always returns None for
+    it, which environment_tier_multiplier already treats as "no adjustment"
+    for that component. Don't fabricate a volatility read to fill the gap.
+    """
+    if game_pk is None:
+        return None, None
+    name = get_home_plate_umpire(game_pk)
+    if name is None:
+        return None, None
+    table = _get_zone_tendency_table()
+    if len(table) < MIN_TABLE_ENTRIES_TO_TRUST or name not in table:
+        return None, None
+
+    adj = table[name]
+    # Reuse the same sign convention as get_umpire_intel(): negative adj =
+    # pitcher-friendly/wider zone, positive = hitter-friendly/narrower zone.
+    # A dead-zone band around 0 avoids over-labeling a near-neutral umpire.
+    if adj <= -0.15:
+        return "wide", None
+    if adj >= 0.15:
+        return "narrow", None
+    return "average", None

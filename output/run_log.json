@@ -1,5 +1,5 @@
 {
-  "run_at": "2026-08-13T21:00:25.738419+00:00",
+  "run_at": "2026-08-13T21:11:37.268969+00:00",
   "n_errors": 0,
   "n_warnings": 0,
   "n_picks_generated": 2,
@@ -122,12 +122,12 @@
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "CON_total_over_9a2fa5d2: devig fair_prob=50.6% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
+      "message": "CON_total_over_9a2fa5d2: devig fair_prob=50.7% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "CON_total_under_9a2fa5d2: devig fair_prob=49.4% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
+      "message": "CON_total_under_9a2fa5d2: devig fair_prob=49.3% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
     },
     {
       "level": "info",
@@ -157,7 +157,7 @@
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "Gatekeeper: 0 approved / 5 flagged / 1 discarded"
+      "message": "Gatekeeper: 0 approved / 4 flagged / 2 discarded"
     },
     {
       "level": "info",
@@ -182,12 +182,12 @@
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "LVA_total_over_b7f37fe3: GATEKEEPER FLAGGED -- tier=None edge=2.41% conf=63.8 market=game_total | Near-miss: edge=2.4% (need \u22651.0%, gap=-1.4); conf=63.8 (need \u226568.0, gap=+4.2) \u2014 secondary analysis recommended (check injury reports & line movement)."
+      "message": "LVA_total_over_b7f37fe3: GATEKEEPER DISCARD -- edge=1.22% conf=55.8 market=game_total | below threshold, no specific reason recorded"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "LVA_total_under_b7f37fe3: GATEKEEPER DISCARD -- edge=0.00% conf=32.0 market=game_total | below threshold, no specific reason recorded"
+      "message": "LVA_total_under_b7f37fe3: GATEKEEPER DISCARD -- edge=0.00% conf=29.4 market=game_total | below threshold, no specific reason recorded"
     },
     {
       "level": "info",
@@ -227,7 +227,7 @@
     {
       "level": "info",
       "stage": "pipeline",
-      "message": "appended 2 pick(s) to output/pick_history.jsonl (0 skipped as same-day duplicates)"
+      "message": "appended 0 pick(s) to output/pick_history.jsonl (2 skipped as same-day duplicates)"
     }
   ]
 }

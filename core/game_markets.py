@@ -1279,6 +1279,85 @@ def _process_spread(
 # Main public function
 # ─────────────────────────────────────────────────────────────────────────────
 
+# ---------------------------------------------------------------------------
+# Per-event market fetch (The Odds API "Additional"/"Game Period" markets)
+# ---------------------------------------------------------------------------
+# The Odds API's batch /sports/{sport}/odds endpoint only accepts its four
+# "Featured Markets": h2h, spreads, totals, outrights (see
+# https://the-odds-api.com/sports-odds-data/betting-markets.html). Everything
+# else -- including totals_1st_1_innings (NRFI/YRFI) and every other
+# innings/period-specific or player-prop market -- is an "Additional Market"
+# or "Game Period Market" and is documented as ONLY available one event at a
+# time via /sports/{sport}/events/{eventId}/odds. Requesting one of these on
+# the batch endpoint doesn't degrade gracefully -- The Odds API rejects the
+# whole request with HTTP 422 Unprocessable Entity, which is what silently
+# zeroed out MLB's expanded markets before this was wired up correctly.
+_FEATURED_MARKETS = frozenset({"h2h", "spreads", "totals", "outrights", "h2h_lay", "outrights_lay"})
+
+
+def _bundle_needs_per_event_fetch(markets_str: str) -> bool:
+    """True if any market in a comma-joined bundle string requires the
+    per-event odds endpoint rather than the batch endpoint."""
+    return any(m.strip() not in _FEATURED_MARKETS for m in markets_str.split(","))
+
+
+def _fetch_per_event_games(
+    api_sport: str, markets_str: str, commence_from: str, commence_to: str,
+) -> list[dict[str, Any]]:
+    """
+    Two-step fetch for markets that only exist on The Odds API's per-event
+    endpoint (see module note above):
+      1. GET /sports/{api_sport}/events -- free (0 usage credits per The
+         Odds API's docs), returns event id/home_team/away_team/commence_time
+         for every game in the window, no odds attached.
+      2. GET /sports/{api_sport}/events/{eventId}/odds?markets=... -- one
+         paid call PER EVENT (cost = markets x regions, same per-call rate
+         as the batch endpoint, just metered per game instead of per slate).
+
+    Returns a list of game dicts in the SAME shape fetch_expanded_game_candidates'
+    existing per-game loop already expects (id/commence_time/home_team/
+    away_team/bookmakers) -- confirmed against The Odds API's own documented
+    event-odds response schema, which is the batch schema for a single game.
+
+    A single event's odds call failing (e.g. that book hasn't posted this
+    market yet) is logged and SKIPPED, not fatal to the whole slate --
+    unlike the batch endpoint, one bad event here shouldn't zero out every
+    other game's real odds. Only the initial /events list call being
+    unavailable is treated as a hard failure (raised to the caller), since
+    without it there's no game list to iterate at all.
+    """
+    from core.odds_client import _fetch  # type: ignore[attr-defined]
+
+    events = _fetch(
+        f"sports/{api_sport}/events",
+        f"commenceTimeFrom={commence_from}&commenceTimeTo={commence_to}",
+    )
+    if not isinstance(events, list):
+        return []
+
+    games: list[dict[str, Any]] = []
+    for ev in events:
+        event_id = ev.get("id")
+        if not event_id:
+            continue
+        try:
+            game = _fetch(
+                f"sports/{api_sport}/events/{event_id}/odds",
+                f"regions=us,eu&markets={markets_str}&oddsFormat=american&dateFormat=iso",
+            )
+        except Exception as exc:
+            print(
+                f"[game_markets] per-event odds fetch failed for "
+                f"{ev.get('away_team')}@{ev.get('home_team')} "
+                f"(event {event_id}): {exc}",
+                flush=True,
+            )
+            continue
+        if isinstance(game, dict) and game.get("bookmakers"):
+            games.append(game)
+    return games
+
+
 def fetch_expanded_game_candidates(
     sport: str,
     as_of_date: str | None = None,
@@ -1338,19 +1417,55 @@ def fetch_expanded_game_candidates(
         return cached
 
     commence_from, commence_to = _et_day_bounds_utc(today_et)
-    params = (
-        f"regions=us,eu&markets={markets_str}&oddsFormat=american&dateFormat=iso"
-        f"&commenceTimeFrom={commence_from}&commenceTimeTo={commence_to}"
-    )
 
-    try:
+    if _bundle_needs_per_event_fetch(markets_str):
+        # Any market outside h2h/spreads/totals/outrights ("Featured
+        # Markets") is an "Additional"/"Game Period" market per The Odds
+        # API's own docs, and is documented as NOT available on the batch
+        # /sports/{sport}/odds endpoint -- attempting it there is exactly
+        # what produced the "HTTP Error 422: Unprocessable Entity" this
+        # comment used to just pass through blind. totals_1st_1_innings
+        # (NRFI/YRFI) is one of these -- it must be fetched per-event via
+        # /sports/{sport}/events/{eventId}/odds instead. See
+        # _fetch_per_event_games()'s own docstring for the two-call shape
+        # (free /events list, then one paid /events/{id}/odds call per
+        # game) and its cost implications.
         if as_of_date is not None:
-            raw_games = _fetch_historical(f"sports/{api_sport}/odds/", params, snapshot_iso)
-        else:
-            raw_games = _fetch(f"sports/{api_sport}/odds/", params)
-    except Exception as exc:
-        print(f"[game_markets] {sport_up} expanded fetch failed: {exc}", flush=True)
-        return []
+            # Historical per-event odds exist on The Odds API
+            # (/v4/historical/sports/{sport}/events/{eventId}/odds) but at
+            # 10x the live per-event cost, and this repo's _fetch_historical
+            # helper was written/tested only against the batch historical
+            # endpoint shape -- extending it to the per-event historical
+            # endpoint needs its own verification against a live paid
+            # account before trusting backtest results built on it. Skip
+            # cleanly rather than guess at an unverified endpoint shape.
+            print(
+                f"[game_markets] {sport_up} expanded markets: replay/backtest "
+                "not yet supported for per-event-only markets "
+                f"({markets_str}) -- skipping for {date_str}.",
+                flush=True,
+            )
+            return []
+        try:
+            raw_games = _fetch_per_event_games(
+                api_sport, markets_str, commence_from, commence_to,
+            )
+        except Exception as exc:
+            print(f"[game_markets] {sport_up} expanded fetch failed: {exc}", flush=True)
+            return []
+    else:
+        params = (
+            f"regions=us,eu&markets={markets_str}&oddsFormat=american&dateFormat=iso"
+            f"&commenceTimeFrom={commence_from}&commenceTimeTo={commence_to}"
+        )
+        try:
+            if as_of_date is not None:
+                raw_games = _fetch_historical(f"sports/{api_sport}/odds/", params, snapshot_iso)
+            else:
+                raw_games = _fetch(f"sports/{api_sport}/odds/", params)
+        except Exception as exc:
+            print(f"[game_markets] {sport_up} expanded fetch failed: {exc}", flush=True)
+            return []
 
     if not isinstance(raw_games, list):
         return []

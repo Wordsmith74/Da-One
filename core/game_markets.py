@@ -49,14 +49,25 @@ _SPORT_KEY: dict[str, str] = {
 
 # Odds API market bundle per sport.
 # Scope limited to the System Scope Definition (core/market_gate.py):
-#   MLB  — no game markets in scope (moneyline/run_line/game_total all
-#          disabled 2026-07-10, pitcher_strikeouts is the only remaining
-#          MLB market and it's a player prop, not a game market, so it
-#          doesn't come from this bundle -- see core/player_props.py).
+#   MLB  — moneyline/run_line/game_total remain disabled (2026-07-10 scope
+#          removal; pitcher_strikeouts is the only remaining full-game-out-
+#          of-this-bundle MLB market, and it's a player prop, not a game
+#          market, so it doesn't come from this bundle -- see
+#          core/player_props.py). totals_1st_1_innings (NRFI/YRFI) is back
+#          IN scope as of the first-inning tiered-handicapping wiring
+#          (models/nrfi_handicapper.py, data/statcast_first_inning.py, etc.)
+#          -- it was swept out incidentally by the 2026-07-10 change (that
+#          removal's own rationale never mentions NRFI/YRFI at all, see
+#          core/market_gate.py's ALLOWED_MARKETS comment), not by a
+#          deliberate decision about first-inning markets specifically.
+#          ALLOWED_MARKETS["MLB"] below must also carry "nrfi"/"yrfi" or
+#          this bundle entry alone won't produce any live picks -- that
+#          gate is the authoritative one either way (its own docstring
+#          says so), so both have to agree.
 #   WNBA — full-game moneyline only (spreads and team-totals removed) -- unchanged
 #   NBA  — no markets in scope (empty string → fetch_expanded_game_candidates returns [])
 _MARKET_BUNDLE: dict[str, str] = {
-    "MLB":  "",   # blocked: moneyline/run_line/game_total all out of scope
+    "MLB":  "totals_1st_1_innings",   # NRFI/YRFI only -- moneyline/run_line/game_total stay out of scope
     "NBA":  "",   # blocked: no game markets in scope
     "WNBA": "h2h",
 }

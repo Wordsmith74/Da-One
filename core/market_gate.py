@@ -9,9 +9,17 @@ gatekeeper entry, no audit trail beyond a brief rejection log.
 
 Allowed scope
 ─────────────
-MLB:  Pitcher Strikeouts only. Moneyline / Run Line (Spread) / Game Total
-      were removed from scope 2026-07-10 (see ALLOWED_MARKETS below for the
-      graded-sample evidence) -- kept out here, not just floored high.
+MLB:  Pitcher Strikeouts, plus NRFI/YRFI (first-inning 0.5 total) as of the
+      first-inning tiered-handicapping wiring (see models/nrfi_handicapper.py
+      and data/statcast_first_inning.py, umpire_zone_compute.py, etc.).
+      Moneyline / Run Line (Spread) / Game Total remain removed from scope
+      as of 2026-07-10 (see ALLOWED_MARKETS below for the graded-sample
+      evidence) -- kept out here, not just floored high. NRFI/YRFI's
+      re-addition is a separate, later decision from that 2026-07-10 removal
+      -- that removal's own rationale never mentions first-inning markets,
+      they were only caught incidentally because core/game_markets.py's
+      _MARKET_BUNDLE["MLB"] was zeroed out entirely rather than trimmed to
+      exclude just the three markets actually being removed.
 WNBA: Game Total · Player Assists · Player Rebounds · Moneyline  (unchanged)
 
 NBA:  (no markets in scope — all candidates blocked before modeling)
@@ -33,19 +41,29 @@ from core.decision_gatekeeper import market_normalized  # re-use existing normal
 # ---------------------------------------------------------------------------
 
 ALLOWED_MARKETS: dict[str, frozenset[str]] = {
-    # MLB scope: pitcher strikeouts only. Moneyline / run line / game total
-    # were removed from scope per explicit request -- see git history around
-    # 2026-07-10 for the graded sample that motivated it (run_line 37.5% win
-    # rate n=8, moneyline weakest market overall, game_total's own floor was
-    # only ever derived from an n=2 sample). Candidates for those three
-    # markets are now blocked here exactly like an out-of-scope NBA
-    # candidate would be -- no simulation, no gatekeeper entry, no picks.
-    # core/game_markets.py's _MARKET_BUNDLE["MLB"] and the MLB game-total
-    # fetch in run_pipeline.py are ALSO disabled (belt and suspenders / to
-    # stop spending API credits on candidates that would just be blocked
-    # here anyway) -- this entry is the authoritative one either way.
+    # MLB scope: pitcher strikeouts, plus NRFI/YRFI. Moneyline / run line /
+    # game total were removed from scope per explicit request -- see git
+    # history around 2026-07-10 for the graded sample that motivated it
+    # (run_line 37.5% win rate n=8, moneyline weakest market overall,
+    # game_total's own floor was only ever derived from an n=2 sample).
+    # Candidates for those three markets are still blocked here exactly
+    # like an out-of-scope NBA candidate would be -- no simulation, no
+    # gatekeeper entry, no picks.
+    # NRFI ("nrfi") / YRFI ("yrfi") are back in scope: they were swept out
+    # incidentally by the 2026-07-10 change (that removal's rationale never
+    # mentions first-inning markets) when core/game_markets.py's
+    # _MARKET_BUNDLE["MLB"] was zeroed out wholesale rather than trimmed to
+    # the three markets actually being removed. Re-added alongside the
+    # first-inning tiered-handicapping wiring (models/nrfi_handicapper.py).
+    # core/game_markets.py's _MARKET_BUNDLE["MLB"] must also carry
+    # "totals_1st_1_innings" or this entry alone won't produce any live
+    # picks -- this gate is still the authoritative scope definition either
+    # way (both need to agree, same "belt and suspenders" reasoning as the
+    # original removal).
     "MLB": frozenset({
         "pitcher_strikeouts",   # Pitcher Ks prop      (Bayesian, core/player_props.py)
+        "nrfi",                 # No Run 1st Inning    (Poisson closed-form, core/game_markets.py)
+        "yrfi",                 # Yes Run 1st Inning   (Poisson closed-form, core/game_markets.py)
     }),
     "WNBA": frozenset({
         "game_total",           # Full-game total     (odds_client.py fetch_todays_candidates)

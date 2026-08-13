@@ -33,6 +33,20 @@ outside Open-Meteo's ~16-day forecast window — common in backtest.py runs
 against past dates, which need the /archive endpoint instead; not wired in
 here since backtest correctness for weather is a smaller concern than not
 breaking live picks).
+
+NRFI environment-tier wiring (added)
+-------------------------------------
+get_nrfi_environment_inputs() below feeds
+models.nrfi_handicapper.environment_tier_multiplier's wind_out_mph and
+park_run_factor kwargs -- previously wired to nothing (module docstring's
+own "no first-inning-specific splits feed wired in" note covered this gap
+too). Unlike get_k_weather_scale(), this DOES use wind, since wind's effect
+on batted-ball carry (and therefore runs) is the well-established
+mechanism this module's own docstring calls out -- it was already being
+fetched here, just never resolved against park orientation or handed to
+the NRFI side. Direction-aware resolution lives in models/park_factors.py
+(get_wind_out_component) to keep this file focused on the fetch, not the
+geometry.
 """
 from __future__ import annotations
 
@@ -184,7 +198,8 @@ def get_weather(team_abbr: str, opp_abbr: str, game_date: str | None = None) -> 
 
         url = (
             f"{_OPEN_METEO}?latitude={lat}&longitude={lon}"
-            f"&daily=temperature_2m_max,temperature_2m_min,wind_speed_10m_max"
+            f"&daily=temperature_2m_max,temperature_2m_min,wind_speed_10m_max,"
+            f"wind_direction_10m_dominant"
             f"&temperature_unit=fahrenheit&wind_speed_unit=mph"
             f"&timezone=auto&start_date={game_date}&end_date={game_date}"
         )
@@ -196,10 +211,12 @@ def get_weather(team_abbr: str, opp_abbr: str, game_date: str | None = None) -> 
             tmax = (daily.get("temperature_2m_max") or [None])[0]
             tmin = (daily.get("temperature_2m_min") or [None])[0]
             wind = (daily.get("wind_speed_10m_max") or [None])[0]
+            wind_dir = (daily.get("wind_direction_10m_dominant") or [None])[0]
             if tmax is not None and tmin is not None:
                 result = {
                     "temp_f":   round((tmax + tmin) / 2.0, 1),
                     "wind_mph": round(wind, 1) if wind is not None else None,
+                    "wind_direction_deg": round(wind_dir, 1) if wind_dir is not None else None,
                     "is_dome":  False,
                     "home_abbr": home_abbr,
                 }
@@ -251,3 +268,37 @@ def get_k_weather_scale(team_abbr: str, opp_abbr: str, game_date: str | None = N
     except Exception as exc:
         logger.debug(f"[weather_intel] get_k_weather_scale failed: {exc!r}")
         return 1.0
+
+
+def get_nrfi_environment_inputs(
+    team_abbr: str, opp_abbr: str, game_date: str | None = None,
+) -> dict:
+    """
+    Returns {"wind_out_mph": float, "park_run_factor": float} for
+    models.nrfi_handicapper.environment_tier_multiplier's kwargs of the
+    same names. wind_out_mph is direction-resolved via
+    models.park_factors.get_wind_out_component (positive = blowing out to
+    CF, negative = blowing in) rather than the raw, directionless wind
+    speed get_k_weather_scale() ignores by design.
+
+    Neutral defaults (wind_out_mph=0.0, park_run_factor=1.0) on any error,
+    dome, or missing data -- environment_tier_multiplier already treats
+    these as "no environment adjustment," which is the correct behavior
+    when this module can't get a real read, not a special case to handle
+    here.
+    """
+    from models.park_factors import get_park_run_factor, get_wind_out_component
+
+    park_run_factor = get_park_run_factor(team_abbr)
+    wind_out_mph = 0.0
+    try:
+        wx = get_weather(team_abbr, opp_abbr, game_date)
+        if wx and not wx.get("is_dome"):
+            wind_out_mph = get_wind_out_component(
+                team_abbr, wx.get("wind_mph"), wx.get("wind_direction_deg"),
+            )
+    except Exception as exc:
+        logger.debug(f"[weather_intel] get_nrfi_environment_inputs failed: {exc!r}")
+        wind_out_mph = 0.0
+
+    return {"wind_out_mph": wind_out_mph, "park_run_factor": park_run_factor}

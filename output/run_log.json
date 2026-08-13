@@ -1,8 +1,8 @@
 {
-  "run_at": "2026-08-13T21:29:57.436174+00:00",
+  "run_at": "2026-08-13T21:39:16.309133+00:00",
   "n_errors": 0,
-  "n_warnings": 1,
-  "n_picks_generated": 2,
+  "n_warnings": 0,
+  "n_picks_generated": 4,
   "entries": [
     {
       "level": "info",
@@ -82,7 +82,7 @@
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Walbert_Ure\u00f1a_pitcher_strikeouts_under_f9b96108: GATEKEEPER FLAGGED -- tier=None edge=0.67% conf=71.0 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (66.0\u219271.0); Market entry floor [pitcher_strikeouts]: edge 0.67% < floor 3.0%"
+      "message": "prop_Walbert_Ure\u00f1a_pitcher_strikeouts_under_f9b96108: GATEKEEPER FLAGGED -- tier=None edge=0.53% conf=70.8 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (65.8\u219270.8); Market entry floor [pitcher_strikeouts]: edge 0.53% < floor 3.0%"
     },
     {
       "level": "info",
@@ -92,12 +92,12 @@
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Shane_Drohan_pitcher_strikeouts_under_40715667: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=68.2 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (63.2\u219268.2); Market entry floor [pitcher_strikeouts]: edge 0.00% < floor 3.0%"
+      "message": "prop_Shane_Drohan_pitcher_strikeouts_under_40715667: GATEKEEPER FLAGGED -- tier=None edge=0.00% conf=68.5 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (63.5\u219268.5); Market entry floor [pitcher_strikeouts]: edge 0.00% < floor 3.0%"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Roki_Sasaki_pitcher_strikeouts_under_40715667: GATEKEEPER FLAGGED -- tier=None edge=3.39% conf=63.5 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (68.5\u219273.5); Market uniqueness conflict (pitcher_strikeouts): UNDER opposes stronger OVER (edge 4.30%) in game Milwaukee_Brewers@Los_Angeles_Dodgers_MLB"
+      "message": "prop_Roki_Sasaki_pitcher_strikeouts_under_40715667: GATEKEEPER FLAGGED -- tier=None edge=3.39% conf=63.5 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (68.5\u219273.5); Market uniqueness conflict (pitcher_strikeouts): UNDER opposes stronger OVER (edge 4.45%) in game Milwaukee_Brewers@Los_Angeles_Dodgers_MLB"
     },
     {
       "level": "info",
@@ -197,12 +197,12 @@
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "LVA_total_over_b7f37fe3: GATEKEEPER DISCARD -- edge=1.36% conf=58.2 market=game_total | below threshold, no specific reason recorded"
+      "message": "LVA_total_over_b7f37fe3: GATEKEEPER DISCARD -- edge=1.31% conf=57.0 market=game_total | below threshold, no specific reason recorded"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "LVA_total_under_b7f37fe3: GATEKEEPER DISCARD -- edge=0.00% conf=29.4 market=game_total | below threshold, no specific reason recorded"
+      "message": "LVA_total_under_b7f37fe3: GATEKEEPER DISCARD -- edge=0.00% conf=29.2 market=game_total | below threshold, no specific reason recorded"
     },
     {
       "level": "info",
@@ -230,24 +230,19 @@
       "message": "4 picks after daily caps."
     },
     {
-      "level": "warn",
+      "level": "info",
       "stage": "pipeline",
-      "message": "dropped 2 pick(s) not in publication whitelist: [('MLB', 'yrfi'), ('MLB', 'yrfi')]"
+      "message": "4 picks after publication whitelist."
     },
     {
       "level": "info",
       "stage": "pipeline",
-      "message": "2 picks after publication whitelist."
+      "message": "4 picks after pre-publish line verification (0 dropped)."
     },
     {
       "level": "info",
       "stage": "pipeline",
-      "message": "2 picks after pre-publish line verification (0 dropped)."
-    },
-    {
-      "level": "info",
-      "stage": "pipeline",
-      "message": "appended 0 pick(s) to output/pick_history.jsonl (2 skipped as same-day duplicates)"
+      "message": "appended 2 pick(s) to output/pick_history.jsonl (2 skipped as same-day duplicates)"
     }
   ]
 }

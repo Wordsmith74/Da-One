@@ -210,6 +210,138 @@ def run_monte_carlo(
     return rng.normal(loc=mean, scale=std_dev, size=trials)
 
 
+def run_monte_carlo_poisson(
+    mean: float,
+    trials: int = 10_000,
+    rng_seed: int | None = 42,
+) -> np.ndarray:
+    """
+    Simulate game outcomes by drawing `trials` samples from a Poisson
+    distribution parameterised by a single rate (lambda = mean).
+
+    Intended for count-style full-game totals (combined runs/points), where
+    the outcome is a non-negative integer and, absent overdispersion,
+    variance == mean is a reasonable assumption -- unlike the continuous
+    Normal draw run_monte_carlo() uses for box-score stats.
+
+    This is independent of the Binomial(batters_faced, k_pct) path used for
+    MLB pitcher strikeouts (see models/monte_carlo.py / core/player_props.py)
+    -- that path never calls into this module.
+
+    Args:
+        mean:     Poisson rate (lambda). Must be > 0; values <= 0 are
+                  floored to a small positive epsilon so np.random.poisson
+                  doesn't raise.
+        trials:   Number of simulated outcomes. Defaults to 10,000.
+        rng_seed: Random seed for reproducibility. Pass None for random results.
+
+    Returns:
+        np.ndarray of shape (trials,) containing simulated integer totals
+        (as floats, so downstream code that expects run_monte_carlo()'s
+        dtype -- e.g. get_win_probability()'s comparisons -- works unchanged).
+    """
+    rng = np.random.default_rng(rng_seed)
+    lam = max(float(mean), 1e-6)
+    return rng.poisson(lam=lam, size=trials).astype(float)
+
+
+def run_monte_carlo_negative_binomial(
+    mean: float,
+    std_dev: float,
+    trials: int = 10_000,
+    rng_seed: int | None = 42,
+) -> np.ndarray:
+    """
+    Simulate game outcomes by drawing `trials` samples from a Negative
+    Binomial distribution matched to the given (mean, std_dev) via
+    method-of-moments.
+
+    Use this instead of run_monte_carlo_poisson() when the historical data
+    is overdispersed for a count total (variance meaningfully exceeds the
+    mean) -- a plain Poisson would then understate tail risk, the same
+    failure mode documented for NRFI/runs-per-inning modeling elsewhere in
+    this codebase (see models/monte_carlo.py's module docstring).
+
+    Method of moments: for NB, variance = mean + mean^2 / n, so
+        n = mean^2 / (variance - mean)
+        p = n / (n + mean)
+    If variance <= mean (no real overdispersion -- degenerate/undefined for
+    NB, since that limit IS the Poisson), falls back to a Poisson draw at
+    the same mean rather than raising or fabricating a bogus n.
+
+    Args:
+        mean:     Expected total (must be > 0; floored to a small epsilon).
+        std_dev:  Standard deviation of the total, as already computed by
+                  the Bayesian posterior / MC-sigma-floor step upstream.
+        trials:   Number of simulated outcomes. Defaults to 10,000.
+        rng_seed: Random seed for reproducibility. Pass None for random results.
+
+    Returns:
+        np.ndarray of shape (trials,) containing simulated integer totals
+        (as floats, matching run_monte_carlo()'s dtype).
+    """
+    rng = np.random.default_rng(rng_seed)
+    mean_f = max(float(mean), 1e-6)
+    var = float(std_dev) ** 2
+    if var <= mean_f:
+        return rng.poisson(lam=mean_f, size=trials).astype(float)
+    n = (mean_f ** 2) / (var - mean_f)
+    p = n / (n + mean_f)
+    return rng.negative_binomial(n=n, p=p, size=trials).astype(float)
+
+
+# ---------------------------------------------------------------------------
+# Distribution selection for count-style full-game totals
+# ---------------------------------------------------------------------------
+# Explicit allowlist of normalized market keys that represent a combined
+# integer game total (runs/points), where Poisson/Negative-Binomial is the
+# statistically appropriate shape instead of the default Normal draw.
+#
+# Deliberately scoped narrowly and matched only against this exact set --
+# this must NEVER expand to player props (player_points, pitcher_strikeouts,
+# etc.), which stay on the existing Normal Monte Carlo path in
+# run_monte_carlo(), and it has no interaction at all with the separate
+# Binomial(batters_faced, k_pct) pitcher-strikeout pipeline in
+# models/monte_carlo.py / core/player_props.py -- that code doesn't import
+# from or call into this module.
+_COUNT_TOTAL_MARKETS: frozenset[str] = frozenset({
+    "totals", "total", "game_total", "team_total",
+    "totals_first_5_innings", "f5_total",
+    "totals_q1", "totals_h1",
+})
+
+
+def _normalize_market_key(market_type: str) -> str:
+    """Local, dependency-free normalization (lowercase + underscored).
+    Deliberately does NOT import core/grading_utils.py's or
+    core/decision_gatekeeper.py's market_normalized() -- those two modules
+    alias "totals" and "game_total" in OPPOSITE directions for their own
+    dispatch/publication purposes, and pulling either in here would risk a
+    circular import. This function only needs to recognize the count-total
+    markets in _COUNT_TOTAL_MARKETS above, not participate in that broader
+    aliasing scheme.
+    """
+    return (market_type or "").strip().lower().replace(" ", "_").replace("-", "_")
+
+
+def select_mc_distribution(market_type: str, mean: float, std_dev: float) -> str:
+    """
+    Decide which Monte Carlo shape to draw a candidate's simulation from.
+
+    Returns "normal" for everything except the explicit count-total markets
+    in _COUNT_TOTAL_MARKETS -- i.e. this is a no-op for every player prop,
+    moneyline/spread (which bypass this file entirely), and the pitcher-K
+    Binomial path. For a recognized game-total market, picks "negative_binomial"
+    when the data shows meaningful overdispersion (variance > ~1.05x mean),
+    else "poisson".
+    """
+    if _normalize_market_key(market_type) not in _COUNT_TOTAL_MARKETS:
+        return "normal"
+    mean_f = max(float(mean), 1e-9)
+    var = float(std_dev) ** 2
+    return "negative_binomial" if var > mean_f * 1.05 else "poisson"
+
+
 # ---------------------------------------------------------------------------
 # Probability Calculation
 # ---------------------------------------------------------------------------
@@ -359,6 +491,7 @@ class SimulationEngine:
         recent_n: int = 5,
         volatility_index: float | None = None,
         market_type: str = "",
+        distribution: str | None = None,
     ) -> dict[str, Any]:
         """
         Full pipeline: Bayesian posterior → Monte Carlo → win probability,
@@ -379,6 +512,19 @@ class SimulationEngine:
                                None → uses PLAYOFF_VOLATILITY[sport] per
                                the sport-level lookup table.  Ignored when
                                context == 'regular'.
+            distribution:      Explicit Monte Carlo shape override --
+                               "normal" | "poisson" | "negative_binomial".
+                               None (default) auto-selects via
+                               select_mc_distribution(market_type, ...):
+                               every market keeps the existing Normal draw
+                               EXCEPT the explicit count-total markets (full
+                               game totals), which get Poisson or Negative
+                               Binomial depending on observed overdispersion.
+                               Passing a value here forces that shape
+                               regardless of market_type. Has no effect on,
+                               and no interaction with, the separate
+                               Binomial(batters_faced, k_pct) pitcher-K path
+                               in models/monte_carlo.py / core/player_props.py.
 
         Playoff adjustments (active only when context == 'playoff')
         -----------------------------------------------------------
@@ -402,6 +548,8 @@ class SimulationEngine:
                 active_data_n     — number of observations used by the model
                 posterior         — output of estimate_player_metric()
                 win_probability   — output of get_win_probability()
+                mc_distribution   — which Monte Carlo shape was actually used:
+                                    "normal" | "poisson" | "negative_binomial"
         """
         _context = context.lower().strip()
         if _context not in ("regular", "playoff"):
@@ -453,12 +601,34 @@ class SimulationEngine:
             mc_std = _sigma_floor
 
         # ── Monte Carlo simulation ────────────────────────────────────────────
-        simulated = run_monte_carlo(
-            mean=posterior["posterior_mean"],
-            std_dev=max(mc_std, 1e-6),   # floor avoids degenerate zero-std runs
-            trials=trials,
-            rng_seed=rng_seed,
+        # _dist stays "normal" (identical behavior to before this feature was
+        # added) for every market except the explicit count-total allowlist
+        # in select_mc_distribution() -- player props, moneyline/spread, and
+        # the separate pitcher-K Binomial pipeline are all unaffected.
+        _dist = distribution or select_mc_distribution(
+            market_type, posterior["posterior_mean"], mc_std
         )
+
+        if _dist == "poisson":
+            simulated = run_monte_carlo_poisson(
+                mean=posterior["posterior_mean"],
+                trials=trials,
+                rng_seed=rng_seed,
+            )
+        elif _dist == "negative_binomial":
+            simulated = run_monte_carlo_negative_binomial(
+                mean=posterior["posterior_mean"],
+                std_dev=max(mc_std, 1e-6),
+                trials=trials,
+                rng_seed=rng_seed,
+            )
+        else:
+            simulated = run_monte_carlo(
+                mean=posterior["posterior_mean"],
+                std_dev=max(mc_std, 1e-6),   # floor avoids degenerate zero-std runs
+                trials=trials,
+                rng_seed=rng_seed,
+            )
 
         win_prob = get_win_probability(
             simulated_results=simulated,
@@ -492,4 +662,5 @@ class SimulationEngine:
             "active_data_n":    len(active_data),
             "posterior":        posterior,
             "win_probability":  win_prob,
+            "mc_distribution":  _dist,
         }

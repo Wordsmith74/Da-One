@@ -346,6 +346,47 @@ def _score_and_gate_mlb_totals_reliability(c):
 
 # ---------- Bet-derivation math (ported from main.py's _derive_bet_params) ----------
 
+def _calibration_veto(sport: str, mkt: str, model_prob_pct: float, american_odds) -> tuple[bool, float]:
+    """
+    Hard safety net wiring model_prob_calibrated INTO the gate/tier decision,
+    not just into Kelly stake sizing downstream.
+
+    Previously the fitted (isotonic) calibration curve from
+    core/probability_calibrator.py was only ever consulted after a pick had
+    already cleared Game Truth Protocol + run_gatekeeper and been assigned a
+    tier -- see the "CALIBRATED PROBABILITY (Fix #2)" block below. That meant
+    a pick the calibration curve believed was near-worthless (e.g. a fitted
+    ~3% true win probability against a raw model read of ~45%) could still
+    publish as a Gold Standard pick with a real edge_pct on it; the only
+    visible symptom was stake_pct_bankroll landing at 0.0, which looks
+    identical to "correctly sized to zero for other reasons" rather than
+    "the calibration model disagrees with this pick entirely."
+
+    This runs BEFORE Game Truth Protocol / run_gatekeeper, using the same
+    calibrate_probability() curve, and re-derives edge from the calibrated
+    probability against the actual offered price (same edge formula
+    game_markets.py's _edge_pct() uses: model_prob * decimal_odds - 1).
+    If that calibrated edge is <= 0 -- i.e. the calibration curve itself
+    says this is not a +EV bet at the price offered -- the candidate is
+    vetoed here rather than being allowed to reach tier assignment.
+
+    Only ever REJECTS: when no fitted curve exists yet for this
+    (sport, market) group, calibrate_probability() returns raw_prob
+    unchanged (see its own docstring), so this check degrades to whatever
+    edge the market/model already implied and never blocks a candidate it
+    wouldn't otherwise have valid grounds to block. Safe to run
+    unconditionally on every candidate, precomputed or simulated.
+    """
+    raw_prob_0to1 = max(0.0, min(1.0, (model_prob_pct or 0.0) / 100.0))
+    calibrated_prob_0to1 = calibrate_probability(raw_prob=raw_prob_0to1, sport=sport, market=mkt)
+    if not american_odds:
+        return False, calibrated_prob_0to1
+    odds = float(american_odds)
+    decimal = (1.0 + odds / 100.0) if odds >= 0 else (1.0 + 100.0 / abs(odds))
+    calibrated_edge_pct = (calibrated_prob_0to1 * decimal - 1.0) * 100.0
+    return calibrated_edge_pct <= 0.0, calibrated_prob_0to1
+
+
 def _derive_bet_params(sim, candidate):
     """
     Extract edge_percentage, confidence_score, and model_probability from a
@@ -628,6 +669,31 @@ def run_sport_pipeline(sport, as_of_date=None):
             model_prob = round(c["precomputed_model_prob"] * 100, 1)
             mkt = market_normalized(c.get("market", ""))
             edge = calibrate_edge(raw_edge, sport, mkt)
+
+            _vetoed, _cal_prob = _calibration_veto(sport, mkt, model_prob, c.get("american_odds"))
+            if _vetoed:
+                log(
+                    "info", sport,
+                    f"{bet_id}: CALIBRATION VETO -- raw model_prob={model_prob:.1f}% "
+                    f"but fitted curve for ({sport}, {mkt}) puts true probability at "
+                    f"{_cal_prob*100:.1f}%, which is -EV at the offered price. "
+                    f"Rejected before Game Truth Protocol / gatekeeper.",
+                )
+                log_rejected_candidate(
+                    sport=sport, candidate=c, stage="calibration_veto",
+                    reason=f"calibrated_prob={_cal_prob:.4f} is -EV at offered odds",
+                    slate_date=slate_date,
+                )
+                log_candidate(
+                    sport=sport, player=c.get("player"), matchup=c.get("matchup", c.get("game_id", "")),
+                    market_line=c.get("sportsbook_line"), side=c.get("direction"),
+                    rejected_stage="calibration_veto",
+                    rejected_reason=f"calibrated_prob={_cal_prob:.4f} is -EV at offered odds",
+                    published=False, extra={"bet_id": bet_id},
+                )
+                continue
+            c["model_prob_calibrated_precheck"] = round(_cal_prob, 4)
+
             c.setdefault("posterior_std", None)
             c.setdefault("posterior_mean", None)
             c.setdefault("relative_sigma_pct", None)
@@ -725,6 +791,31 @@ def run_sport_pipeline(sport, as_of_date=None):
                 f"{bet_id}: devig unavailable (no named book quoted both sides) "
                 f"-- fell back to raw single-book implied prob"
             )
+
+        _mkt_for_cal = market_normalized(c.get("market", ""))
+        _vetoed, _cal_prob = _calibration_veto(sport, _mkt_for_cal, model_prob, c.get("american_odds"))
+        if _vetoed:
+            log(
+                "info", sport,
+                f"{bet_id}: CALIBRATION VETO -- raw model_prob={model_prob:.1f}% "
+                f"but fitted curve for ({sport}, {_mkt_for_cal}) puts true probability at "
+                f"{_cal_prob*100:.1f}%, which is -EV at the offered price. "
+                f"Rejected before Game Truth Protocol / gatekeeper.",
+            )
+            log_rejected_candidate(
+                sport=sport, candidate=c, stage="calibration_veto",
+                reason=f"calibrated_prob={_cal_prob:.4f} is -EV at offered odds",
+                slate_date=slate_date,
+            )
+            log_candidate(
+                sport=sport, player=c.get("player"), matchup=c.get("matchup", c.get("game_id", "")),
+                market_line=c.get("sportsbook_line"), side=c.get("direction"),
+                rejected_stage="calibration_veto",
+                rejected_reason=f"calibrated_prob={_cal_prob:.4f} is -EV at offered odds",
+                published=False, extra={"bet_id": bet_id},
+            )
+            continue
+        c["model_prob_calibrated_precheck"] = round(_cal_prob, 4)
 
         processed.append((c, edge, confidence, model_prob))
 

@@ -197,9 +197,11 @@ _MARKET_ENTRY_FLOORS: dict[str, tuple[float, float]] = {
                                           # team-totals were removed from scope) -- this floor is
                                           # currently unreachable and kept only for when/if that
                                           # market is re-enabled with its own graded history.
-    # "moneyline" / "run_line" moved OUT of this shared dict -- MLB moneyline is now
-    # in scope (game_markets._MARKET_BUNDLE["MLB"] == "h2h,spreads") and needs its own
-    # per-sport floor rather than sharing WNBA's -- see _MARKET_ENTRY_FLOORS_BY_SPORT below.
+    # "moneyline" / "run_line" moved OUT of this shared dict -- WNBA moneyline is its own
+    # per-sport entry below (_MARKET_ENTRY_FLOORS_BY_SPORT). MLB moneyline/run_line/game_total
+    # remain fully OUT OF SCOPE (see core/market_gate.py's ALLOWED_MARKETS["MLB"] --
+    # game_markets._MARKET_BUNDLE["MLB"] == "totals_1st_1_innings" only, i.e. nrfi/yrfi; no
+    # h2h/spreads are ever requested for MLB), so no MLB entry belongs in either floor table.
 }
 
 # ---------------------------------------------------------------------------

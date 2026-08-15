@@ -682,6 +682,31 @@ def _process_moneyline(
             elif name == away_team:
                 away_lines.append((pt, int(price), bk_title))
 
+    # Consensus deviation gate (moneyline) -- same protection the totals/
+    # spread/nrfi-yrfi paths use, adapted for price instead of point value:
+    # moneyline has no "line" to drift-check, so this compares the best
+    # book's IMPLIED PROBABILITY against the median implied probability
+    # across all books quoting that side. A single soft/stale book (e.g.
+    # one that hasn't moved off an opening number) can otherwise anchor
+    # the whole edge calculation on a price no other book agrees with --
+    # this is the same failure mode that was flagged for nrfi/yrfi.
+    _ML_DRIFT: dict[str, float] = {"MLB": 0.04, "NBA": 0.04, "WNBA": 0.05}
+    _ml_drift_lim = _ML_DRIFT.get(sport.upper(), 0.05)
+
+    def _consensus_filtered(lines: list[tuple[float, int, str]]) -> list[tuple[float, int, str]]:
+        if len(lines) < 2:
+            return lines
+        implied = [_american_to_implied(price) for (_pt, price, _bk) in lines]
+        consensus_impl = statistics.median(implied)
+        within = [
+            (pt, price, bk) for (pt, price, bk) in lines
+            if abs(_american_to_implied(price) - consensus_impl) <= _ml_drift_lim
+        ]
+        return within if within else lines
+
+    home_lines = _consensus_filtered(home_lines)
+    away_lines = _consensus_filtered(away_lines)
+
     home_win_model, away_win_model = _win_prob(home_hist, away_hist, sport)
 
     # ── rivalry_intel.py wiring (MLB moneyline only) ────────────────────────
@@ -1037,6 +1062,28 @@ def _process_nrfi_yrfi(
                 nrfi_lines.append((0.5, int(price), bk_title))
             elif name == "over":    # Over 0.5 == a run scores == YRFI
                 yrfi_lines.append((0.5, int(price), bk_title))
+
+    # Consensus deviation gate (nrfi/yrfi) -- same protection ported from
+    # the totals/spread paths: the line is fixed at 0.5 for both sides, so
+    # there's nothing to drift-check there, but the PRICE can still be a
+    # stale outlier from a single book. Compare best price's implied
+    # probability against the median across books quoting that side.
+    _NRFI_DRIFT: dict[str, float] = {"MLB": 0.04}
+    _nrfi_drift_lim = _NRFI_DRIFT.get(sport.upper(), 0.05)
+
+    def _nrfi_consensus_filtered(lines: list[tuple[float, int, str]]) -> list[tuple[float, int, str]]:
+        if len(lines) < 2:
+            return lines
+        implied = [_american_to_implied(price) for (_pt, price, _bk) in lines]
+        consensus_impl = statistics.median(implied)
+        within = [
+            (pt, price, bk) for (pt, price, bk) in lines
+            if abs(_american_to_implied(price) - consensus_impl) <= _nrfi_drift_lim
+        ]
+        return within if within else lines
+
+    nrfi_lines = _nrfi_consensus_filtered(nrfi_lines)
+    yrfi_lines = _nrfi_consensus_filtered(yrfi_lines)
 
     for side, lines, model_prob in (
         ("nrfi", nrfi_lines, nrfi_model_prob),

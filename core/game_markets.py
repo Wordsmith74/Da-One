@@ -1114,6 +1114,34 @@ def _process_nrfi_yrfi(
     nrfi_lines = _nrfi_consensus_filtered(nrfi_lines)
     yrfi_lines = _nrfi_consensus_filtered(yrfi_lines)
 
+    # Minimum book count for nrfi/yrfi specifically -- ABOVE _best_side's
+    # generic 2-book floor. Confirmed case (2026-08-15, ~07:44-08:14 UTC):
+    # 7 YRFI candidates cleared the 4% entry floor with 8-15% edges, priced
+    # off exactly 2 books (the bare minimum _best_side allows), 6 of the 7
+    # sharing BetRivers as best_book in a suspiciously narrow +195/+235
+    # band. By the same evening, the model's own probability for the same
+    # games had barely moved (e.g. SD@CLE yrfi 43.6% -> 44.6%) but the
+    # price had converged to a normal, -EV-at-those-odds level -- i.e. the
+    # early "edge" was two thinly-covered books both being stale together,
+    # not real value. The median-consensus filter above can't catch this:
+    # it only flags one book disagreeing with others, not the whole
+    # (thin) market agreeing on a bad number. Raising the bar to 3 books
+    # for THIS market specifically (not touched in the shared _best_side
+    # util other markets rely on) holds the pick until enough independent
+    # books have posted for a real consensus to exist, rather than trusting
+    # 2 books quoting first-inning props at 3-4am ET.
+    #
+    # NOTE: not paired with a market-specific edge ceiling
+    # (_MARKET_MAX_EDGE_BY_SPORT) the way WNBA moneyline's 8.2% ceiling
+    # was -- that was derived from a real graded sample (multiple 10%+
+    # edge losses vs a clean win rate in the 4.7-8.2% band). nrfi/yrfi has
+    # only 4 graded picks total as of this fix -- nowhere near enough to
+    # derive a defensible edge ceiling without fabricating a threshold on
+    # noise, which is exactly what this module's own reliability-gate
+    # design principle warns against. Revisit once there's a real graded
+    # sample of nrfi/yrfi edges to look at.
+    _NRFI_MIN_BOOKS = 3
+
     for side, lines, model_prob in (
         ("nrfi", nrfi_lines, nrfi_model_prob),
         ("yrfi", yrfi_lines, yrfi_model_prob),
@@ -1122,6 +1150,15 @@ def _process_nrfi_yrfi(
         if result is None:
             continue
         best_line, best_odds, best_book, n_books = result
+        if n_books < _NRFI_MIN_BOOKS:
+            print(
+                f"[game_markets] {away_abbr}@{home_abbr} {side}: HELD -- "
+                f"only {n_books} book(s) quoting (need >= {_NRFI_MIN_BOOKS} "
+                f"for nrfi/yrfi specifically); best={best_book} {best_odds:+d}. "
+                f"Insufficient independent coverage to trust this price yet.",
+                flush=True,
+            )
+            continue
         edge       = _edge_pct(model_prob, best_odds)
         confidence = _precomp_confidence(n_books, len(home_hist) + len(away_hist), model_prob)
 

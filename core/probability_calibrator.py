@@ -116,8 +116,16 @@ def _pav_isotonic(probs: list[float], outcomes: list[int]) -> list[tuple[float, 
 
 
 def _interp(points: list[tuple[float, float]], x: float) -> float:
-    """Piecewise-linear interpolation over PAV output; clamps outside the
-    observed range rather than extrapolating past the data."""
+    """Piecewise-linear interpolation over PAV output.
+
+    Outside the observed [min_x, max_x] range there is, by definition, zero
+    graded evidence -- so instead of clamping to whichever boundary point is
+    nearest (which used to mean a *single* graded pick's win/loss outcome
+    got applied as a hard floor/ceiling to every query beyond it -- see
+    CalibrationCurve.apply()'s docstring), we return the raw x unchanged.
+    That keeps this function's job strictly to interpolation; the
+    identity-fallback decision for out-of-range x lives in apply().
+    """
     if not points:
         return x
     if x <= points[0][0]:
@@ -145,9 +153,30 @@ class CalibrationCurve:
     points: list                # list[tuple[float, float]]; empty when unfitted
     fitted: bool                # False -> apply() is identity (insufficient n)
     train_window: tuple = (None, None)   # (earliest, latest) generated_at in the fit set
+    x_min: Optional[float] = None   # min raw_prob actually seen in the fit set
+    x_max: Optional[float] = None   # max raw_prob actually seen in the fit set
 
     def apply(self, raw_prob: float) -> float:
         if not self.fitted:
+            return raw_prob
+        # Bug fix (extrapolation clamp): a query outside [x_min, x_max] has
+        # zero graded evidence behind it. _interp() used to clamp these to
+        # the y-value of the nearest training point -- but PAV's boundary
+        # points are frequently built from a single graded pick (confirmed
+        # via output/pick_history.jsonl: MLB props' and both sports' game
+        # markets' leftmost anchor was n=1, one loss, y=0.0). That meant
+        # e.g. every MLB pitcher_strikeouts "over" candidate, whose raw
+        # probabilities structurally land in the 30s-40s (below the fit
+        # set's observed minimum of ~48.6%), was being told "0% true
+        # probability" off the back of one unrelated pick's outcome, not
+        # off any evidence about probabilities in that range. Match the
+        # module's own "don't calibrate what you don't have evidence for"
+        # principle (already applied at the group/MIN_SAMPLE_SIZE level)
+        # by falling back to identity for out-of-range queries too, rather
+        # than extrapolating via boundary-clamp.
+        if self.x_min is not None and raw_prob < self.x_min:
+            return raw_prob
+        if self.x_max is not None and raw_prob > self.x_max:
             return raw_prob
         return _interp(self.points, raw_prob)
 
@@ -241,10 +270,12 @@ def fit_calibration_curves(records: list[dict]) -> dict:
                 sport, market_class, n, MIN_SAMPLE_SIZE,
             )
             continue
-        points = _pav_isotonic([r["prob"] for r in recs], [r["y"] for r in recs])
+        fit_probs = [r["prob"] for r in recs]
+        points = _pav_isotonic(fit_probs, [r["y"] for r in recs])
         curves[(sport, market_class)] = CalibrationCurve(
             sport=sport, market_class=market_class, n=n,
             points=points, fitted=True, train_window=window,
+            x_min=min(fit_probs), x_max=max(fit_probs),
         )
     return curves
 
@@ -256,6 +287,7 @@ def save_calibration_curves(curves: dict, path: str = DEFAULT_CALIBRATION_PATH) 
             "fitted": c.fitted,
             "points": [list(p) for p in c.points],
             "train_window": list(c.train_window),
+            "x_min": c.x_min, "x_max": c.x_max,
         }
         for (sport, market_class), c in curves.items()
     }
@@ -276,6 +308,7 @@ def load_calibration_curves(path: str = DEFAULT_CALIBRATION_PATH) -> dict:
             sport=v["sport"], market_class=v["market_class"], n=v["n"],
             points=[tuple(pt) for pt in v["points"]], fitted=v["fitted"],
             train_window=tuple(v.get("train_window", (None, None))),
+            x_min=v.get("x_min"), x_max=v.get("x_max"),
         )
     return curves
 

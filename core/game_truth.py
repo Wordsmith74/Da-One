@@ -189,20 +189,36 @@ def apply_game_truth_protocol(
 
     for game_id, entries in grouped.items():
 
-        # ── Step 2: Dual Value Vector ────────────────────────────────────────
+        # ── Step 2: Triple Value Vector ──────────────────────────────────────
         # Score each candidate's market by edge × confidence / 100.
-        # Markets are split into two lanes: game markets (totals/spreads) and
-        # prop markets (player/pitcher props).  The top market from EACH lane
-        # independently survives to the gatekeeper so a game can contribute
-        # both a prop pick and a game-total pick simultaneously.
+        # Markets are split into THREE lanes: game markets (totals/spreads),
+        # first-inning markets (nrfi/yrfi), and prop markets (player/pitcher
+        # props). The top market from EACH lane independently survives to
+        # the gatekeeper so a game can contribute a prop pick, a first-inning
+        # pick, AND a game-total pick simultaneously.
+        #
+        # first-inning gets its OWN lane rather than folding into the prop
+        # lane: nrfi/yrfi don't match any _GAME_MKT_TOKENS substring (no
+        # "total"/"f5"/"spread"/etc in "nrfi" or "yrfi"), so before this fix
+        # they fell into prop_mkt_scores and wrongly competed for a single
+        # slot against unrelated player-prop candidates (e.g. a pitcher
+        # strikeout pick) for the same game -- a K prop and a first-inning
+        # bet aren't contradictory and shouldn't cannibalize each other.
+        # nrfi and yrfi themselves DO stay mutually exclusive within this
+        # lane (same underlying market, opposite sides) -- that part is
+        # correct and intentional, same as over/under within game markets.
 
         _GAME_MKT_TOKENS = {
             "totals", "total", "first_5", "f5", "spread",
             "moneyline", "run_line", "team_total",
         }
+        _FIRST_INNING_MARKETS = {"nrfi", "yrfi"}
 
         def _is_game_market(mkt_norm: str) -> bool:
             return any(tok in mkt_norm for tok in _GAME_MKT_TOKENS)
+
+        def _is_first_inning_market(mkt_norm: str) -> bool:
+            return mkt_norm in _FIRST_INNING_MARKETS
 
         market_scores: dict[str, float] = {}
         for (c, edge, conf, _) in entries:
@@ -215,14 +231,22 @@ def apply_game_truth_protocol(
             continue
 
         game_mkt_scores = {m: s for m, s in market_scores.items() if _is_game_market(m)}
-        prop_mkt_scores = {m: s for m, s in market_scores.items() if not _is_game_market(m)}
+        first_inning_scores = {m: s for m, s in market_scores.items() if _is_first_inning_market(m)}
+        prop_mkt_scores = {
+            m: s for m, s in market_scores.items()
+            if not _is_game_market(m) and not _is_first_inning_market(m)
+        }
 
         top_game_mkt = max(game_mkt_scores, key=lambda m: game_mkt_scores[m]) if game_mkt_scores else None
+        top_first_inning_mkt = (
+            max(first_inning_scores, key=lambda m: first_inning_scores[m]) if first_inning_scores else None
+        )
         top_prop_mkt = max(prop_mkt_scores, key=lambda m: prop_mkt_scores[m]) if prop_mkt_scores else None
 
-        # Primary value vector for state tracking (game market preferred)
-        value_vector = top_game_mkt or top_prop_mkt
-        winning_vectors = {v for v in (top_game_mkt, top_prop_mkt) if v}
+        # Primary value vector for state tracking (game market preferred,
+        # then first-inning, then prop)
+        value_vector = top_game_mkt or top_first_inning_mkt or top_prop_mkt
+        winning_vectors = {v for v in (top_game_mkt, top_first_inning_mkt, top_prop_mkt) if v}
 
         vv_entries = [
             entry for entry in entries

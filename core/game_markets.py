@@ -1003,15 +1003,24 @@ def _process_nrfi_yrfi(
     away_lambda = projection["away_lambda"]
     combined_lambda = projection["combined_lambda"]
 
-    nrfi_model_prob = math.exp(-combined_lambda)
-    yrfi_model_prob = 1.0 - nrfi_model_prob
+    nrfi_model_prob_raw = math.exp(-combined_lambda)
+    yrfi_model_prob_raw = 1.0 - nrfi_model_prob_raw
     # Sanity-check against the doc's own stated prior -- a per-game
     # projection this far from the league baseline needs the causal tiers
     # above, not just the coarse fallback, before it should be trusted at
     # the extremes. Clamp keeps a noisy fallback from producing an
     # implausible near-certain NRFI/YRFI read on its own.
-    nrfi_model_prob = max(0.45, min(0.92, nrfi_model_prob))
+    nrfi_model_prob = max(0.45, min(0.92, nrfi_model_prob_raw))
     yrfi_model_prob = 1.0 - nrfi_model_prob
+
+    _clamp_engaged = abs(nrfi_model_prob - nrfi_model_prob_raw) > 1e-9
+    print(
+        f"[game_markets] {away_abbr}@{home_abbr} NRFI/YRFI prob: "
+        f"raw_nrfi={nrfi_model_prob_raw:.4f} raw_yrfi={yrfi_model_prob_raw:.4f} "
+        f"-> clamped_nrfi={nrfi_model_prob:.4f} clamped_yrfi={yrfi_model_prob:.4f} "
+        f"combined_lambda={combined_lambda:.3f} clamp_engaged={_clamp_engaged}",
+        flush=True,
+    )
 
     nrfi_lines: list[tuple[float, int, str]] = []
     yrfi_lines: list[tuple[float, int, str]] = []

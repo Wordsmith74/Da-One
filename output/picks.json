@@ -1,46 +1,4 @@
 {
-  "generated_at": "2026-08-15T22:27:42.056399+00:00",
-  "picks": [
-    {
-      "sport": "MLB",
-      "bet_id": "prop_Ryan_Gusto_pitcher_strikeouts_under_5bab26a4",
-      "player": "Ryan Gusto",
-      "team": "MARLINvREDS",
-      "matchup": "Miami_Marlins@Cincinnati_Reds_MLB",
-      "away_team": "Miami Marlins",
-      "home_team": "Cincinnati Reds",
-      "bookmaker_source": "Betr Picks",
-      "market": "pitcher_strikeouts",
-      "market_type": "pitcher_strikeouts",
-      "side": "under",
-      "pick": "Ryan Gusto pitcher_strikeouts under 4.5",
-      "pick_time_line": 4.5,
-      "pick_time_odds": 100.0,
-      "current_line": 4.5,
-      "current_odds": 100.0,
-      "line": 4.5,
-      "model_number": 81.7,
-      "edge_pct": 9.35,
-      "confidence": 77.5,
-      "model_prob": 81.7,
-      "tier": "Nuke",
-      "game_id": "Miami_Marlins@Cincinnati_Reds_MLB",
-      "steam_move_threshold_pct": 8.0,
-      "moneyline_steam_cents": 15,
-      "side_agreement_frac": null,
-      "posterior_std": null,
-      "posterior_mean": null,
-      "relative_sigma_pct": null,
-      "model_prob_raw": 0.817,
-      "model_prob_calibrated": 0.5539,
-      "stake_pct_bankroll": 2.69,
-      "ccs_score": 80.13,
-      "robustness": "robust",
-      "line_move_pct": 0.0,
-      "pick_id": "83dec06e1f11",
-      "actual_result": null,
-      "closing_line": null,
-      "clv_pct": null
-    }
-  ]
+  "generated_at": "2026-08-15T22:50:33.193854+00:00",
+  "picks": []
 }

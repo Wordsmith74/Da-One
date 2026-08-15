@@ -44,6 +44,8 @@ from typing import Optional
 
 import requests
 
+from core.mlb_team_ids import MLB_TEAM_IDS
+
 logger = logging.getLogger("betting_bot")
 
 STATSAPI_BASE = "https://statsapi.mlb.com/api/v1"
@@ -80,10 +82,28 @@ class Top4PlatoonSplits:
 
 
 def _resolve_game_pk(home_abbr: str, away_abbr: str, game_date: date) -> Optional[int]:
+    """
+    NOTE: previously matched on team.abbreviation without hydrate=team --
+    the schedule endpoint's default team sub-object is just {id, name,
+    link} without that hydrate, so abbreviation was always "" and this
+    always returned None. Matching on id (via MLB_TEAM_IDS, present
+    either way) fixes that; see the identical bug/fix in
+    data/mlb_probable_pitchers.get_probable_pitchers and
+    core/intelligence/umpire_intel.resolve_game_pk.
+    """
+    home_id = MLB_TEAM_IDS.get(home_abbr.upper())
+    away_id = MLB_TEAM_IDS.get(away_abbr.upper())
+    if home_id is None or away_id is None:
+        logger.debug(
+            f"[statcast_lineup_platoon] unrecognized abbreviation(s) "
+            f"home={home_abbr!r} away={away_abbr!r} -- not in MLB_TEAM_IDS."
+        )
+        return None
+
     try:
         r = requests.get(
             f"{STATSAPI_BASE}/schedule",
-            params={"sportId": 1, "date": game_date.isoformat()},
+            params={"sportId": 1, "date": game_date.isoformat(), "hydrate": "team"},
             timeout=_TIMEOUT,
         )
         r.raise_for_status()
@@ -92,8 +112,7 @@ def _resolve_game_pk(home_abbr: str, away_abbr: str, game_date: date) -> Optiona
             for g in day.get("games", []):
                 h = (g.get("teams", {}).get("home", {}).get("team", {}) or {})
                 a = (g.get("teams", {}).get("away", {}).get("team", {}) or {})
-                if (h.get("abbreviation", "").upper() == home_abbr.upper()
-                        and a.get("abbreviation", "").upper() == away_abbr.upper()):
+                if h.get("id") == home_id and a.get("id") == away_id:
                     matches.append(g.get("gamePk"))
         return matches[0] if len(matches) == 1 else None
     except Exception as exc:

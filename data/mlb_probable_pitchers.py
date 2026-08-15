@@ -35,6 +35,8 @@ from typing import Optional
 
 import requests
 
+from core.mlb_team_ids import MLB_TEAM_IDS
+
 logger = logging.getLogger("betting_bot")
 
 STATSAPI_BASE = "https://statsapi.mlb.com/api/v1"
@@ -263,12 +265,29 @@ def get_probable_pitchers(
         return _PROBABLE_CACHE[cache_key]
 
     result = _empty_matchup()
+    home_id = MLB_TEAM_IDS.get(home_abbr.upper())
+    away_id = MLB_TEAM_IDS.get(away_abbr.upper())
+    if home_id is None or away_id is None:
+        logger.debug(
+            f"[mlb_probable_pitchers] unrecognized abbreviation(s) "
+            f"home={home_abbr!r} away={away_abbr!r} -- not in MLB_TEAM_IDS."
+        )
+        _PROBABLE_CACHE[cache_key] = result
+        return result
+
     try:
         r = requests.get(
             f"{STATSAPI_BASE}/schedule",
             params={
                 "sportId": 1, "date": game_date.isoformat(),
-                "hydrate": "probablePitcher",
+                # "team" must be in hydrate for the schedule response to
+                # include team.abbreviation at all -- without it the team
+                # sub-object is just {id, name, link}. We match on team.id
+                # instead (via MLB_TEAM_IDS above) since that's present
+                # either way and isn't a fragile string-format dependency,
+                # but keep "team" hydrated too for any other consumer of
+                # this response shape that might want the name/abbrev.
+                "hydrate": "team,probablePitcher",
             },
             timeout=_TIMEOUT,
         )
@@ -279,8 +298,7 @@ def get_probable_pitchers(
                 teams = g.get("teams", {})
                 h = (teams.get("home", {}).get("team", {}) or {})
                 a = (teams.get("away", {}).get("team", {}) or {})
-                if (h.get("abbreviation", "").upper() == home_abbr.upper()
-                        and a.get("abbreviation", "").upper() == away_abbr.upper()):
+                if h.get("id") == home_id and a.get("id") == away_id:
                     matches.append((teams.get("home", {}), teams.get("away", {})))
 
         if len(matches) == 1:

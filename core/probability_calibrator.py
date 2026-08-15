@@ -154,7 +154,29 @@ class CalibrationCurve:
 
 def _group_key(sport_raw: str, market_raw: str) -> tuple[str, str]:
     sport_key = (sport_raw or "UNKNOWN").strip().split()[0].upper() if sport_raw else "UNKNOWN"
-    market_class = "game" if is_game_market(market_normalized(market_raw or "")) else "prop"
+    mkt_norm = market_normalized(market_raw or "")
+    # nrfi/yrfi get their OWN market_class rather than falling into "game"
+    # or "prop" -- is_game_market()'s substring list (totals/moneyline/
+    # h2h/run_line/etc) doesn't match "nrfi"/"yrfi" at all, so before this
+    # fix they silently fell into "prop" and were calibrated against
+    # whatever else MLB's prop bucket contained. In practice that bucket is
+    # dominated by pitcher_strikeouts (207 of ~207 graded MLB prop picks
+    # at last fit, vs 0 graded nrfi/yrfi picks), so nrfi/yrfi bets were
+    # being calibrated entirely off strikeout-prop history -- a market with
+    # a completely different probability structure. Confirmed by
+    # (MLB, nrfi/yrfi) calibration-veto rejections showing raw model_prob
+    # in the low-50s mapping to a "true" probability read straight off that
+    # strikeout curve. Giving first-inning markets their own group means
+    # they fall back to the safe raw_prob identity mapping (via
+    # calibrate_probability's own MIN_SAMPLE_SIZE guard) until nrfi/yrfi
+    # accumulate enough graded history of their own to fit a curve that
+    # actually reflects how THIS market performs -- same "don't calibrate
+    # what you don't have evidence for" principle the rest of this module
+    # already follows for every other group.
+    if mkt_norm in ("nrfi", "yrfi"):
+        market_class = "first_inning"
+    else:
+        market_class = "game" if is_game_market(mkt_norm) else "prop"
     return sport_key, market_class
 
 

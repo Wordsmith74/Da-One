@@ -48,6 +48,17 @@ _GAME_MARKET_SUBSTRINGS: tuple[str, ...] = (
     "full_game",
     "draw_no_bet",
     "double_chance",
+    "nrfi",   # whole-game/sub-window outcome (inning 1), not a player prop --
+    "yrfi",   # same category as first_half/first_quarter above. Precomputed
+              # via the same Poisson closed-form shortcut _process_moneyline
+              # uses, and grouped with first_5_total/first_5_ml/first_5_rl in
+              # decision_gatekeeper.py's entry floors -- everywhere else in
+              # the pipeline already treats these as game markets. Before
+              # this fix, is_game_market("nrfi") was False, so nrfi/yrfi
+              # picks were compressed with the lighter PROP floor/ceiling
+              # (8% floor, 15% cap) instead of the stricter GAME floor/
+              # ceiling (10% floor, 10% cap) -- inconsistent with the rest
+              # of the system's own classification of these markets.
 )
 
 

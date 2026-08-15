@@ -1019,6 +1019,35 @@ def _process_nrfi_yrfi(
             home_team_inputs = away_team_inputs = None
             home_reliability = away_reliability = None
 
+        # Visibility fix: previously the only signal of whether real
+        # pitcher/lineup/park data actually populated this game's
+        # projection (vs. every individual source degrading NEUTRAL, which
+        # raises no exception and so was invisible above) lived buried in
+        # each candidate's "factor" display string (tiers=real/
+        # fallback_only) -- never printed to the run log, only ever seen if
+        # someone opened picks.json and read one pick's factor text by
+        # hand. Print it explicitly, per side, every game, so a silent
+        # slate-wide fallback (e.g. pybaseball down, or every pitcher
+        # showing as unconfirmed) is visible in the log the same night it
+        # happens instead of only showing up later as an unexplained dip
+        # in nrfi/yrfi pick quality.
+        def _tier_summary(side_inputs: Optional[dict]) -> str:
+            if not side_inputs:
+                return "NEUTRAL(no data)"
+            parts = []
+            for key in ("pitcher", "lineup", "environment"):
+                sub = side_inputs.get(key) or {}
+                parts.append(f"{key}={'real' if sub else 'neutral'}")
+            return " ".join(parts)
+
+        print(
+            f"[game_markets] {away_abbr}@{home_abbr} NRFI tier inputs: "
+            f"home_side[{_tier_summary(home_team_inputs)}] "
+            f"away_side[{_tier_summary(away_team_inputs)}] "
+            f"home_reliability={home_reliability} away_reliability={away_reliability}",
+            flush=True,
+        )
+
     projection = project_combined_first_inning_lambda(
         home_team_inputs=home_team_inputs, away_team_inputs=away_team_inputs,
         league_combined_lambda=home_fallback_lambda + away_fallback_lambda,

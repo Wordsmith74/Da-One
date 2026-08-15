@@ -63,6 +63,7 @@ ALLOWED_MARKETS: dict[str, frozenset[str]] = {
     "MLB": frozenset({
         "pitcher_strikeouts",   # Pitcher Ks prop      (Bayesian, core/player_props.py)
         "nrfi",                 # No Run 1st Inning    (Poisson closed-form, core/game_markets.py)
+        "yrfi",                 # Yes Run 1st Inning   (Poisson closed-form, core/game_markets.py)
     }),
     "WNBA": frozenset({
         "game_total",           # Full-game total     (odds_client.py fetch_todays_candidates)

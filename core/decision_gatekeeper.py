@@ -187,6 +187,7 @@ _MARKET_ENTRY_FLOORS: dict[str, tuple[float, float]] = {
     "first_5_ml":         (4.0, 60.0),   # MLB F5 moneyline
     "first_5_rl":         (4.0, 60.0),   # MLB F5 run line
     "nrfi":               (4.0, 60.0),   # No Run First Inning
+    "yrfi":               (4.0, 60.0),   # Yes Run First Inning
     "player_assists":     (1.0, 60.0),   # WNBA assists
     "player_rebounds":    (1.0, 60.0),   # WNBA rebounds
     "h2h":                (0.0, 68.0),   # WNBA ML — market_normalized("h2h") -> "h2h"

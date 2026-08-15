@@ -75,6 +75,7 @@ PUBLICATION_MARKETS: dict[str, frozenset[str]] = {
     "MLB": frozenset({
         "pitcher_strikeouts",
         "nrfi",
+        "yrfi",
     }),
     "WNBA": frozenset({
         "player_assists",
@@ -95,6 +96,7 @@ MARKET_PRIORITY: dict[tuple[str, str], int] = {
     ("WNBA", "player_rebounds"):    6,
     ("WNBA", "moneyline"):          7,
     ("MLB",  "nrfi"):               8,
+    ("MLB",  "yrfi"):               9,
     ("WNBA", "game_total"):         11,
 }
 

@@ -54,6 +54,8 @@ from typing import Optional
 
 import requests
 
+from core.mlb_team_ids import MLB_TEAM_IDS
+
 logger = logging.getLogger("betting_bot")
 
 STATSAPI_BASE = "https://statsapi.mlb.com/api/v1"
@@ -175,15 +177,31 @@ def resolve_game_pk(home_abbr: str, away_abbr: str, game_date: date) -> Optional
     module in this codebase uses -- pitcher_intel, bullpen_intel) don't
     need to separately track the Odds-API game id vs. the MLB Stats API id.
 
-    Matches on the home team abbreviation appearing in the schedule for
+    Matches on team id (via MLB_TEAM_IDS) appearing in the schedule for
     that date; returns None if zero or more than one plausible match is
     found (ambiguous -- e.g. a doubleheader -- rather than guessing which
     game).
+
+    NOTE: this used to match on team.abbreviation without requesting
+    hydrate=team -- the schedule endpoint's default team sub-object is
+    just {id, name, link} without that hydrate, so abbreviation was always
+    "" and this always returned None. Matching on id (present either way,
+    and not a fragile string-format dependency) fixes that; see the
+    identical bug/fix in data/mlb_probable_pitchers.get_probable_pitchers.
     """
+    home_id = MLB_TEAM_IDS.get(home_abbr.upper())
+    away_id = MLB_TEAM_IDS.get(away_abbr.upper())
+    if home_id is None or away_id is None:
+        logger.debug(
+            f"[umpire_intel] unrecognized abbreviation(s) home={home_abbr!r} "
+            f"away={away_abbr!r} -- not in MLB_TEAM_IDS."
+        )
+        return None
+
     try:
         r = requests.get(
             f"{STATSAPI_BASE}/schedule",
-            params={"sportId": 1, "date": game_date.isoformat()},
+            params={"sportId": 1, "date": game_date.isoformat(), "hydrate": "team"},
             timeout=10,
         )
         r.raise_for_status()
@@ -192,9 +210,7 @@ def resolve_game_pk(home_abbr: str, away_abbr: str, game_date: date) -> Optional
             for g in day.get("games", []):
                 home_team = (g.get("teams", {}).get("home", {}).get("team", {}) or {})
                 away_team = (g.get("teams", {}).get("away", {}).get("team", {}) or {})
-                home_abbrev = (home_team.get("abbreviation") or "").upper()
-                away_abbrev = (away_team.get("abbreviation") or "").upper()
-                if home_abbrev == home_abbr.upper() and away_abbrev == away_abbr.upper():
+                if home_team.get("id") == home_id and away_team.get("id") == away_id:
                     candidates.append(g.get("gamePk"))
         if len(candidates) == 1:
             return candidates[0]

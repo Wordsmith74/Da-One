@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-16T06:10:39.147469+00:00",
+  "generated_at": "2026-08-16T10:25:54.399441+00:00",
   "picks": [
     {
       "sport": "MLB",
@@ -34,10 +34,10 @@
       "model_prob_raw": 0.902,
       "model_prob_calibrated": 0.6078,
       "stake_pct_bankroll": 5.0,
-      "ccs_score": 80.78,
+      "ccs_score": 79.58,
       "robustness": "robust",
       "line_move_pct": 0.0,
-      "pick_id": "1d91b18c551d",
+      "pick_id": "39b4bcdc486e",
       "actual_result": null,
       "closing_line": null,
       "clv_pct": null
@@ -56,12 +56,12 @@
       "side": "nrfi",
       "pick": "CIN nrfi nrfi 0.5",
       "pick_time_line": 0.5,
-      "pick_time_odds": -107.0,
+      "pick_time_odds": -108.0,
       "current_line": 0.5,
-      "current_odds": -107.0,
+      "current_odds": -108.0,
       "line": 0.5,
       "model_number": 64.6,
-      "edge_pct": 4.36,
+      "edge_pct": 4.24,
       "confidence": 81.0,
       "model_prob": 64.6,
       "tier": "Gold Standard",
@@ -75,10 +75,10 @@
       "model_prob_raw": 0.646,
       "model_prob_calibrated": 0.646,
       "stake_pct_bankroll": 5.0,
-      "ccs_score": 47.55,
+      "ccs_score": 47.46,
       "robustness": "fragile",
       "line_move_pct": 0.0,
-      "pick_id": "f9703ea43e5e",
+      "pick_id": "a2135d4b7500",
       "actual_result": null,
       "closing_line": null,
       "clv_pct": null
@@ -119,7 +119,7 @@
       "ccs_score": 68.97,
       "robustness": "moderate",
       "line_move_pct": 0.0,
-      "pick_id": "825db2334fd1",
+      "pick_id": "1463e6360744",
       "actual_result": null,
       "closing_line": null,
       "clv_pct": null

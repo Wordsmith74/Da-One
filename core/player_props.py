@@ -1982,38 +1982,30 @@ def get_player_prop_candidates(
                             f"drop={_ramp['drop_pct']:.0f}%)"
                         )
 
-                    # ── CSW%/SwStr% blend (models/advanced_metrics.py) ────────────
-                    # process stats (how often a pitcher generates whiffs/called
-                    # strikes per pitch) predict forward K% better than recent
-                    # outcome-based K% alone, which can be inflated/deflated by
-                    # sequencing luck. Distinct from the workload/matchup scales
-                    # above: those adjust expected OPPORTUNITIES (innings,
-                    # lineup quality); this adjusts the underlying RATE.
-                    try:
-                        from data.fetch import get_savant_pitcher_advanced_stats
-                        from models.advanced_metrics import project_k_pct_advanced
-                        _season_yr = int(_wl.game_date[:4]) if _wl.game_date else datetime.now(timezone.utc).year
-                        _savant_row = get_savant_pitcher_advanced_stats(player_name, _season_yr)
-                        if _savant_row is not None and not _savant_row.empty:
-                            _raw_k_pct = _savant_row.iloc[0].get("K%")
-                            _csw_pct   = _savant_row.iloc[0].get("CSW%")
-                            _swstr_pct = _savant_row.iloc[0].get("SwStr%")
-                            if _raw_k_pct and _raw_k_pct > 0 and (_csw_pct is not None or _swstr_pct is not None):
-                                _blended_k_pct = project_k_pct_advanced(_csw_pct, _swstr_pct, _raw_k_pct)
-                                _k_pct_scale = max(0.85, min(1.15, _blended_k_pct / _raw_k_pct))
-                                if _k_pct_scale != 1.0:
-                                    _orig_a = weighted_proj
-                                    weighted_proj = round(weighted_proj * _k_pct_scale, 2)
-                                    logger.debug(
-                                        f"[player_props] K CSW%/SwStr% blend {player_name}: "
-                                        f"{_orig_a:.2f} → {weighted_proj:.2f} (×{_k_pct_scale:.3f}, "
-                                        f"raw K%={_raw_k_pct:.3f} → blended={_blended_k_pct:.3f})"
-                                    )
-                    except Exception as _adv_exc:
-                        logger.debug(
-                            f"[player_props] advanced_metrics K% blend failed for "
-                            f"{player_name}: {_adv_exc}"
-                        )
+                    # ── CSW%/SwStr% blend — REMOVED 2026-08-16 ────────────────────
+                    # This used to call models.advanced_metrics.project_k_pct_advanced()
+                    # to blend Savant CSW%/SwStr% into weighted_proj a second time.
+                    # Root-cause fix for systematic overconfidence in pitcher_strikeouts
+                    # picks (see output/probability_calibration.json — model_prob ~0.84
+                    # was realizing at ~55% win rate, and core/bucket_analysis.py showed
+                    # the 80-85 confidence bucket running BELOW breakeven).
+                    #
+                    # strikeout_matchup.get_k_matchup_scale() (called just above, Layers
+                    # 5/6/8) already folds Whiff%, CSW%, Zone%, and F-Strike% into
+                    # _matchup_scale. Those four are different facets of the same
+                    # underlying "pitcher stuff/command quality" signal, not independent
+                    # evidence, and this second blend multiplied that quality signal
+                    # into weighted_proj a second time on top of Layers 5/6. Combined
+                    # with the other correlated layers, that compounding pushed hot-CSW
+                    # pitchers' projections toward the clamp ceiling and made model_prob
+                    # far more bullish than the correlated evidence actually supported.
+                    #
+                    # Do NOT re-add a CSW%/SwStr% adjustment here without also removing
+                    # or reweighting strikeout_matchup.py Layers 5/6 -- one pass over
+                    # this signal per projection, not two. models/advanced_metrics.py's
+                    # project_k_pct_advanced() is left in place (still used elsewhere /
+                    # available for a future single-pass rewrite) but is no longer
+                    # called from this pipeline.
                 except Exception as _wl_exc:
                     logger.debug(
                         f"[player_props] workload/matchup K scale failed for "

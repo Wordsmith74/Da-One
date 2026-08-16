@@ -1,8 +1,8 @@
 {
-  "run_at": "2026-08-15T23:10:24.103388+00:00",
+  "run_at": "2026-08-16T05:34:49.074292+00:00",
   "n_errors": 0,
   "n_warnings": 0,
-  "n_picks_generated": 0,
+  "n_picks_generated": 3,
   "entries": [
     {
       "level": "info",
@@ -47,222 +47,277 @@
     {
       "level": "info",
       "stage": "MLB",
-      "message": "16 expanded game market candidate(s) added."
+      "message": "30 expanded game market candidate(s) added."
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "41 total candidate(s) (game totals + player props)."
+      "message": "55 total candidate(s) (game totals + player props)."
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Joey_Cantillo_pitcher_strikeouts_over_96401141: CALIBRATION VETO -- raw model_prob=39.8% but fitted curve for (MLB, pitcher_strikeouts) puts true probability at 39.8%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
+      "message": "prop_Dylan_Cease_pitcher_strikeouts_over_43eaf820: CALIBRATION VETO -- raw model_prob=50.1% but fitted curve for (MLB, pitcher_strikeouts) puts true probability at 14.9%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Grant_Holmes_pitcher_strikeouts_over_d3dfabfd: CALIBRATION VETO -- raw model_prob=31.7% but fitted curve for (MLB, pitcher_strikeouts) puts true probability at 31.7%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
+      "message": "prop_Dylan_Cease_pitcher_strikeouts_under_43eaf820: CALIBRATION VETO -- raw model_prob=47.2% but fitted curve for (MLB, pitcher_strikeouts) puts true probability at 47.2%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Joey_Cantillo_pitcher_strikeouts_under_96401141: CALIBRATION VETO -- raw model_prob=50.5% but fitted curve for (MLB, pitcher_strikeouts) puts true probability at 18.8%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
+      "message": "prop_Ryan_Weathers_pitcher_strikeouts_over_43eaf820: CALIBRATION VETO -- raw model_prob=35.6% but fitted curve for (MLB, pitcher_strikeouts) puts true probability at 35.6%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Emerson_Hancock_pitcher_strikeouts_over_69928d29: CALIBRATION VETO -- raw model_prob=41.7% but fitted curve for (MLB, pitcher_strikeouts) puts true probability at 41.7%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
+      "message": "prop_Ryan_Weathers_pitcher_strikeouts_under_43eaf820: CALIBRATION VETO -- raw model_prob=40.0% but fitted curve for (MLB, pitcher_strikeouts) puts true probability at 40.0%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Connor_Prielipp_pitcher_strikeouts_under_4cbeb5e4: CALIBRATION VETO -- raw model_prob=38.8% but fitted curve for (MLB, pitcher_strikeouts) puts true probability at 38.8%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
+      "message": "prop_Sean_Burke_pitcher_strikeouts_under_b9ca059d: CALIBRATION VETO -- raw model_prob=37.4% but fitted curve for (MLB, pitcher_strikeouts) puts true probability at 37.4%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Jared_Jones_pitcher_strikeouts_over_229c4156: CALIBRATION VETO -- raw model_prob=44.1% but fitted curve for (MLB, pitcher_strikeouts) puts true probability at 44.1%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
+      "message": "prop_Nick_Lodolo_pitcher_strikeouts_over_bfdc3a34: CALIBRATION VETO -- raw model_prob=40.5% but fitted curve for (MLB, pitcher_strikeouts) puts true probability at 40.5%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Eduardo_Rodriguez_pitcher_strikeouts_over_d3dfabfd: CALIBRATION VETO -- raw model_prob=34.3% but fitted curve for (MLB, pitcher_strikeouts) puts true probability at 34.3%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
+      "message": "prop_Nick_Lodolo_pitcher_strikeouts_under_bfdc3a34: CALIBRATION VETO -- raw model_prob=53.8% but fitted curve for (MLB, pitcher_strikeouts) puts true probability at 37.0%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Reid_Detmers_pitcher_strikeouts_over_c7a2e07e: CALIBRATION VETO -- raw model_prob=40.0% but fitted curve for (MLB, pitcher_strikeouts) puts true probability at 40.0%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
+      "message": "prop_Tanner_Bibee_pitcher_strikeouts_over_35501cb3: CALIBRATION VETO -- raw model_prob=37.6% but fitted curve for (MLB, pitcher_strikeouts) puts true probability at 37.6%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Emerson_Hancock_pitcher_strikeouts_under_69928d29: CALIBRATION VETO -- raw model_prob=56.0% but fitted curve for (MLB, pitcher_strikeouts) puts true probability at 45.7%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
+      "message": "prop_Tanner_Bibee_pitcher_strikeouts_under_35501cb3: CALIBRATION VETO -- raw model_prob=47.0% but fitted curve for (MLB, pitcher_strikeouts) puts true probability at 47.0%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Sonny_Gray_pitcher_strikeouts_under_229c4156: CALIBRATION VETO -- raw model_prob=54.8% but fitted curve for (MLB, pitcher_strikeouts) puts true probability at 41.5%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
+      "message": "prop_Dean_Kremer_pitcher_strikeouts_over_1fb92c4b: CALIBRATION VETO -- raw model_prob=51.9% but fitted curve for (MLB, pitcher_strikeouts) puts true probability at 26.8%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Jared_Jones_pitcher_strikeouts_under_229c4156: CALIBRATION VETO -- raw model_prob=55.0% but fitted curve for (MLB, pitcher_strikeouts) puts true probability at 42.2%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
+      "message": "prop_Dean_Kremer_pitcher_strikeouts_under_1fb92c4b: CALIBRATION VETO -- raw model_prob=45.6% but fitted curve for (MLB, pitcher_strikeouts) puts true probability at 45.6%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Eduardo_Rodriguez_pitcher_strikeouts_under_d3dfabfd: CALIBRATION VETO -- raw model_prob=47.2% but fitted curve for (MLB, pitcher_strikeouts) puts true probability at 47.2%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
+      "message": "prop_Hunter_Dobbins_pitcher_strikeouts_under_4ac1d4b9: CALIBRATION VETO -- raw model_prob=34.3% but fitted curve for (MLB, pitcher_strikeouts) puts true probability at 34.3%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Reid_Detmers_pitcher_strikeouts_under_c7a2e07e: CALIBRATION VETO -- raw model_prob=41.4% but fitted curve for (MLB, pitcher_strikeouts) puts true probability at 41.4%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
+      "message": "prop_Drew_Anderson_pitcher_strikeouts_over_b9ca059d: CALIBRATION VETO -- raw model_prob=11.4% but fitted curve for (MLB, pitcher_strikeouts) puts true probability at 11.4%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Randy_Dobnak_pitcher_strikeouts_over_c7a2e07e: CALIBRATION VETO -- raw model_prob=33.9% but fitted curve for (MLB, pitcher_strikeouts) puts true probability at 33.9%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
+      "message": "prop_Jake_Irvin_pitcher_strikeouts_over_3a240338: CALIBRATION VETO -- raw model_prob=37.2% but fitted curve for (MLB, pitcher_strikeouts) puts true probability at 37.2%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Randy_Dobnak_pitcher_strikeouts_under_c7a2e07e: CALIBRATION VETO -- raw model_prob=53.9% but fitted curve for (MLB, pitcher_strikeouts) puts true probability at 37.5%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
+      "message": "prop_Jake_Irvin_pitcher_strikeouts_under_3a240338: CALIBRATION VETO -- raw model_prob=49.0% but fitted curve for (MLB, pitcher_strikeouts) puts true probability at 4.0%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Jacob_Misiorowski_pitcher_strikeouts_over_70b9a39a: CALIBRATION VETO -- raw model_prob=42.4% but fitted curve for (MLB, pitcher_strikeouts) puts true probability at 42.4%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
+      "message": "prop_Christian_Scott_pitcher_strikeouts_over_3a240338: CALIBRATION VETO -- raw model_prob=54.1% but fitted curve for (MLB, pitcher_strikeouts) puts true probability at 38.6%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Jacob_Misiorowski_pitcher_strikeouts_under_70b9a39a: CALIBRATION VETO -- raw model_prob=53.3% but fitted curve for (MLB, pitcher_strikeouts) puts true probability at 34.3%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
+      "message": "prop_Christian_Scott_pitcher_strikeouts_under_3a240338: CALIBRATION VETO -- raw model_prob=44.1% but fitted curve for (MLB, pitcher_strikeouts) puts true probability at 44.1%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_MacKenzie_Gore_pitcher_strikeouts_over_1145a9db: CALIBRATION VETO -- raw model_prob=37.7% but fitted curve for (MLB, pitcher_strikeouts) puts true probability at 37.7%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
+      "message": "prop_Andrew_Painter_pitcher_strikeouts_over_1fb92c4b: CALIBRATION VETO -- raw model_prob=58.4% but fitted curve for (MLB, pitcher_strikeouts) puts true probability at 50.0%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_MacKenzie_Gore_pitcher_strikeouts_under_1145a9db: CALIBRATION VETO -- raw model_prob=54.8% but fitted curve for (MLB, pitcher_strikeouts) puts true probability at 41.5%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
+      "message": "prop_Andrew_Painter_pitcher_strikeouts_under_1fb92c4b: CALIBRATION VETO -- raw model_prob=42.1% but fitted curve for (MLB, pitcher_strikeouts) puts true probability at 42.1%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Justin_Wrobleski_pitcher_strikeouts_over_70b9a39a: CALIBRATION VETO -- raw model_prob=55.9% but fitted curve for (MLB, pitcher_strikeouts) puts true probability at 45.3%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
+      "message": "prop_Trevor_Rogers_pitcher_strikeouts_under_2c36a750: CALIBRATION VETO -- raw model_prob=25.2% but fitted curve for (MLB, pitcher_strikeouts) puts true probability at 25.2%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Justin_Wrobleski_pitcher_strikeouts_under_70b9a39a: CALIBRATION VETO -- raw model_prob=37.8% but fitted curve for (MLB, pitcher_strikeouts) puts true probability at 37.8%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
+      "message": "prop_Patrick_Sandoval_pitcher_strikeouts_over_3da21002: CALIBRATION VETO -- raw model_prob=36.2% but fitted curve for (MLB, pitcher_strikeouts) puts true probability at 36.2%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "CLE_yrfi: CALIBRATION VETO -- raw model_prob=44.6% but fitted curve for (MLB, yrfi) puts true probability at 44.6%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
+      "message": "TB_yrfi: CALIBRATION VETO -- raw model_prob=37.6% but fitted curve for (MLB, yrfi) puts true probability at 37.6%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "HOU_yrfi: CALIBRATION VETO -- raw model_prob=40.7% but fitted curve for (MLB, yrfi) puts true probability at 40.7%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
+      "message": "ATL_nrfi: CALIBRATION VETO -- raw model_prob=45.0% but fitted curve for (MLB, nrfi) puts true probability at 45.0%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "MIN_yrfi: CALIBRATION VETO -- raw model_prob=45.0% but fitted curve for (MLB, yrfi) puts true probability at 45.0%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
+      "message": "PIT_nrfi: CALIBRATION VETO -- raw model_prob=54.9% but fitted curve for (MLB, nrfi) puts true probability at 54.9%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "LAD_nrfi: CALIBRATION VETO -- raw model_prob=52.7% but fitted curve for (MLB, nrfi) puts true probability at 52.7%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
+      "message": "PIT_yrfi: CALIBRATION VETO -- raw model_prob=45.1% but fitted curve for (MLB, yrfi) puts true probability at 45.1%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "PIT_nrfi: CALIBRATION VETO -- raw model_prob=49.9% but fitted curve for (MLB, nrfi) puts true probability at 49.9%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
+      "message": "TOR_yrfi: CALIBRATION VETO -- raw model_prob=38.4% but fitted curve for (MLB, yrfi) puts true probability at 38.4%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "ATL_nrfi: CALIBRATION VETO -- raw model_prob=45.5% but fitted curve for (MLB, nrfi) puts true probability at 45.5%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
+      "message": "DET_yrfi: CALIBRATION VETO -- raw model_prob=44.3% but fitted curve for (MLB, yrfi) puts true probability at 44.3%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "ATL_yrfi: CALIBRATION VETO -- raw model_prob=54.5% but fitted curve for (MLB, yrfi) puts true probability at 54.5%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
+      "message": "CIN_yrfi: CALIBRATION VETO -- raw model_prob=35.4% but fitted curve for (MLB, yrfi) puts true probability at 35.4%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "LAA_yrfi: CALIBRATION VETO -- raw model_prob=42.9% but fitted curve for (MLB, yrfi) puts true probability at 42.9%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
+      "message": "CLE_yrfi: CALIBRATION VETO -- raw model_prob=37.7% but fitted curve for (MLB, yrfi) puts true probability at 37.7%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "OAK_yrfi: CALIBRATION VETO -- raw model_prob=49.3% but fitted curve for (MLB, yrfi) puts true probability at 49.3%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
+      "message": "NYM_yrfi: CALIBRATION VETO -- raw model_prob=47.2% but fitted curve for (MLB, yrfi) puts true probability at 47.2%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "Gatekeeper: 0 approved / 11 flagged / 0 discarded"
+      "message": "MIN_yrfi: CALIBRATION VETO -- raw model_prob=49.2% but fitted curve for (MLB, yrfi) puts true probability at 49.2%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Connor_Prielipp_pitcher_strikeouts_over_4cbeb5e4: GATEKEEPER FLAGGED -- tier=None edge=1.31% conf=66.8 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (66.8\u219271.8); MLB K OVER hook-risk [workload=Medium]: conf \u22125pts (71.8\u219266.8); Prop confidence floor: pitcher_strikeouts requires conf \u2265 68 for broadcast eligibility, got 66.8"
+      "message": "CHC_yrfi: CALIBRATION VETO -- raw model_prob=39.7% but fitted curve for (MLB, yrfi) puts true probability at 39.7%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Jes\u00fas_Luzardo_pitcher_strikeouts_over_4cbeb5e4: GATEKEEPER FLAGGED -- tier=None edge=4.70% conf=70.0 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (70.0\u219275.0); MLB K OVER hook-risk [workload=Medium]: conf \u22125pts (75.0\u219270.0); Plus-money confidence floor: odds=+119 requires conf \u2265 71 even at Gold Standard, got 70.0"
+      "message": "SF_yrfi: CALIBRATION VETO -- raw model_prob=46.4% but fitted curve for (MLB, yrfi) puts true probability at 46.4%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Sonny_Gray_pitcher_strikeouts_over_229c4156: GATEKEEPER FLAGGED -- tier=None edge=0.72% conf=72.8 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (67.8\u219272.8); Market entry floor [pitcher_strikeouts]: edge 0.72% < floor 1.0%"
+      "message": "OAK_yrfi: CALIBRATION VETO -- raw model_prob=48.2% but fitted curve for (MLB, yrfi) puts true probability at 48.2%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "prop_Grant_Holmes_pitcher_strikeouts_under_d3dfabfd: GATEKEEPER FLAGGED -- tier=None edge=0.69% conf=71.8 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (66.8\u219271.8); Market entry floor [pitcher_strikeouts]: edge 0.69% < floor 3.0%"
+      "message": "LAA_yrfi: CALIBRATION VETO -- raw model_prob=44.4% but fitted curve for (MLB, yrfi) puts true probability at 44.4%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "CLE_nrfi: GATEKEEPER FLAGGED -- tier=None edge=0.63% conf=78.5 market=nrfi | Market entry floor [nrfi]: edge 0.63% < floor 4.0%"
+      "message": "LAD_yrfi: CALIBRATION VETO -- raw model_prob=38.5% but fitted curve for (MLB, yrfi) puts true probability at 38.5%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "HOU_nrfi: GATEKEEPER FLAGGED -- tier=None edge=1.70% conf=80.9 market=nrfi | Market entry floor [nrfi]: edge 1.70% < floor 4.0%"
+      "message": "HOU_yrfi: CALIBRATION VETO -- raw model_prob=40.8% but fitted curve for (MLB, yrfi) puts true probability at 40.8%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "MIN_nrfi: GATEKEEPER FLAGGED -- tier=None edge=0.12% conf=80.0 market=nrfi | Market entry floor [nrfi]: edge 0.12% < floor 4.0%"
+      "message": "Gatekeeper: 3 approved / 15 flagged / 0 discarded"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "LAD_yrfi: GATEKEEPER FLAGGED -- tier=None edge=0.96% conf=79.8 market=yrfi | Market entry floor [yrfi]: edge 0.96% < floor 4.0%"
+      "message": "prop_Sean_Burke_pitcher_strikeouts_over_b9ca059d: GATEKEEPER FLAGGED -- tier=Tier.GOLD edge=6.29% conf=61.2 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (71.2\u219276.2); MLB K OVER hook-risk [workload=Medium]: conf \u22125pts (76.2\u219271.2); Market uniqueness conflict (pitcher_strikeouts): OVER opposes stronger UNDER (edge 11.95%) in game Chicago_White_Sox@Detroit_Tigers_MLB"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "PIT_yrfi: GATEKEEPER FLAGGED -- tier=None edge=0.68% conf=80.0 market=yrfi | Market entry floor [yrfi]: edge 0.68% < floor 4.0%"
+      "message": "prop_Trevor_Rogers_pitcher_strikeouts_over_2c36a750: GATEKEEPER FLAGGED -- tier=None edge=5.79% conf=70.8 market=pitcher_strikeouts | Market weight [Tier 1 prop (+5 conf)]: conf +5pts (70.8\u219275.8); MLB K OVER hook-risk [workload=Medium]: conf \u22125pts (75.8\u219270.8); Plus-money confidence floor: odds=+131 requires conf \u2265 71 even at Gold Standard, got 70.8"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "LAA_nrfi: GATEKEEPER FLAGGED -- tier=None edge=0.38% conf=80.2 market=nrfi | Market entry floor [nrfi]: edge 0.38% < floor 4.0%"
+      "message": "TB_nrfi: GATEKEEPER FLAGGED -- tier=None edge=2.71% conf=79.2 market=nrfi | Market entry floor [nrfi]: edge 2.71% < floor 4.0%"
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "OAK_nrfi: GATEKEEPER FLAGGED -- tier=None edge=0.24% conf=79.6 market=nrfi | Market entry floor [nrfi]: edge 0.24% < floor 4.0%"
+      "message": "ATL_yrfi: GATEKEEPER FLAGGED -- tier=None edge=0.41% conf=77.0 market=yrfi | Market entry floor [yrfi]: edge 0.41% < floor 4.0%"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "TOR_nrfi: GATEKEEPER FLAGGED -- tier=None edge=0.41% conf=80.7 market=nrfi | Market entry floor [nrfi]: edge 0.41% < floor 4.0%"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "DET_nrfi: GATEKEEPER FLAGGED -- tier=None edge=0.46% conf=80.1 market=nrfi | Market entry floor [nrfi]: edge 0.46% < floor 4.0%"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "CLE_nrfi: GATEKEEPER FLAGGED -- tier=None edge=2.25% conf=80.7 market=nrfi | Market entry floor [nrfi]: edge 2.25% < floor 4.0%"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "NYM_nrfi: GATEKEEPER FLAGGED -- tier=None edge=0.08% conf=79.8 market=nrfi | Market entry floor [nrfi]: edge 0.08% < floor 4.0%"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "MIN_nrfi: GATEKEEPER FLAGGED -- tier=None edge=0.17% conf=78.1 market=nrfi | Market entry floor [nrfi]: edge 0.17% < floor 4.0%"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "CHC_nrfi: GATEKEEPER FLAGGED -- tier=None edge=2.88% conf=80.5 market=nrfi | Market entry floor [nrfi]: edge 2.88% < floor 4.0%"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "SF_nrfi: GATEKEEPER FLAGGED -- tier=None edge=0.02% conf=78.4 market=nrfi | Market entry floor [nrfi]: edge 0.02% < floor 4.0%"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "OAK_nrfi: GATEKEEPER FLAGGED -- tier=None edge=0.92% conf=78.2 market=nrfi | Market entry floor [nrfi]: edge 0.92% < floor 4.0%"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "LAA_nrfi: GATEKEEPER FLAGGED -- tier=None edge=2.27% conf=78.6 market=nrfi | Market entry floor [nrfi]: edge 2.27% < floor 4.0%"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "LAD_nrfi: GATEKEEPER FLAGGED -- tier=None edge=0.82% conf=80.7 market=nrfi | Market entry floor [nrfi]: edge 0.82% < floor 4.0%"
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "HOU_nrfi: GATEKEEPER FLAGGED -- tier=None edge=0.94% conf=78.9 market=nrfi | Market entry floor [nrfi]: edge 0.94% < floor 4.0%"
     },
     {
       "level": "info",
@@ -272,102 +327,147 @@
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "4 expanded game market candidate(s) added."
+      "message": "6 expanded game market candidate(s) added."
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "8 total candidate(s) (game totals + player props)."
+      "message": "12 total candidate(s) (game totals + player props)."
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "WAS_total_over_715e100a: devig fair_prob=50.5% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
+      "message": "ATL_total_over_87322449: devig fair_prob=49.1% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "WAS_total_over_715e100a: CALIBRATION VETO -- raw model_prob=40.2% but fitted curve for (WNBA, game_total) puts true probability at 40.2%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
+      "message": "ATL_total_over_87322449: CALIBRATION VETO -- raw model_prob=41.5% but fitted curve for (WNBA, game_total) puts true probability at 41.5%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "WAS_total_under_715e100a: devig fair_prob=49.5% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
+      "message": "ATL_total_under_87322449: devig fair_prob=50.9% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "WAS_total_under_715e100a: CALIBRATION VETO -- raw model_prob=59.8% but fitted curve for (WNBA, game_total) puts true probability at 28.4%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
+      "message": "ATL_total_under_87322449: CALIBRATION VETO -- raw model_prob=58.3% but fitted curve for (WNBA, game_total) puts true probability at 25.0%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "LVA_total_over_29cad233: devig fair_prob=50.1% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
+      "message": "SEA_total_over_7748b732: devig fair_prob=49.9% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "LVA_total_over_29cad233: CALIBRATION VETO -- raw model_prob=48.3% but fitted curve for (WNBA, game_total) puts true probability at 2.3%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
+      "message": "SEA_total_over_7748b732: CALIBRATION VETO -- raw model_prob=53.1% but fitted curve for (WNBA, game_total) puts true probability at 13.2%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "LVA_total_under_29cad233: devig fair_prob=49.9% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
+      "message": "SEA_total_under_7748b732: devig fair_prob=50.1% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "LVA_total_under_29cad233: CALIBRATION VETO -- raw model_prob=51.8% but fitted curve for (WNBA, game_total) puts true probability at 10.2%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
+      "message": "SEA_total_under_7748b732: CALIBRATION VETO -- raw model_prob=46.7% but fitted curve for (WNBA, game_total) puts true probability at 0.0%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "WAS_moneyline_home: CALIBRATION VETO -- raw model_prob=26.4% but fitted curve for (WNBA, moneyline) puts true probability at 26.4%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
+      "message": "PHX_total_over_7f616c3e: devig fair_prob=49.7% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "LVA_moneyline_home: CALIBRATION VETO -- raw model_prob=42.8% but fitted curve for (WNBA, moneyline) puts true probability at 42.8%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
+      "message": "PHX_total_over_7f616c3e: CALIBRATION VETO -- raw model_prob=54.2% but fitted curve for (WNBA, game_total) puts true probability at 15.7%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "MIN_moneyline_away: CALIBRATION VETO -- raw model_prob=57.2% but fitted curve for (WNBA, moneyline) puts true probability at 22.5%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
+      "message": "PHX_total_under_7f616c3e: devig fair_prob=50.3% books=['BetOnline', 'FanDuel', 'Pinnacle'] weight_covered=1.00"
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "Gatekeeper: 0 approved / 1 flagged / 0 discarded"
+      "message": "PHX_total_under_7f616c3e: CALIBRATION VETO -- raw model_prob=46.2% but fitted curve for (WNBA, game_total) puts true probability at 46.2%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
     },
     {
       "level": "info",
       "stage": "WNBA",
-      "message": "LAS_moneyline_away: GATEKEEPER FLAGGED -- tier=None edge=10.00% conf=80.2 market=moneyline | Market edge ceiling [moneyline]: edge 10.00% > ceiling 8.2%"
+      "message": "ATL_moneyline_home: CALIBRATION VETO -- raw model_prob=40.7% but fitted curve for (WNBA, moneyline) puts true probability at 40.7%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
+    },
+    {
+      "level": "info",
+      "stage": "WNBA",
+      "message": "IND_moneyline_away: CALIBRATION VETO -- raw model_prob=59.3% but fitted curve for (WNBA, moneyline) puts true probability at 27.3%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
+    },
+    {
+      "level": "info",
+      "stage": "WNBA",
+      "message": "SEA_moneyline_home: CALIBRATION VETO -- raw model_prob=52.2% but fitted curve for (WNBA, moneyline) puts true probability at 11.1%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
+    },
+    {
+      "level": "info",
+      "stage": "WNBA",
+      "message": "CHI_moneyline_away: CALIBRATION VETO -- raw model_prob=47.8% but fitted curve for (WNBA, moneyline) puts true probability at 1.1%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
+    },
+    {
+      "level": "info",
+      "stage": "WNBA",
+      "message": "PHX_moneyline_home: CALIBRATION VETO -- raw model_prob=40.8% but fitted curve for (WNBA, moneyline) puts true probability at 40.8%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
+    },
+    {
+      "level": "info",
+      "stage": "WNBA",
+      "message": "POR_moneyline_away: CALIBRATION VETO -- raw model_prob=59.2% but fitted curve for (WNBA, moneyline) puts true probability at 27.1%, which is -EV at the offered price. Rejected before Game Truth Protocol / gatekeeper."
+    },
+    {
+      "level": "info",
+      "stage": "WNBA",
+      "message": "All candidates failed simulation -- skipping."
     },
     {
       "level": "info",
       "stage": "pipeline",
-      "message": "0 raw picks generated. Running contradiction check..."
+      "message": "CCS ranking: 3 pick(s) scored -- top assigned Nuke, runner-up Diamond, rest Gold Standard."
     },
     {
       "level": "info",
       "stage": "pipeline",
-      "message": "0 picks after contradiction check. Running line movement check..."
+      "message": "3 raw picks generated. Running contradiction check..."
     },
     {
       "level": "info",
       "stage": "pipeline",
-      "message": "0 picks after line movement check. Applying per-sport daily caps..."
+      "message": "3 picks after contradiction check. Running line movement check..."
     },
     {
       "level": "info",
       "stage": "pipeline",
-      "message": "0 picks after daily caps."
+      "message": "3 picks after line movement check. Applying per-sport daily caps..."
     },
     {
       "level": "info",
       "stage": "pipeline",
-      "message": "0 picks after publication whitelist."
+      "message": "3 picks after daily caps."
+    },
+    {
+      "level": "info",
+      "stage": "pipeline",
+      "message": "3 picks after publication whitelist."
+    },
+    {
+      "level": "info",
+      "stage": "pipeline",
+      "message": "3 picks after pre-publish line verification (0 dropped)."
+    },
+    {
+      "level": "info",
+      "stage": "pipeline",
+      "message": "appended 3 pick(s) to output/pick_history.jsonl (0 skipped as same-day duplicates)"
     }
   ]
 }

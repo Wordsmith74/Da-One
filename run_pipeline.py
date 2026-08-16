@@ -363,28 +363,34 @@ def _calibration_veto(sport: str, mkt: str, model_prob_pct: float, american_odds
     "the calibration model disagrees with this pick entirely."
 
     This runs BEFORE Game Truth Protocol / run_gatekeeper, using the same
-    calibrate_probability() curve, and re-derives edge from the calibrated
-    probability against the actual offered price (same edge formula
-    game_markets.py's _edge_pct() uses: model_prob * decimal_odds - 1).
-    If that calibrated edge is <= 0 -- i.e. the calibration curve itself
-    says this is not a +EV bet at the price offered -- the candidate is
-    vetoed here rather than being allowed to reach tier assignment.
+    calibrate_probability() curve.
+
+    CHANGED 2026-08-16: this used to re-derive edge from the calibrated
+    probability against the actual offered price (model_prob * decimal_odds
+    - 1) and veto whenever that was <= 0 -- i.e. whenever the calibrated
+    curve said the price offered wasn't +EV, even for picks that were still
+    more likely than not to win (e.g. a calibrated 51% at a price needing
+    52.4% to break even got vetoed here despite being a favorite to hit).
+    Per instruction, this is no longer an EV/price gate -- the price and
+    american_odds argument are ignored for the veto decision itself (kept
+    only for the caller's signature / any future re-add) and the check is
+    now purely about the calibrated win probability: is this pick, per the
+    fitted curve, more likely to win than not. Threshold is 0.50 -- a
+    coin-flip or worse gets vetoed, anything the calibration curve believes
+    clears 50% passes regardless of what price it's offered at.
 
     Only ever REJECTS: when no fitted curve exists yet for this
     (sport, market) group, calibrate_probability() returns raw_prob
     unchanged (see its own docstring), so this check degrades to whatever
-    edge the market/model already implied and never blocks a candidate it
-    wouldn't otherwise have valid grounds to block. Safe to run
-    unconditionally on every candidate, precomputed or simulated.
+    the raw model already implied and never blocks a candidate it wouldn't
+    otherwise have valid grounds to block. Safe to run unconditionally on
+    every candidate, precomputed or simulated.
     """
     raw_prob_0to1 = max(0.0, min(1.0, (model_prob_pct or 0.0) / 100.0))
     calibrated_prob_0to1 = calibrate_probability(raw_prob=raw_prob_0to1, sport=sport, market=mkt)
-    if not american_odds:
-        return False, calibrated_prob_0to1
-    odds = float(american_odds)
-    decimal = (1.0 + odds / 100.0) if odds >= 0 else (1.0 + 100.0 / abs(odds))
-    calibrated_edge_pct = (calibrated_prob_0to1 * decimal - 1.0) * 100.0
-    return calibrated_edge_pct <= 0.0, calibrated_prob_0to1
+    # Win-probability gate only -- american_odds is intentionally unused now
+    # (see docstring: this stopped being an EV/price check on 2026-08-16).
+    return calibrated_prob_0to1 <= 0.50, calibrated_prob_0to1
 
 
 def _derive_bet_params(sim, candidate):
@@ -675,20 +681,20 @@ def run_sport_pipeline(sport, as_of_date=None):
                 log(
                     "info", sport,
                     f"{bet_id}: CALIBRATION VETO -- raw model_prob={model_prob:.1f}% "
-                    f"but fitted curve for ({sport}, {mkt}) puts true probability at "
-                    f"{_cal_prob*100:.1f}%, which is -EV at the offered price. "
+                    f"but fitted curve for ({sport}, {mkt}) puts true win probability at "
+                    f"{_cal_prob*100:.1f}%, which is not more likely than not to win. "
                     f"Rejected before Game Truth Protocol / gatekeeper.",
                 )
                 log_rejected_candidate(
                     sport=sport, candidate=c, stage="calibration_veto",
-                    reason=f"calibrated_prob={_cal_prob:.4f} is -EV at offered odds",
+                    reason=f"calibrated_prob={_cal_prob:.4f} is <= 50% win probability",
                     slate_date=slate_date,
                 )
                 log_candidate(
                     sport=sport, player=c.get("player"), matchup=c.get("matchup", c.get("game_id", "")),
                     market_line=c.get("sportsbook_line"), side=c.get("direction"),
                     rejected_stage="calibration_veto",
-                    rejected_reason=f"calibrated_prob={_cal_prob:.4f} is -EV at offered odds",
+                    rejected_reason=f"calibrated_prob={_cal_prob:.4f} is <= 50% win probability",
                     published=False, extra={"bet_id": bet_id},
                 )
                 continue
@@ -798,20 +804,20 @@ def run_sport_pipeline(sport, as_of_date=None):
             log(
                 "info", sport,
                 f"{bet_id}: CALIBRATION VETO -- raw model_prob={model_prob:.1f}% "
-                f"but fitted curve for ({sport}, {_mkt_for_cal}) puts true probability at "
-                f"{_cal_prob*100:.1f}%, which is -EV at the offered price. "
+                f"but fitted curve for ({sport}, {_mkt_for_cal}) puts true win probability at "
+                f"{_cal_prob*100:.1f}%, which is not more likely than not to win. "
                 f"Rejected before Game Truth Protocol / gatekeeper.",
             )
             log_rejected_candidate(
                 sport=sport, candidate=c, stage="calibration_veto",
-                reason=f"calibrated_prob={_cal_prob:.4f} is -EV at offered odds",
+                reason=f"calibrated_prob={_cal_prob:.4f} is <= 50% win probability",
                 slate_date=slate_date,
             )
             log_candidate(
                 sport=sport, player=c.get("player"), matchup=c.get("matchup", c.get("game_id", "")),
                 market_line=c.get("sportsbook_line"), side=c.get("direction"),
                 rejected_stage="calibration_veto",
-                rejected_reason=f"calibrated_prob={_cal_prob:.4f} is -EV at offered odds",
+                rejected_reason=f"calibrated_prob={_cal_prob:.4f} is <= 50% win probability",
                 published=False, extra={"bet_id": bet_id},
             )
             continue

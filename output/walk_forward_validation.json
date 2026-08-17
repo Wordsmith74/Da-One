@@ -1,24 +1,31 @@
 {
-  "generated_at": "2026-08-16T11:10:52.452336+00:00",
+  "generated_at": "2026-08-17T11:16:01.022426+00:00",
   "method": "chronological_split walk-forward (train_frac=0.6)",
   "min_sample_size_train": 15,
   "min_sample_size_test": 8,
   "groups": [
     {
       "sport": "MLB",
+      "market_class": "first_inning",
+      "n_graded": 12,
+      "status": "insufficient_data_for_walk_forward",
+      "note": "Need >= 23 graded picks to split into a trainable train fold and an evaluable test fold (have 12)."
+    },
+    {
+      "sport": "MLB",
       "market_class": "game",
-      "n_graded": 41,
+      "n_graded": 30,
       "status": "ok",
       "train_window": [
         "2026-07-07T11:02:14.113522+00:00",
-        "2026-07-10T07:18:24.239739+00:00"
+        "2026-07-09T08:58:26.440956+00:00"
       ],
       "test_window": [
-        "2026-07-10T07:18:24.239739+00:00",
-        "2026-08-15T08:14:33.594009+00:00"
+        "2026-07-09T08:58:26.440956+00:00",
+        "2026-07-11T01:10:48.780600+00:00"
       ],
-      "train_n": 24,
-      "test_n": 17,
+      "train_n": 18,
+      "test_n": 12,
       "tiers": {
         "Gold": {
           "status": "no_train_candidate"
@@ -34,7 +41,7 @@
     {
       "sport": "MLB",
       "market_class": "prop",
-      "n_graded": 195,
+      "n_graded": 197,
       "status": "ok",
       "train_window": [
         "2026-07-03T02:00:28.176366+00:00",
@@ -42,10 +49,10 @@
       ],
       "test_window": [
         "2026-08-01T11:17:13.559603+00:00",
-        "2026-08-15T07:44:23.236726+00:00"
+        "2026-08-16T05:34:49.059883+00:00"
       ],
-      "train_n": 117,
-      "test_n": 78,
+      "train_n": 118,
+      "test_n": 79,
       "tiers": {
         "Gold": {
           "status": "validated",
@@ -53,28 +60,28 @@
             "edge_threshold": 1.55,
             "confidence_threshold": 70.0,
             "consensus_threshold": null,
-            "n": 117,
-            "wins": 60,
+            "n": 118,
+            "wins": 61,
             "losses": 56,
             "pushes": 1,
-            "win_pct": 0.5172,
-            "roi": 0.0863,
-            "profit_units": 1.35
+            "win_pct": 0.5214,
+            "roi": 0.0918,
+            "profit_units": 1.44
           },
           "test": {
             "edge_threshold": 1.55,
             "confidence_threshold": 70.0,
             "consensus_threshold": null,
-            "n": 72,
+            "n": 73,
             "wins": 40,
-            "losses": 32,
+            "losses": 33,
             "pushes": 0,
-            "win_pct": 0.5556,
-            "roi": 0.101,
-            "profit_units": 0.36
+            "win_pct": 0.5479,
+            "roi": 0.0675,
+            "profit_units": 0.24
           },
-          "roi_drop": -0.0147,
-          "note": "Train ROI +8.6% -> Test ROI +10.1% on n=72 picks the search never saw."
+          "roi_drop": 0.0243,
+          "note": "Train ROI +9.2% -> Test ROI +6.8% on n=73 picks the search never saw."
         },
         "Diamond": {
           "status": "insufficient_test_volume",
@@ -97,15 +104,15 @@
           "status": "insufficient_test_volume",
           "train": {
             "edge_threshold": 1.55,
-            "confidence_threshold": 78.2,
+            "confidence_threshold": 83.2,
             "consensus_threshold": 0.35,
-            "n": 31,
-            "wins": 18,
-            "losses": 12,
+            "n": 18,
+            "wins": 10,
+            "losses": 7,
             "pushes": 1,
-            "win_pct": 0.6,
-            "roi": 0.2267,
-            "profit_units": 1.56
+            "win_pct": 0.5882,
+            "roi": 0.2044,
+            "profit_units": 0.83
           },
           "test_n": 0,
           "note": "Only 0 test-fold picks cleared this cutoff (need >= 8) -- can't validate either way."

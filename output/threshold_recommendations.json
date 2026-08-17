@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-08-16T11:10:52.439534+00:00",
-  "n_total_picks": 338,
-  "n_graded": 305,
+  "generated_at": "2026-08-17T11:16:01.012699+00:00",
+  "n_total_picks": 347,
+  "n_graded": 308,
   "n_quarantined_pre_fix": 24,
   "edge_pct_trusted_since": "2026-07-03T00:00:00+00:00",
-  "n_usable_for_search": 305,
+  "n_usable_for_search": 308,
   "min_sample_size": 15,
   "min_sample_size_nuke": 8,
   "gold_roi_floor": 0.0,
@@ -12,9 +12,9 @@
   "groups": [
     {
       "sport": "MLB",
-      "market_class": "game",
-      "n_graded": 41,
-      "status": "ok",
+      "market_class": "first_inning",
+      "n_graded": 12,
+      "status": "insufficient_data",
       "consensus_evaluated": false,
       "current_thresholds": {
         "Nuke": {
@@ -30,28 +30,36 @@
           "confidence": 68.0
         }
       },
-      "recommended": {
-        "Gold": {
-          "edge_threshold": 8.66,
-          "confidence_threshold": 75.0,
-          "consensus_threshold": null,
-          "n": 15,
-          "wins": 8,
-          "losses": 7,
-          "pushes": 0,
-          "win_pct": 0.5333,
-          "roi": 0.0658,
-          "profit_units": 0.04
+      "recommended": null,
+      "note": "Only 12 graded picks (need >= 15). Keeping existing thresholds until more results are graded."
+    },
+    {
+      "sport": "MLB",
+      "market_class": "game",
+      "n_graded": 30,
+      "status": "insufficient_data",
+      "consensus_evaluated": false,
+      "current_thresholds": {
+        "Nuke": {
+          "edge_pct": 3.5,
+          "confidence": 85.0
         },
-        "Diamond": null,
-        "Nuke": null
+        "Diamond": {
+          "edge_pct": 2.0,
+          "confidence": 78.0
+        },
+        "Gold": {
+          "edge_pct": 1.0,
+          "confidence": 68.0
+        }
       },
-      "note": "No Diamond cutoff beat Gold's ROI by the required margin -- recommend collapsing Diamond into Gold for this group. consensus_not_evaluated: only 4 picks had side_agreement_frac populated (need >= 15)."
+      "recommended": null,
+      "note": "No edge/confidence cutoff in this group cleared breakeven ROI with n >= 15. Keeping existing thresholds."
     },
     {
       "sport": "MLB",
       "market_class": "prop",
-      "n_graded": 195,
+      "n_graded": 197,
       "status": "ok",
       "consensus_evaluated": true,
       "current_thresholds": {
@@ -73,13 +81,13 @@
           "edge_threshold": 1.21,
           "confidence_threshold": 68.8,
           "consensus_threshold": null,
-          "n": 195,
-          "wins": 103,
-          "losses": 91,
+          "n": 197,
+          "wins": 104,
+          "losses": 92,
           "pushes": 1,
-          "win_pct": 0.5309,
-          "roi": 0.088,
-          "profit_units": 1.7
+          "win_pct": 0.5306,
+          "roi": 0.0863,
+          "profit_units": 1.68
         },
         "Diamond": {
           "edge_threshold": 1.21,

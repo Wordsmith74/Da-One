@@ -69,6 +69,32 @@ from .edge_calibrator import is_game_market
 
 logger = logging.getLogger("threshold_optimizer")
 
+
+def _classify_market_class(market_raw: str) -> str:
+    """
+    RE-APPLIED 2026-08-17 (originally added 2026-08-15, never reached the
+    live repo the first time -- see core/decision_gatekeeper.py's
+    NRFI_YRFI_NO_EDGE_FLOOR_NOTE for the same story on that file).
+
+    Shared classifier factored out of the two inline
+    `"game" if is_game_market(...) else "prop"` call sites below. Mirrors
+    core/probability_calibrator.py's `_group_key()`, which already carves
+    nrfi/yrfi into their own "first_inning" class rather than letting them
+    fall into "prop" -- is_game_market()'s substring list doesn't match
+    "nrfi"/"yrfi" at all, so without this they silently get lumped into
+    MLB's prop bucket, which is dominated by pitcher_strikeouts (195+
+    graded picks vs 0 graded nrfi/yrfi at last count). A threshold
+    "recommended" for nrfi/yrfi off that bucket would really just be a
+    strikeout threshold wearing a different market's name -- exactly the
+    bug probability_calibrator.py's fix already addressed for calibration;
+    this brings threshold_optimizer.py's OWN market-grouping into line
+    with it so the two modules agree on what "first_inning" means.
+    """
+    mkt_norm = market_normalized(market_raw or "")
+    if mkt_norm in ("nrfi", "yrfi"):
+        return "first_inning"
+    return "game" if is_game_market(mkt_norm) else "prop"
+
 DEFAULT_PICK_HISTORY_PATH = "output/pick_history.jsonl"
 DEFAULT_OUTPUT_PATH = "output/threshold_recommendations.json"
 
@@ -273,7 +299,7 @@ def optimize(pick_history_path: str = DEFAULT_PICK_HISTORY_PATH) -> dict[str, An
             r["_consensus"] = None
         raw_sport = (r.get("sport") or "").strip()
         r["_sport_key"] = raw_sport.split()[0].upper() if raw_sport else "UNKNOWN"
-        r["_market_class"] = "game" if is_game_market(market_normalized(r.get("market", ""))) else "prop"
+        r["_market_class"] = _classify_market_class(r.get("market", ""))
 
     usable = [r for r in graded if r["_edge_abs"] is not None and r["_confidence"] is not None]
 
@@ -435,7 +461,7 @@ def walk_forward_validate(pick_history_path: str = DEFAULT_PICK_HISTORY_PATH,
             r["_consensus"] = None
         raw_sport = (r.get("sport") or "").strip()
         r["_sport_key"] = raw_sport.split()[0].upper() if raw_sport else "UNKNOWN"
-        r["_market_class"] = "game" if is_game_market(market_normalized(r.get("market", ""))) else "prop"
+        r["_market_class"] = _classify_market_class(r.get("market", ""))
 
     usable = [r for r in graded if r["_edge_abs"] is not None and r["_confidence"] is not None]
 

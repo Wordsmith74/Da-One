@@ -186,8 +186,27 @@ _MARKET_ENTRY_FLOORS: dict[str, tuple[float, float]] = {
     "first_5_total":      (4.0, 60.0),   # MLB F5 total (Bayesian)
     "first_5_ml":         (4.0, 60.0),   # MLB F5 moneyline
     "first_5_rl":         (4.0, 60.0),   # MLB F5 run line
-    "nrfi":               (4.0, 60.0),   # No Run First Inning
-    "yrfi":               (4.0, 60.0),   # Yes Run First Inning
+    # NRFI_YRFI_NO_EDGE_FLOOR_NOTE (2026-08-15, RE-APPLIED 2026-08-17 after
+    # confirming this edit never reached the live repo the first time --
+    # see run_pipeline.py logs from 2026-08-17 still showing "floor 4.0%"
+    # rejections after this was supposedly already 0.0): the 4.0% edge
+    # floor below was a guess, not a derived threshold -- unlike WNBA
+    # moneyline's 8.2% ceiling (_MARKET_MAX_EDGE_BY_SPORT) or the tier cuts
+    # core/threshold_optimizer.py produces, both fit against a real graded
+    # sample. nrfi/yrfi had only 4 graded picks as of the original note --
+    # nowhere near enough to know whether 4.0% is right, too loose, or (far
+    # more likely, given how rarely nrfi/yrfi edges clear it) too strict,
+    # silently starving the market of the volume it needs to ever build a
+    # real graded sample. Set to 0.0 (no edge floor) so nrfi/yrfi picks
+    # flow through on calibration + confidence alone until
+    # threshold_optimizer.py's "first_inning" group (see that file) has
+    # enough graded rows (MIN_SAMPLE_SIZE=15) to derive a real cut the way
+    # WNBA moneyline's was derived. DO NOT silently revert this back to
+    # (4.0, 60.0) -- if reinstating a floor, derive it from
+    # threshold_recommendations.json's first_inning group once it exists,
+    # the same way every other market-specific floor in this file was set.
+    "nrfi":               (0.0, 60.0),   # No Run First Inning -- edge floor removed, see note above.
+    "yrfi":               (0.0, 60.0),   # Yes Run First Inning -- same as nrfi, see note above.
     "player_assists":     (1.0, 60.0),   # WNBA assists
     "player_rebounds":    (1.0, 60.0),   # WNBA rebounds
     "h2h":                (0.0, 68.0),   # WNBA ML — market_normalized("h2h") -> "h2h"

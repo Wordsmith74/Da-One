@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-17T11:16:01.022426+00:00",
+  "generated_at": "2026-08-18T11:15:59.378864+00:00",
   "method": "chronological_split walk-forward (train_frac=0.6)",
   "min_sample_size_train": 15,
   "min_sample_size_test": 8,
@@ -7,9 +7,9 @@
     {
       "sport": "MLB",
       "market_class": "first_inning",
-      "n_graded": 12,
+      "n_graded": 16,
       "status": "insufficient_data_for_walk_forward",
-      "note": "Need >= 23 graded picks to split into a trainable train fold and an evaluable test fold (have 12)."
+      "note": "Need >= 23 graded picks to split into a trainable train fold and an evaluable test fold (have 16)."
     },
     {
       "sport": "MLB",
@@ -41,18 +41,18 @@
     {
       "sport": "MLB",
       "market_class": "prop",
-      "n_graded": 197,
+      "n_graded": 202,
       "status": "ok",
       "train_window": [
         "2026-07-03T02:00:28.176366+00:00",
         "2026-08-01T11:17:13.559603+00:00"
       ],
       "test_window": [
-        "2026-08-01T11:17:13.559603+00:00",
-        "2026-08-16T05:34:49.059883+00:00"
+        "2026-08-02T11:18:14.941827+00:00",
+        "2026-08-17T10:32:52.737581+00:00"
       ],
-      "train_n": 118,
-      "test_n": 79,
+      "train_n": 121,
+      "test_n": 81,
       "tiers": {
         "Gold": {
           "status": "validated",
@@ -60,28 +60,28 @@
             "edge_threshold": 1.55,
             "confidence_threshold": 70.0,
             "consensus_threshold": null,
-            "n": 118,
-            "wins": 61,
-            "losses": 56,
+            "n": 121,
+            "wins": 62,
+            "losses": 58,
             "pushes": 1,
-            "win_pct": 0.5214,
-            "roi": 0.0918,
-            "profit_units": 1.44
+            "win_pct": 0.5167,
+            "roi": 0.0878,
+            "profit_units": 1.4
           },
           "test": {
             "edge_threshold": 1.55,
             "confidence_threshold": 70.0,
             "consensus_threshold": null,
-            "n": 73,
+            "n": 75,
             "wins": 40,
-            "losses": 33,
-            "pushes": 0,
-            "win_pct": 0.5479,
-            "roi": 0.0675,
-            "profit_units": 0.24
+            "losses": 34,
+            "pushes": 1,
+            "win_pct": 0.5405,
+            "roi": 0.057,
+            "profit_units": 0.2
           },
-          "roi_drop": 0.0243,
-          "note": "Train ROI +9.2% -> Test ROI +6.8% on n=73 picks the search never saw."
+          "roi_drop": 0.0308,
+          "note": "Train ROI +8.8% -> Test ROI +5.7% on n=75 picks the search never saw."
         },
         "Diamond": {
           "status": "insufficient_test_volume",

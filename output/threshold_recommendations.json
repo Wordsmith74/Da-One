@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-08-18T11:15:59.363156+00:00",
-  "n_total_picks": 351,
-  "n_graded": 317,
+  "generated_at": "2026-08-19T11:15:56.846350+00:00",
+  "n_total_picks": 354,
+  "n_graded": 321,
   "n_quarantined_pre_fix": 24,
   "edge_pct_trusted_since": "2026-07-03T00:00:00+00:00",
-  "n_usable_for_search": 317,
+  "n_usable_for_search": 321,
   "min_sample_size": 15,
   "min_sample_size_nuke": 8,
   "gold_roi_floor": 0.0,
@@ -13,7 +13,7 @@
     {
       "sport": "MLB",
       "market_class": "first_inning",
-      "n_graded": 16,
+      "n_graded": 18,
       "status": "ok",
       "consensus_evaluated": false,
       "current_thresholds": {
@@ -35,18 +35,40 @@
           "edge_threshold": 1.04,
           "confidence_threshold": 77.1,
           "consensus_threshold": null,
-          "n": 16,
-          "wins": 10,
-          "losses": 6,
+          "n": 18,
+          "wins": 11,
+          "losses": 7,
           "pushes": 0,
-          "win_pct": 0.625,
-          "roi": 0.5567,
+          "win_pct": 0.6111,
+          "roi": 0.4199,
           "profit_units": 0.17
         },
-        "Diamond": null,
-        "Nuke": null
+        "Diamond": {
+          "edge_threshold": 1.04,
+          "confidence_threshold": 78.5,
+          "consensus_threshold": null,
+          "n": 15,
+          "wins": 9,
+          "losses": 6,
+          "pushes": 0,
+          "win_pct": 0.6,
+          "roi": 0.5216,
+          "profit_units": 0.17
+        },
+        "Nuke": {
+          "edge_threshold": 1.04,
+          "confidence_threshold": 79.1,
+          "consensus_threshold": null,
+          "n": 10,
+          "wins": 7,
+          "losses": 3,
+          "pushes": 0,
+          "win_pct": 0.7,
+          "roi": 0.6955,
+          "profit_units": 0.18
+        }
       },
-      "note": "No Diamond cutoff beat Gold's ROI by the required margin -- recommend collapsing Diamond into Gold for this group. consensus_not_evaluated: only 0 picks had side_agreement_frac populated (need >= 15)."
+      "note": "consensus_not_evaluated: only 0 picks had side_agreement_frac populated (need >= 15)."
     },
     {
       "sport": "MLB",
@@ -74,7 +96,7 @@
     {
       "sport": "MLB",
       "market_class": "prop",
-      "n_graded": 202,
+      "n_graded": 204,
       "status": "ok",
       "consensus_evaluated": true,
       "current_thresholds": {
@@ -96,13 +118,13 @@
           "edge_threshold": 1.21,
           "confidence_threshold": 68.8,
           "consensus_threshold": null,
-          "n": 202,
+          "n": 204,
           "wins": 105,
-          "losses": 95,
+          "losses": 97,
           "pushes": 2,
-          "win_pct": 0.525,
-          "roi": 0.0813,
-          "profit_units": 1.59
+          "win_pct": 0.5198,
+          "roi": 0.0792,
+          "profit_units": 1.56
         },
         "Diamond": {
           "edge_threshold": 1.21,

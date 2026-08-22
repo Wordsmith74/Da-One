@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-21T11:17:25.900816+00:00",
+  "generated_at": "2026-08-22T11:11:57.031720+00:00",
   "method": "chronological_split walk-forward (train_frac=0.6)",
   "min_sample_size_train": 15,
   "min_sample_size_test": 8,
@@ -7,9 +7,29 @@
     {
       "sport": "MLB",
       "market_class": "first_inning",
-      "n_graded": 20,
-      "status": "insufficient_data_for_walk_forward",
-      "note": "Need >= 23 graded picks to split into a trainable train fold and an evaluable test fold (have 20)."
+      "n_graded": 23,
+      "status": "ok",
+      "train_window": [
+        "2026-08-13T21:39:16.291641+00:00",
+        "2026-08-17T09:23:40.250772+00:00"
+      ],
+      "test_window": [
+        "2026-08-17T09:23:40.250772+00:00",
+        "2026-08-21T10:32:08.883138+00:00"
+      ],
+      "train_n": 13,
+      "test_n": 10,
+      "tiers": {
+        "Gold": {
+          "status": "no_train_candidate"
+        },
+        "Diamond": {
+          "status": "no_train_candidate"
+        },
+        "Nuke": {
+          "status": "no_train_candidate"
+        }
+      }
     },
     {
       "sport": "MLB",
@@ -41,7 +61,7 @@
     {
       "sport": "MLB",
       "market_class": "prop",
-      "n_graded": 207,
+      "n_graded": 210,
       "status": "ok",
       "train_window": [
         "2026-07-03T02:00:28.176366+00:00",
@@ -49,10 +69,10 @@
       ],
       "test_window": [
         "2026-08-02T11:18:14.941827+00:00",
-        "2026-08-20T10:30:41.095492+00:00"
+        "2026-08-21T10:32:08.883138+00:00"
       ],
-      "train_n": 124,
-      "test_n": 83,
+      "train_n": 126,
+      "test_n": 84,
       "tiers": {
         "Gold": {
           "status": "validated",
@@ -60,28 +80,28 @@
             "edge_threshold": 1.55,
             "confidence_threshold": 70.0,
             "consensus_threshold": null,
-            "n": 124,
-            "wins": 64,
-            "losses": 59,
+            "n": 126,
+            "wins": 65,
+            "losses": 60,
             "pushes": 1,
-            "win_pct": 0.5203,
-            "roi": 0.0914,
-            "profit_units": 1.48
+            "win_pct": 0.52,
+            "roi": 0.0916,
+            "profit_units": 1.49
           },
           "test": {
             "edge_threshold": 1.55,
             "confidence_threshold": 70.0,
             "consensus_threshold": null,
-            "n": 77,
-            "wins": 39,
+            "n": 78,
+            "wins": 40,
             "losses": 37,
             "pushes": 1,
-            "win_pct": 0.5132,
-            "roi": 0.0351,
-            "profit_units": 0.12
+            "win_pct": 0.5195,
+            "roi": 0.0426,
+            "profit_units": 0.14
           },
-          "roi_drop": 0.0563,
-          "note": "Train ROI +9.1% -> Test ROI +3.5% on n=77 picks the search never saw."
+          "roi_drop": 0.049,
+          "note": "Train ROI +9.2% -> Test ROI +4.3% on n=78 picks the search never saw."
         },
         "Diamond": {
           "status": "insufficient_test_volume",

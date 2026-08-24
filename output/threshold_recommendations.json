@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-08-23T11:12:01.241513+00:00",
-  "n_total_picks": 379,
-  "n_graded": 344,
+  "generated_at": "2026-08-24T11:18:11.801396+00:00",
+  "n_total_picks": 385,
+  "n_graded": 349,
   "n_quarantined_pre_fix": 24,
   "edge_pct_trusted_since": "2026-07-03T00:00:00+00:00",
-  "n_usable_for_search": 344,
+  "n_usable_for_search": 349,
   "min_sample_size": 15,
   "min_sample_size_nuke": 8,
   "gold_roi_floor": 0.0,
@@ -13,7 +13,7 @@
     {
       "sport": "MLB",
       "market_class": "first_inning",
-      "n_graded": 28,
+      "n_graded": 30,
       "status": "ok",
       "consensus_evaluated": false,
       "current_thresholds": {
@@ -35,13 +35,13 @@
           "edge_threshold": 1.0,
           "confidence_threshold": 77.1,
           "consensus_threshold": null,
-          "n": 28,
-          "wins": 15,
-          "losses": 13,
+          "n": 30,
+          "wins": 16,
+          "losses": 14,
           "pushes": 0,
-          "win_pct": 0.5357,
-          "roi": 0.1519,
-          "profit_units": 0.11
+          "win_pct": 0.5333,
+          "roi": 0.1462,
+          "profit_units": 0.12
         },
         "Diamond": {
           "edge_threshold": 1.0,
@@ -57,15 +57,15 @@
         },
         "Nuke": {
           "edge_threshold": 1.0,
-          "confidence_threshold": 78.9,
+          "confidence_threshold": 78.8,
           "consensus_threshold": null,
-          "n": 16,
-          "wins": 10,
+          "n": 17,
+          "wins": 11,
           "losses": 6,
           "pushes": 0,
-          "win_pct": 0.625,
-          "roi": 0.402,
-          "profit_units": 0.19
+          "win_pct": 0.6471,
+          "roi": 0.4293,
+          "profit_units": 0.21
         }
       },
       "note": "consensus_not_evaluated: only 0 picks had side_agreement_frac populated (need >= 15)."
@@ -96,7 +96,7 @@
     {
       "sport": "MLB",
       "market_class": "prop",
-      "n_graded": 215,
+      "n_graded": 218,
       "status": "ok",
       "consensus_evaluated": true,
       "current_thresholds": {
@@ -118,17 +118,17 @@
           "edge_threshold": 1.21,
           "confidence_threshold": 68.8,
           "consensus_threshold": null,
-          "n": 215,
-          "wins": 109,
-          "losses": 104,
+          "n": 218,
+          "wins": 110,
+          "losses": 106,
           "pushes": 2,
-          "win_pct": 0.5117,
-          "roi": 0.0807,
-          "profit_units": 1.6
+          "win_pct": 0.5093,
+          "roi": 0.0791,
+          "profit_units": 1.57
         },
         "Diamond": {
           "edge_threshold": 1.21,
-          "confidence_threshold": 72.1,
+          "confidence_threshold": 72.0,
           "consensus_threshold": 0.0,
           "n": 61,
           "wins": 34,

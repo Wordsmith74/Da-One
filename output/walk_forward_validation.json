@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-25T11:17:10.166395+00:00",
+  "generated_at": "2026-08-26T11:19:52.825364+00:00",
   "method": "chronological_split walk-forward (train_frac=0.6)",
   "min_sample_size_train": 15,
   "min_sample_size_test": 8,
@@ -7,17 +7,17 @@
     {
       "sport": "MLB",
       "market_class": "first_inning",
-      "n_graded": 33,
+      "n_graded": 34,
       "status": "ok",
       "train_window": [
         "2026-08-13T21:39:16.291641+00:00",
         "2026-08-19T10:30:41.106802+00:00"
       ],
       "test_window": [
-        "2026-08-19T10:30:41.106802+00:00",
-        "2026-08-24T10:38:47.480771+00:00"
+        "2026-08-21T10:32:08.883138+00:00",
+        "2026-08-25T10:34:01.853125+00:00"
       ],
-      "train_n": 19,
+      "train_n": 20,
       "test_n": 14,
       "tiers": {
         "Gold": {
@@ -26,62 +26,62 @@
             "edge_threshold": 1.04,
             "confidence_threshold": 77.1,
             "consensus_threshold": null,
-            "n": 19,
-            "wins": 12,
+            "n": 20,
+            "wins": 13,
             "losses": 7,
             "pushes": 0,
-            "win_pct": 0.6316,
-            "roi": 0.4623,
-            "profit_units": 0.2
+            "win_pct": 0.65,
+            "roi": 0.4902,
+            "profit_units": 0.23
           },
           "test": {
             "edge_threshold": 1.04,
             "confidence_threshold": 77.1,
             "consensus_threshold": null,
             "n": 12,
-            "wins": 4,
-            "losses": 8,
+            "wins": 3,
+            "losses": 9,
             "pushes": 0,
-            "win_pct": 0.3333,
-            "roi": -0.2949,
-            "profit_units": -0.12
+            "win_pct": 0.25,
+            "roi": -0.4072,
+            "profit_units": -0.16
           },
-          "roi_drop": 0.7572,
-          "note": "FAILED: train ROI +46.2% did not hold up out-of-sample (test ROI -29.5% on n=12) -- likely overfit to the training window. Do not deploy this cutoff."
+          "roi_drop": 0.8974,
+          "note": "FAILED: train ROI +49.0% did not hold up out-of-sample (test ROI -40.7% on n=12) -- likely overfit to the training window. Do not deploy this cutoff."
         },
         "Diamond": {
           "status": "insufficient_test_volume",
           "train": {
-            "edge_threshold": 1.9,
-            "confidence_threshold": 77.1,
+            "edge_threshold": 1.04,
+            "confidence_threshold": 78.6,
             "consensus_threshold": null,
-            "n": 17,
-            "wins": 11,
-            "losses": 6,
+            "n": 15,
+            "wins": 10,
+            "losses": 5,
             "pushes": 0,
-            "win_pct": 0.6471,
-            "roi": 0.5412,
-            "profit_units": 0.21
+            "win_pct": 0.6667,
+            "roi": 0.5928,
+            "profit_units": 0.23
           },
-          "test_n": 4,
-          "note": "Only 4 test-fold picks cleared this cutoff (need >= 8) -- can't validate either way."
+          "test_n": 7,
+          "note": "Only 7 test-fold picks cleared this cutoff (need >= 8) -- can't validate either way."
         },
         "Nuke": {
           "status": "insufficient_test_volume",
           "train": {
-            "edge_threshold": 1.9,
-            "confidence_threshold": 78.6,
+            "edge_threshold": 1.04,
+            "confidence_threshold": 79.0,
             "consensus_threshold": null,
             "n": 12,
-            "wins": 8,
-            "losses": 4,
+            "wins": 9,
+            "losses": 3,
             "pushes": 0,
-            "win_pct": 0.6667,
-            "roi": 0.6894,
-            "profit_units": 0.2
+            "win_pct": 0.75,
+            "roi": 0.7389,
+            "profit_units": 0.25
           },
-          "test_n": 2,
-          "note": "Only 2 test-fold picks cleared this cutoff (need >= 8) -- can't validate either way."
+          "test_n": 6,
+          "note": "Only 6 test-fold picks cleared this cutoff (need >= 8) -- can't validate either way."
         }
       }
     },

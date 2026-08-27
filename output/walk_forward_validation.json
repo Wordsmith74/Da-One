@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-26T11:19:52.825364+00:00",
+  "generated_at": "2026-08-27T20:51:33.586796+00:00",
   "method": "chronological_split walk-forward (train_frac=0.6)",
   "min_sample_size_train": 15,
   "min_sample_size_test": 8,
@@ -7,17 +7,17 @@
     {
       "sport": "MLB",
       "market_class": "first_inning",
-      "n_graded": 34,
+      "n_graded": 35,
       "status": "ok",
       "train_window": [
         "2026-08-13T21:39:16.291641+00:00",
-        "2026-08-19T10:30:41.106802+00:00"
+        "2026-08-21T10:32:08.883138+00:00"
       ],
       "test_window": [
         "2026-08-21T10:32:08.883138+00:00",
-        "2026-08-25T10:34:01.853125+00:00"
+        "2026-08-26T10:37:29.245639+00:00"
       ],
-      "train_n": 20,
+      "train_n": 21,
       "test_n": 14,
       "tiers": {
         "Gold": {
@@ -26,13 +26,13 @@
             "edge_threshold": 1.04,
             "confidence_threshold": 77.1,
             "consensus_threshold": null,
-            "n": 20,
+            "n": 21,
             "wins": 13,
-            "losses": 7,
+            "losses": 8,
             "pushes": 0,
-            "win_pct": 0.65,
-            "roi": 0.4902,
-            "profit_units": 0.23
+            "win_pct": 0.619,
+            "roi": 0.3853,
+            "profit_units": 0.2
           },
           "test": {
             "edge_threshold": 1.04,
@@ -43,11 +43,11 @@
             "losses": 9,
             "pushes": 0,
             "win_pct": 0.25,
-            "roi": -0.4072,
-            "profit_units": -0.16
+            "roi": -0.3682,
+            "profit_units": -0.14
           },
-          "roi_drop": 0.8974,
-          "note": "FAILED: train ROI +49.0% did not hold up out-of-sample (test ROI -40.7% on n=12) -- likely overfit to the training window. Do not deploy this cutoff."
+          "roi_drop": 0.7535,
+          "note": "FAILED: train ROI +38.5% did not hold up out-of-sample (test ROI -36.8% on n=12) -- likely overfit to the training window. Do not deploy this cutoff."
         },
         "Diamond": {
           "status": "insufficient_test_volume",
@@ -55,16 +55,16 @@
             "edge_threshold": 1.04,
             "confidence_threshold": 78.6,
             "consensus_threshold": null,
-            "n": 15,
+            "n": 16,
             "wins": 10,
-            "losses": 5,
+            "losses": 6,
             "pushes": 0,
-            "win_pct": 0.6667,
-            "roi": 0.5928,
-            "profit_units": 0.23
+            "win_pct": 0.625,
+            "roi": 0.4565,
+            "profit_units": 0.19
           },
-          "test_n": 7,
-          "note": "Only 7 test-fold picks cleared this cutoff (need >= 8) -- can't validate either way."
+          "test_n": 6,
+          "note": "Only 6 test-fold picks cleared this cutoff (need >= 8) -- can't validate either way."
         },
         "Nuke": {
           "status": "insufficient_test_volume",
@@ -72,16 +72,16 @@
             "edge_threshold": 1.04,
             "confidence_threshold": 79.0,
             "consensus_threshold": null,
-            "n": 12,
+            "n": 13,
             "wins": 9,
-            "losses": 3,
+            "losses": 4,
             "pushes": 0,
-            "win_pct": 0.75,
-            "roi": 0.7389,
-            "profit_units": 0.25
+            "win_pct": 0.6923,
+            "roi": 0.5702,
+            "profit_units": 0.21
           },
-          "test_n": 6,
-          "note": "Only 6 test-fold picks cleared this cutoff (need >= 8) -- can't validate either way."
+          "test_n": 5,
+          "note": "Only 5 test-fold picks cleared this cutoff (need >= 8) -- can't validate either way."
         }
       }
     },

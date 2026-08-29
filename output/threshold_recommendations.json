@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-08-28T21:17:42.912738+00:00",
-  "n_total_picks": 391,
-  "n_graded": 359,
+  "generated_at": "2026-08-29T15:23:01.859947+00:00",
+  "n_total_picks": 392,
+  "n_graded": 360,
   "n_quarantined_pre_fix": 24,
   "edge_pct_trusted_since": "2026-07-03T00:00:00+00:00",
-  "n_usable_for_search": 359,
+  "n_usable_for_search": 360,
   "min_sample_size": 15,
   "min_sample_size_nuke": 8,
   "gold_roi_floor": 0.0,
@@ -96,7 +96,7 @@
     {
       "sport": "MLB",
       "market_class": "prop",
-      "n_graded": 221,
+      "n_graded": 222,
       "status": "ok",
       "consensus_evaluated": true,
       "current_thresholds": {
@@ -118,13 +118,13 @@
           "edge_threshold": 1.21,
           "confidence_threshold": 68.8,
           "consensus_threshold": null,
-          "n": 221,
+          "n": 222,
           "wins": 113,
-          "losses": 106,
+          "losses": 107,
           "pushes": 2,
-          "win_pct": 0.516,
-          "roi": 0.0814,
-          "profit_units": 1.62
+          "win_pct": 0.5136,
+          "roi": 0.0804,
+          "profit_units": 1.6
         },
         "Diamond": {
           "edge_threshold": 1.21,

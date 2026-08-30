@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-29T15:23:01.878161+00:00",
+  "generated_at": "2026-08-30T15:07:26.389575+00:00",
   "method": "chronological_split walk-forward (train_frac=0.6)",
   "min_sample_size_train": 15,
   "min_sample_size_test": 8,
@@ -7,7 +7,7 @@
     {
       "sport": "MLB",
       "market_class": "first_inning",
-      "n_graded": 35,
+      "n_graded": 36,
       "status": "ok",
       "train_window": [
         "2026-08-13T21:39:16.291641+00:00",
@@ -15,10 +15,10 @@
       ],
       "test_window": [
         "2026-08-21T10:32:08.883138+00:00",
-        "2026-08-26T10:37:29.245639+00:00"
+        "2026-08-29T15:03:31.355775+00:00"
       ],
       "train_n": 21,
-      "test_n": 14,
+      "test_n": 15,
       "tiers": {
         "Gold": {
           "status": "failed_walk_forward",

@@ -271,32 +271,29 @@ def _synthetic_history(
     sport: str = "",
 ) -> list[float]:
     """
+    DISABLED (2026-08-29, policy): no pick may ever be generated from
+    fabricated history -- real data or the candidate is skipped, full
+    stop. Every call site in this file that used to fall back to this
+    function now `continue`s (skips the candidate) instead when real
+    per-team game-log history isn't available. Left in place, but
+    deliberately raising, so a future edit can't quietly reintroduce a
+    fallback call here without it being immediately obvious at runtime
+    rather than silently shipping fabricated-data picks again.
+
+    Original docstring, for reference:
     Deterministic synthetic game-log history exactly centred at *mean*.
-
-    Key guarantees:
-    1. The sample mean equals *mean* exactly (centred sample) so the
-       Bayesian posterior mean starts at league_mean, not shifted by
-       random noise.  This prevents the prior from accidentally sitting
-       at the market line and killing edge in both directions.
-    2. The seed is game-specific (from the game_id hash) so different
-       games produce different-looking histories even for the same sport.
-    3. The spread uses a seasonal multiplier — tighter mid-season when
-       we have more real data, wider pre-season under high uncertainty.
-    4. Strict independence from sportsbook lines: *mean* is always the
-       sport's league average, never the current market line.  The line
-       enters only at the edge-derivation step.
-
-    n=50 (default): posterior_std ≈ data_std/√50 = 5.6/7.07 ≈ 0.79 for WNBA,
-    giving z≈1.90 for a 1.5-point edge → conf≈97.5 (Nuke-tier).
-    Keeps NUTS sampling tractable (4 s → ~5 s per candidate).
+    Key guarantees: (1) sample mean equals *mean* exactly, so the
+    Bayesian posterior mean starts at league_mean, not shifted by random
+    noise; (2) seed is game-specific; (3) spread uses a seasonal
+    multiplier; (4) strict independence from sportsbook lines.
     """
-    mult = _seasonal_std_multiplier(sport)
-    random.seed(int(seed) % (2 ** 31))
-    raw = [random.gauss(0, std * mult) for _ in range(n)]
-    # Force exact centering: subtract the empirical mean so sample_mean == 0,
-    # then shift to league_mean.  The spread is preserved.
-    sample_mean = sum(raw) / n
-    return [round(mean + (r - sample_mean), 1) for r in raw]
+    raise RuntimeError(
+        "_synthetic_history() is disabled by policy (2026-08-29): "
+        "no pick may be generated from fabricated history. The caller "
+        "should skip this candidate (real data or NO PLAY) instead of "
+        "calling this function -- see the FIX/POLICY comments at each "
+        "former call site in fetch_todays_candidates()."
+    )
 
 
 def _mlb_dynamic_game_window(as_of_date: str | None = None) -> int:
@@ -742,6 +739,15 @@ def fetch_todays_candidates(
             combined.extend(longer[shorter_len:])
             return combined
 
+        # POLICY (2026-08-29, per explicit instruction): no pick may ever be
+        # generated from _synthetic_history() fallback data -- real history
+        # or the candidate is skipped outright, full stop. This replaces the
+        # earlier flag-and-discard-downstream approach (historical_data_synthetic
+        # + integrity_filters.py hard-discard) with an upfront skip, so a
+        # fabricated-history candidate is never even built -- consistent with
+        # the same real-data-or-NO-PLAY rule already enforced in
+        # core/player_props.py for pitcher_strikeouts and WNBA player props.
+
         if sport_up == "MLB":
             home_hist = get_mlb_game_totals_history(home_team, as_of_date=as_of_date)
             away_hist = get_mlb_game_totals_history(away_team, as_of_date=as_of_date)
@@ -762,10 +768,15 @@ def fetch_todays_candidates(
                     flush=True,
                 )
             else:
-                shared_history = _synthetic_history(
-                    game_seed, prior["mean"], prior["std"], sport=sport_up,
+                print(
+                    f"[odds_client] NO PLAY: {away_abbr}@{home_abbr} MLB total -- "
+                    "no real team game-log history for either side; "
+                    "synthetic fallback disabled by policy.",
+                    flush=True,
                 )
-                effective_league_mean = prior["mean"]
+                continue
+
+
 
             # ── Starter + bullpen quality prior shift ──────────────────────
             # Full-game MLB totals were previously driven by team scoring
@@ -968,39 +979,30 @@ def fetch_todays_candidates(
                             flush=True,
                         )
                 else:
-                    shared_history = _synthetic_history(
-                        game_seed, prior["mean"], prior["std"], sport=sport_up,
+                    print(
+                        f"[odds_client] NO PLAY: {away_abbr}@{home_abbr} "
+                        f"{sport_up} total -- no real team game-log history "
+                        "for either side; synthetic fallback disabled by policy.",
+                        flush=True,
                     )
-                    if sport_up == "WNBA":
-                        from core.wnba_regime import compute_wnba_cet
-                        _cet, _regime, _vol_mult = compute_wnba_cet([], [])
-                        effective_league_mean = _cet
-                        _wnba_league_std = round(prior["std"] * _vol_mult, 2)
-                    else:
-                        effective_league_mean = prior["mean"]
-                        _wnba_league_std = prior["std"]
-                        _regime = "neutral"
-                        _cet = prior["mean"]
+                    continue
             except Exception as _gl_exc:
                 print(
-                    f"[odds_client] game_logs fallback for {sport_up}: {_gl_exc}",
+                    f"[odds_client] NO PLAY: {away_abbr}@{home_abbr} {sport_up} "
+                    f"total -- game_logs lookup raised ({_gl_exc}); synthetic "
+                    "fallback disabled by policy, skipping rather than "
+                    "pricing off fabricated history.",
                     flush=True,
                 )
-                shared_history = _synthetic_history(
-                    game_seed, prior["mean"], prior["std"], sport=sport_up,
-                )
-                effective_league_mean = prior["mean"]
-                _wnba_league_std = prior["std"]
-                _regime = "neutral"
-                _cet = prior["mean"]
+                continue
         else:
-            shared_history = _synthetic_history(
-                game_seed, prior["mean"], prior["std"], sport=sport_up,
+            print(
+                f"[odds_client] NO PLAY: {away_abbr}@{home_abbr} {sport_up} "
+                "total -- unsupported sport for real history lookup; "
+                "synthetic fallback disabled by policy.",
+                flush=True,
             )
-            effective_league_mean = prior["mean"]
-            _wnba_league_std = prior["std"]
-            _regime = "neutral"
-            _cet = prior["mean"]
+            continue
 
         # Cross-book consensus line (median of all books' over lines).
         # Dispersion = how far the best available line deviates from consensus.
@@ -1111,6 +1113,7 @@ def fetch_todays_candidates(
                 "consensus_line":   _consensus_line,
                 "line_dispersion":  _line_dispersion,
                 "historical_data":  shared_history,
+                "historical_data_synthetic": _hist_is_synthetic,
                 "league_mean":      effective_league_mean,
                 "league_std":       _wnba_league_std,
                 "cet":              _cet,

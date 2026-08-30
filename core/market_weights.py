@@ -45,6 +45,21 @@ _GAME_MARKET_SUBSTRINGS: tuple[str, ...] = (
     "full_game",
     "draw_no_bet",
     "double_chance",
+    # FIX (2026-08-29): duplicate of edge_calibrator.py's
+    # _GAME_MARKET_SUBSTRINGS, which already carries this fix -- nrfi/yrfi
+    # were missing here too, so is_game_market("nrfi") returned False and
+    # this module's Pipeline-A/B split (game markets get no confidence
+    # modifier; props get a market-tier modifier) misrouted nrfi/yrfi into
+    # Pipeline B. In practice _MLB_MODIFIERS has no nrfi/yrfi entry so this
+    # defaulted to a harmless 0.0 modifier either way -- but the
+    # classification itself was wrong, and get_market_confidence_modifier
+    # would silently start applying a real modifier to nrfi/yrfi the
+    # moment anyone added an unprefixed entry to _MLB_MODIFIERS without
+    # realizing this misclassification existed. Propagating the fix here
+    # for correctness and consistency with edge_calibrator.py/
+    # confidence_caps.py, not just because today's impact happens to be nil.
+    "nrfi",
+    "yrfi",
 )
 
 

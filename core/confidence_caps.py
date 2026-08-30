@@ -50,6 +50,15 @@ _GAME_MARKET_SUBSTRINGS: tuple[str, ...] = (
     "full_game",
     "draw_no_bet",
     "double_chance",
+    # FIX (2026-08-29): this is a duplicate of edge_calibrator.py's
+    # _GAME_MARKET_SUBSTRINGS, which already carries this exact fix (see
+    # its comment) -- nrfi/yrfi were missing here, so is_game_market("nrfi")
+    # returned False and confidence_caps.py applied the PROPS ceiling
+    # (92/87/82) to nrfi/yrfi picks instead of the correct MLB totals
+    # ceiling (85/80/75), letting them report higher confidence than the
+    # V3.0 spec intends for that market. Propagating the fix here too.
+    "nrfi",
+    "yrfi",
 )
 
 

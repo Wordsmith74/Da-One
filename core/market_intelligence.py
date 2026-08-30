@@ -432,6 +432,20 @@ def compute_effective_edge(
     if rlm_detected:
         adj += 1.5
 
+    # FIX (2026-08-29): the docstring above has always documented this
+    # mis_score rule ("mis >= 80: +0.5%", "mis < 40: -1.0%"), and the
+    # parameter has been accepted since this function was written, but it
+    # was never actually read anywhere in the body -- silently a no-op.
+    # Confirmed currently dead either way (this function has no live
+    # caller; its only reference is core/revalidation_engine.py, which is
+    # itself not wired into any scheduled workflow yet), but fixing now
+    # rather than leaving a second bug behind the first one for whenever
+    # revalidation_engine.py does get scheduled.
+    if mis_score >= 80:
+        adj += 0.5
+    elif mis_score < 40:
+        adj -= 1.0
+
     if soft_line_detected:
         adj -= 1.5   # Fix 5: soft book line is a bearish signal
 

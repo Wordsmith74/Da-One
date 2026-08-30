@@ -206,6 +206,19 @@ def run_integrity_filter(
     if not is_game_market:
         return 0, []
 
+    # FIX (2026-08-29): hard-discard game-total candidates built on
+    # odds_client._synthetic_history() fallback data (team game-log fetch
+    # failed, so the "history" feeding the Bayesian mean/std is fabricated,
+    # centered exactly on the league average). This is the same
+    # confident-number-from-fabricated-data pattern already removed from
+    # pitcher_strikeouts and WNBA player props (see player_props.py's
+    # 2026-08-05 AUDIT note) -- it just hadn't been wired into this filter
+    # for game totals yet. Treated as worse than any single missing
+    # integrity element (which only downgrades a tier), since the core
+    # input data itself isn't real, not just one supporting factor.
+    if candidate.get("historical_data_synthetic"):
+        return 2, ["synthetic_historical_data"]
+
     s = sport.upper()
     if s == "MLB":
         missing = _check_mlb_integrity(candidate)

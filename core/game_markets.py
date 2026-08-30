@@ -66,8 +66,16 @@ _SPORT_KEY: dict[str, str] = {
 #          says so), so both have to agree.
 #   WNBA — full-game moneyline only (spreads and team-totals removed) -- unchanged
 #   NBA  — no markets in scope (empty string → fetch_expanded_game_candidates returns [])
+#
+# MLB "h2h" (moneyline) ADDED 2026-08-29 alongside core/three_tier_formula.py.
+# ALLOWED_MARKETS["MLB"] in core/market_gate.py must also carry "moneyline"
+# (it does -- added in the same change) or this bundle entry alone won't
+# produce any live candidates. Scope != publication: see
+# core/market_governance.py's PUBLICATION_MARKETS, which deliberately does
+# NOT include MLB moneyline yet -- candidates generate and shadow-log here,
+# nothing publishes until there's real graded evidence for the new formula.
 _MARKET_BUNDLE: dict[str, str] = {
-    "MLB":  "totals_1st_1_innings",   # NRFI/YRFI only -- moneyline/run_line/game_total stay out of scope
+    "MLB":  "totals_1st_1_innings,h2h",   # NRFI/YRFI + moneyline (shadow-only, see above)
     "NBA":  "",   # blocked: no game markets in scope
     "WNBA": "h2h",
 }
@@ -709,36 +717,71 @@ def _process_moneyline(
 
     home_win_model, away_win_model = _win_prob(home_hist, away_hist, sport)
 
-    # ── rivalry_intel.py wiring (MLB moneyline only) ────────────────────────
-    # get_rivalry_intel().edge_adjustment was fully computed (H2H record,
-    # rivalry classification, MLB Stats API fetch) but never called from
-    # anywhere in the pipeline. Its own docstring is explicit about what the
-    # number means: "acknowledges unpredictability, not an upset pick" --
-    # i.e. it's a volatility/uncertainty flag, not a signal that one side is
-    # more likely to win. So it's applied the same way the existing partial-
-    # game regression two lines below already treats uncertainty: shrink the
-    # model's win probability toward 50/50, never shift it toward either
-    # side. Magnitude is scaled off the module's own -5..+5 edge_adjustment
-    # (its "underdog recovery" partially cancels the penalty when the
-    # trailing team has been over-performing H2H, so a MINOR/no-rivalry game
-    # correctly nets ~0 shrink). Capped at 20% regression at the module's own
-    # max magnitude (+/-5) so this can never flatten a strong model read on
-    # its own -- consistent with its documented safety rule of never
-    # overriding pitcher/injury/bullpen/market signals.
-    _rivalry_shrink = 0.0
+    # ── MLB moneyline: three_tier_formula.py, not rivalry_intel ────────────
+    # rivalry_intel.py's wiring here was dead (MLB moneyline was out of
+    # scope) until 2026-08-29, when moneyline was re-added to
+    # ALLOWED_MARKETS specifically to run through the new three-tier
+    # formula (real Savant K-BB%, real bullpen pitch-count data, real
+    # platoon splits -- see core/three_tier_formula.py's module docstring
+    # for exactly what's real vs. honestly substituted). Simply re-adding
+    # scope without this replacement would have silently resurrected the
+    # OLD rivalry_intel-adjusted win_prob approach that produced the
+    # 35.3%-win/-0.52-unit graded record documented in
+    # core/market_governance.py -- not what was asked for.
+    #
+    # This is a binary pass/fail gate (Advantage [team] / No Edge), not a
+    # calibrated probability, so it's translated into model_prob honestly
+    # rather than asserting a large, unearned edge: "No Edge" drops BOTH
+    # candidates for this game outright (the formula's own spec says
+    # these games should be avoided, not bet at low confidence), and
+    # "Advantage" nudges the model modestly off 50/50 in the cleared
+    # side's favor, scaled off the real K-BB% gap size, capped small.
+    # This is intentionally conservative for a brand-new, ungraded
+    # formula -- output is shadow-only either way (see
+    # core/market_governance.py's PUBLICATION_MARKETS) until real graded
+    # results justify more.
+    _mlb_advantage_side: str | None = None
     if sport.upper() == "MLB":
         try:
-            _rivalry = get_rivalry_intel(home_team, away_team, sport, home_abbr, away_abbr)
-            _rivalry_shrink = min(0.20, abs(_rivalry.edge_adjustment) / 5.0 * 0.20)
-        except Exception as exc:
-            print(f"[game_markets] rivalry_intel unavailable: {exc}", flush=True)
-        if _rivalry_shrink:
-            home_win_model = 0.5 + (home_win_model - 0.5) * (1.0 - _rivalry_shrink)
+            from datetime import date as _date
+            from core.three_tier_formula import classify_matchup
+            from data.mlb_probable_pitchers import get_probable_pitchers
+            from data.statcast_lineup_platoon import get_confirmed_top4
+
+            _game_date = _date.today()
+            _pitchers = get_probable_pitchers(home_abbr, away_abbr, _game_date)
+            _lineups = get_confirmed_top4(home_abbr, away_abbr, _game_date)
+            _classification = classify_matchup(
+                home_abbr=home_abbr, away_abbr=away_abbr,
+                home_pitcher_name=_pitchers.home.full_name or "",
+                away_pitcher_name=_pitchers.away.full_name or "",
+                game_date=_game_date, season=_game_date.year,
+                home_pitcher_throws=_pitchers.home.throws,
+                away_pitcher_throws=_pitchers.away.throws,
+                home_lineup_batter_ids=_lineups["home"].batter_ids or [],
+                away_lineup_batter_ids=_lineups["away"].batter_ids or [],
+            )
             print(
-                f"[game_markets] {away_abbr}@{home_abbr} rivalry shrink: "
-                f"{_rivalry_shrink:.1%} -> home_win_model={home_win_model:.3f}",
+                f"[game_markets] {away_abbr}@{home_abbr} three_tier_formula: "
+                f"{_classification.status}"
+                + (f" ({_classification.team})" if _classification.team else "")
+                + f" -- {_classification.reason}",
                 flush=True,
             )
+            if _classification.status == "no_edge":
+                return  # spec: "No Edge" games are avoided outright, not bet
+            _mlb_advantage_side = "home" if _classification.team == home_abbr else "away"
+            _k_bb_gap = abs(
+                (_classification.rule1.home_k_bb or 0.0) - (_classification.rule1.away_k_bb or 0.0)
+            )
+            # Modest, capped nudge off 50/50 -- 1 percentage point of win
+            # probability per 5 points of real K-BB% gap, capped at 8 points
+            # (0.58 max), deliberately conservative for an ungraded formula.
+            _nudge = min(0.08, _k_bb_gap * 0.20)
+            home_win_model = 0.5 + _nudge if _mlb_advantage_side == "home" else 0.5 - _nudge
+        except Exception as exc:
+            print(f"[game_markets] three_tier_formula unavailable, no MLB moneyline candidate: {exc}", flush=True)
+            return  # real data or no pick -- same policy as the rest of this pipeline
 
     # Regress partial-game MLs toward 50/50 (less runs = more uncertainty)
     if mkt_key == "h2h_first_5_innings":
@@ -761,6 +804,12 @@ def _process_moneyline(
         ("home", home_lines, home_abbr, home_team, home_win_model, fair_home),
         ("away", away_lines, away_abbr, away_team, away_win_model, fair_away),
     ):
+        # MLB (three_tier_formula path only): "Advantage" is a single-side
+        # classification -- there's no basis to generate a candidate for
+        # the side the formula didn't clear. WNBA is unaffected (
+        # _mlb_advantage_side stays None there, condition never fires).
+        if _mlb_advantage_side is not None and side != _mlb_advantage_side:
+            continue
         result = _best_side(lines)
         if result is None:
             continue

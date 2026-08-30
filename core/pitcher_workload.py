@@ -609,59 +609,41 @@ def _component_bullpen_fatigue(
     season: int,
 ) -> float | None:
     """
-    Measure how heavily the team's bullpen has been used in the last 3 days.
-    Heavy BP usage → manager lets starter go longer (+).
-    Fresh BP → quicker hook (−).
-    Returns IP delta in [-0.25, +0.30] or None when data unavailable.
+    DISABLED (2026-08-29) -- see below. Always returns None (component
+    skipped) until this is rebuilt on a per-pitcher endpoint.
+
+    What this was supposed to measure: how heavily the team's bullpen has
+    been used in the last 3 days (heavy BP usage -> manager lets tonight's
+    starter go longer; fresh BP -> quicker hook).
+
+    Why it's disabled: `/teams/{id}/stats?stats=gameLog&group=pitching`
+    returns one TEAM-AGGREGATE row per game (~9 total IP for a regulation
+    game), not a per-pitcher breakdown -- there is no field in this
+    response that separates the starter's innings from the bullpen's. The
+    old code guessed the starter's IP as `min(total_ip, LEAGUE_AVG_IP)`
+    and called the remainder "bullpen IP". For a normal 9-inning game that
+    arithmetic reduces to a near-constant
+    `9 - LEAGUE_AVG_IP = 9 - 5.5 = 3.5` regardless of whether the actual
+    starter that day threw 3 innings (heavy real bullpen usage, true value
+    ~6) or 8 innings (almost no bullpen usage, true value ~1) -- the
+    formula can't tell those two very different nights apart, because
+    total_ip is ~9 either way and the cap always pins sp_est to 5.5. So in
+    the common case this component wasn't measuring bullpen fatigue at
+    all, just producing a roughly-constant pseudo-signal (see the removed
+    `sp_est = min(total_ip, LEAGUE_AVG_IP)` line in version control for
+    the exact prior formula) that happened to mostly cancel out against
+    LEAGUE_BP_3D by construction -- confident-looking but not real
+    information, which is worse than admitting we don't have it.
+
+    Real fix requires per-pitcher game logs for the team's actual relief
+    corps (e.g. iterate roster relievers' individual
+    `/people/{id}/stats?stats=gameLog` and sum IP for appearances with
+    gamesStarted=0 in the trailing window) rather than trying to back out
+    a starter/reliever split from a team aggregate. Not implemented here
+    -- flagging as a real, if minor (10% weight, ±0.25/+0.30 IP delta
+    range), TODO rather than shipping the misleading version.
     """
-    date_str  = game_date.strftime("%Y-%m-%d")
-    cache_key = (team_abbr.upper(), date_str)
-    if cache_key in _BP_USAGE_CACHE:
-        return _BP_USAGE_CACHE[cache_key]
-
-    team_id = _MLB_TEAM_IDS.get(team_abbr.upper())
-    if not team_id:
-        _BP_USAGE_CACHE[cache_key] = None
-        return None
-
-    url = (
-        f"{_MLB_BASE}/teams/{team_id}/stats"
-        f"?stats=gameLog&group=pitching&season={season}"
-    )
-    data = _fetch(url)
-    if not data or not isinstance(data, dict):
-        _BP_USAGE_CACHE[cache_key] = None
-        return None
-
-    cutoff  = game_date - timedelta(days=_BP_FATIGUE_DAYS)
-    bp_ip   = 0.0
-
-    for block in data.get("stats", []):
-        for split in block.get("splits", []):
-            raw_date = split.get("date", "")
-            try:
-                split_date = date.fromisoformat(raw_date[:10])
-            except ValueError:
-                continue
-            if not (cutoff <= split_date < game_date):
-                continue
-            stat      = split.get("stat", {})
-            total_ip  = _parse_ip(stat.get("inningsPitched"))
-            gs        = int(stat.get("gamesStarted", 0) or 0)
-            sp_est    = min(total_ip, LEAGUE_AVG_IP) if gs > 0 else 0.0
-            bp_ip    += max(0.0, total_ip - sp_est)
-
-    # League-average BP IP over 3 days ≈ 3.5 IP/game × 3 games = 10.5 IP
-    LEAGUE_BP_3D = 10.5
-    ip_adj = round((bp_ip - LEAGUE_BP_3D) * 0.03, 2)
-    ip_adj = max(-0.25, min(0.30, ip_adj))
-
-    logger.debug(
-        f"[pitcher_workload] BP fatigue {team_abbr}: "
-        f"{bp_ip:.1f} BP IP last 3d (league={LEAGUE_BP_3D:.1f}) → adj={ip_adj:+.2f}"
-    )
-    _BP_USAGE_CACHE[cache_key] = ip_adj
-    return ip_adj
+    return None
 
 
 # ─────────────────────────────────────────────────────────────────────────────

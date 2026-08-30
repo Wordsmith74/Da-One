@@ -16,7 +16,18 @@ from typing import Any
 logger = logging.getLogger("betting_bot")
 
 try:
-    from models.injury_intel import check_pregame_availability as _check_pregame_availability
+    # FIX (2026-08-29): this imported from models.injury_intel, but
+    # check_pregame_availability() only exists in data.injury_intel --
+    # models/injury_intel.py is an older, incomplete copy missing that
+    # function entirely (confirmed via diff; it only has
+    # compute_injury_adjustment()). This import has been silently failing
+    # ImportError -> _PREGAME_AVAILABILITY_AVAILABLE = False on every run,
+    # meaning Step 0.7 below (the pregame-scratch check for
+    # pitcher_strikeouts picks) has never actually executed. Fail-open by
+    # design, so this didn't crash anything -- it just meant a real safety
+    # feature (catching a starter scratched between pick generation and
+    # game time) has been silently inert this whole time.
+    from data.injury_intel import check_pregame_availability as _check_pregame_availability
     _PREGAME_AVAILABILITY_AVAILABLE = True
 except ImportError:
     _PREGAME_AVAILABILITY_AVAILABLE = False
@@ -1397,6 +1408,25 @@ def run_gatekeeper(bets: list[Bet], sport: str = _DEFAULT_SPORT_KEY) -> dict[str
                         bet.edge_percentage = round(
                             max(0.0, bet.edge_percentage - _edge_pen), 2
                         )
+
+            # FIX (2026-08-29): synthetic-history discard applies at EVERY
+            # tier, not just Diamond/Nuke. run_integrity_filter() below is
+            # gated to Diamond/Nuke only (by design, for its normal
+            # missing-element downgrades), but a Gold Standard pick built
+            # on odds_client._synthetic_history() fallback data (fabricated
+            # game log, centered exactly on league average) is just as
+            # fabricated as a Nuke one -- Gold is also the most common
+            # tier, so gating this check out at Gold would leave most of
+            # the actual exposure uncovered. Checked independently of tier
+            # so it can't be skipped by the Nuke/Diamond-only condition.
+            if rd.get("historical_data_synthetic") and not bet.flagged:
+                bet.tier    = None
+                bet.flagged = True
+                bet.flag_reason = _append_flag(
+                    bet.flag_reason,
+                    "synthetic historical data (game-log fetch failed; "
+                    "fabricated fallback) — discarded at all tiers",
+                )
 
             # Integrity filter — only Diamond/Nuke game-market picks
             if bet.tier in (Tier.NUKE, Tier.DIAMOND) and not bet.flagged:

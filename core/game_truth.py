@@ -43,7 +43,17 @@ logger = logging.getLogger("betting_bot")
 VOLATILITY_THRESHOLDS: dict[str, float] = {
     "MLB":  0.20,
     "NBA":  1.50,
-    "WNBA": 1.00,
+    # FIX (2026-08-29): was 1.00, but the module docstring above (line 15)
+    # states the protocol spec value is 2.00 -- this constant just didn't
+    # match it. WNBA is the sport where this check matters most in
+    # practice (it has real published game_total/moneyline candidates
+    # subject to line volatility, unlike MLB's mostly-single-prop scope),
+    # so at 1.00 the gate was twice as sensitive as intended: any WNBA
+    # line move between 1.00 and 2.00 points triggered a re-evaluation
+    # cycle that the documented spec says should have been suppressed as
+    # noise -- exactly the picks-churn instability this protocol exists
+    # to prevent. Corrected to match the documented spec.
+    "WNBA": 2.00,
 }
 
 _DEFAULT_THRESHOLD = 0.50   # fallback for unknown sports

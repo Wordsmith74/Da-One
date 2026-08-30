@@ -221,8 +221,17 @@ def _get_json(url: str, timeout: int = 6) -> Any:
 def _synthetic_history(
     mean: float, std: float, n: int = 15, seed: float | None = None
 ) -> list[float]:
-    rng = random.Random(seed)
-    return [max(0.0, round(rng.gauss(mean, std), 1)) for _ in range(n)]
+    """
+    DISABLED (2026-08-29, policy): no pick may ever be generated from
+    fabricated history -- real data or the candidate is skipped. The one
+    former call site in this file now `continue`s instead of calling this.
+    Left in place but raising, so it can't be silently reintroduced.
+    """
+    raise RuntimeError(
+        "_synthetic_history() is disabled by policy (2026-08-29): "
+        "no pick may be generated from fabricated history. Skip the "
+        "candidate (real data or NO PLAY) instead of calling this."
+    )
 
 
 # ── ESPN season-average lookup (WNBA / NBA) ───────────────────────────────────
@@ -698,15 +707,14 @@ def _ensure_wnba_cached(player_name: str, as_of_date: str | None = None) -> None
     Ensure the WNBA stats cache has data for *player_name*.
 
     Priority order (live mode only, as_of_date=None):
-      1. stats.wnba.com (FREE, no key — core.wnba_stats_client)
-      2. BDL per-player fetch (fast, targeted — requires paid All-Star tier)
-      3. ESPN bulk boxscore scan (once per process — covers all players at once)
+      1. BDL per-player fetch (fast, targeted — requires paid All-Star tier)
+      2. ESPN bulk boxscore scan (once per process — covers all players at once)
 
-    In replay mode (as_of_date set), steps 1 and 2 are skipped entirely —
-    both are "current as of right now" lookups with no historical cutoff
-    parameter, so they would silently return today's data regardless of
-    which date is being replayed. Only the date-scoped ESPN scan (step 3,
-    which does support as_of_date) is used.
+    In replay mode (as_of_date set), step 1 is skipped entirely — it's a
+    "current as of right now" lookup with no historical cutoff parameter,
+    so it would silently return today's data regardless of which date is
+    being replayed. Only the date-scoped ESPN scan (which does support
+    as_of_date) is used.
 
     BDL is skipped when BALLDONTLIE_API_KEY is not configured or when the
     player was already attempted and not found (tracked by _WNBA_BDL_ATTEMPTED).
@@ -718,23 +726,19 @@ def _ensure_wnba_cached(player_name: str, as_of_date: str | None = None) -> None
         return
 
     if as_of_date is None:
-        # 2. Try the free stats.wnba.com client first — no key, no tier wall.
-        try:
-            from core.wnba_stats_client import get_player_stats as _free_wnba_stats
-            data = _free_wnba_stats(player_name)
-            if data and data.get("MIN"):
-                _WNBA_STATS_CACHE.setdefault(None, {})[name_lower] = data
-                logger.info(
-                    f"[wnba_cache] stats.wnba.com ✓  {player_name} — "
-                    f"{len(data['MIN'])} games "
-                    f"(avg {sum(data['MIN'])/len(data['MIN']):.1f} min)"
-                )
-                return
-            logger.debug(f"[wnba_cache] stats.wnba.com: no data for '{player_name}'")
-        except Exception as _free_exc:
-            logger.debug(f"[wnba_cache] stats.wnba.com error for '{player_name}': {_free_exc}")
+        # NOTE (2026-08-29): this used to try `core.wnba_stats_client`
+        # first ("the free stats.wnba.com client -- no key, no tier
+        # wall"). That module doesn't exist anywhere in this codebase --
+        # same confirmed-dead reference already found and fixed in
+        # data/fetch.py and data/game_logs.py. The import always raised
+        # ImportError, silently caught, and fell straight through to BDL
+        # below every single time -- so live behavior is unchanged by
+        # removing it; this just stops a guaranteed-failing import on
+        # every WNBA player-stat cache miss and stops implying a data
+        # source that was never real. BDL (below) and the ESPN bulk scan
+        # are and have always been the actual data sources in use here.
 
-        # 3. Try BDL (targeted, paid-tier for stats)
+        # 2. Try BDL (targeted, paid-tier for stats)
         if name_lower not in _WNBA_BDL_ATTEMPTED:
             _WNBA_BDL_ATTEMPTED.add(name_lower)
             try:
@@ -754,7 +758,7 @@ def _ensure_wnba_cached(player_name: str, as_of_date: str | None = None) -> None
             except Exception as _bdl_exc:
                 logger.debug(f"[wnba_cache] BDL error for '{player_name}': {_bdl_exc}")
 
-    # 4. Fall back to ESPN bulk scan (idempotent per as_of_date)
+    # 3. Fall back to ESPN bulk scan (idempotent per as_of_date)
     _build_wnba_stats_cache(as_of_date=as_of_date)
 
 
@@ -2176,7 +2180,21 @@ def get_player_prop_candidates(
                     )
                     continue
             else:
-                hist = _synthetic_history(hist_mean, league_std, n=15, seed=seed_val)
+                # POLICY (2026-08-29): no pick may be generated from
+                # fabricated history. This `else` branch (sport_up != WNBA,
+                # i.e. MLB) is currently dead code -- pitcher_strikeouts is
+                # MLB's only prop market, and every MLB pitcher_strikeouts
+                # candidate reaching this point already either takes the
+                # real-Binomial-data precomputed path or gets popped (see
+                # the "elif _k_bf_splits is not None" fix above) -- but
+                # skip explicitly here too rather than leave a latent
+                # fallback for a future market to accidentally hit.
+                logger.info(
+                    f"[player_props] NO PLAY: {player_name} {mkt_key} — "
+                    "no real-data path available for this sport/market; "
+                    "synthetic Gaussian fallback disabled by policy."
+                )
+                continue
 
             display_market = _MARKET_DISPLAY.get(mkt_key, mkt_key.replace("_", " ").title())
 
@@ -2423,6 +2441,31 @@ def get_player_prop_candidates(
                     candidates[-1]["precomputed_confidence"] = _k_prop_precomputed["confidence"]
                     candidates[-1]["precomputed_model_prob"] = _k_prop_precomputed["model_prob"]
                     candidates[-1]["k_bf_n_starts"]           = _k_prop_precomputed["n_starts"]
+                elif _k_bf_splits is not None:
+                    # FIX (2026-08-29): this candidate DID have real
+                    # Binomial K/BF data (it cleared the _k_bf_skip_reason
+                    # gate upstream) -- but k_prop_edge_with_uncertainty()
+                    # raised (see the `except Exception as _mc_exc` above)
+                    # and left _k_prop_precomputed as None. Before this fix,
+                    # that silently fell through to the "existing
+                    # historical_data/league_mean Gaussian path" comment
+                    # above describes -- which for pitcher_strikeouts is
+                    # _synthetic_history(hist_mean, ...), i.e. exactly the
+                    # fabricated-data-produces-a-confident-number pattern
+                    # the entire _k_bf_skip_reason/NO PLAY mechanism
+                    # upstream exists to prevent. A computation error on
+                    # real data should not silently downgrade to fake data
+                    # -- it should be treated the same as "no real data",
+                    # per this file's own established principle. Drop the
+                    # candidate rather than let it price off `hist`.
+                    logger.info(
+                        f"[player_props] NO PLAY: {player_name} {mkt_key} "
+                        f"{direction} — real k/bf data existed but "
+                        "k_prop_edge_with_uncertainty() failed; refusing "
+                        "the synthetic-history fallback rather than price "
+                        "off fabricated data (see exception logged above)."
+                    )
+                    candidates.pop()
 
     # Cap to the most-liquid props (highest book count) to keep engine runtime
     # manageable.  Both Over and Under for each player+market are included in

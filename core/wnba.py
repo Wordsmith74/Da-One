@@ -370,4 +370,15 @@ def get_player_assists(game_id: str, player_name: str) -> Optional[float]:
 
 
 def get_player_points(game_id: str, player_name: str) -> Optional[float]:
-    return _get_leader_stat(game_id, player_name, "points")
+    # FIX (2026-08-29): this only checked the leaders block and never fell
+    # back to the full boxscore, unlike get_player_rebounds/get_player_assists
+    # right above -- exactly the "stuck ungraded forever for any non-leader"
+    # bug the module docstring says was already fixed for those two markets.
+    # player_points is currently a suspended market (not in
+    # market_governance.PUBLICATION_MARKETS["WNBA"]), so this had no live
+    # impact today, but matching the same fallback here means it won't
+    # silently reintroduce that bug if the market is ever reactivated.
+    stat = _get_leader_stat(game_id, player_name, "points")
+    if stat is not None:
+        return stat
+    return get_player_boxscore_stat(game_id, player_name, "points")

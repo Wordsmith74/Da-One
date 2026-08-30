@@ -105,7 +105,31 @@ def has_open_opposite_bet(
     if not game_id:
         return False
 
-    opp = "under" if direction.lower() == "over" else "over"
+    # FIX (2026-08-29): this used to hardcode the binary as over/under
+    # (`opp = "under" if direction.lower() == "over" else "over"`), which
+    # is wrong for any market whose direction isn't "over"/"under" --
+    # moneyline candidates use direction="home"/"away" (see
+    # core/game_markets.py._process_moneyline, `direction=side` where side
+    # comes from a `("home", ...), ("away", ...)` loop). For a "home" bet,
+    # the old code computed opp="over" (since "home" != "over"), which
+    # could never match a real moneyline record -- silently defeating this
+    # exact function's purpose for the market where "backing both sides of
+    # the same game" is most literal (home ML + away ML). Handle both
+    # known binary conventions explicitly; fall back to returning False
+    # (skip the check, don't guess) for any other direction value rather
+    # than repeat the same wrong-default mistake for a market this
+    # function wasn't written to understand.
+    d = direction.lower()
+    if d == "over":
+        opp = "under"
+    elif d == "under":
+        opp = "over"
+    elif d == "home":
+        opp = "away"
+    elif d == "away":
+        opp = "home"
+    else:
+        return False
 
     with _connect() as conn:
         row = conn.execute(

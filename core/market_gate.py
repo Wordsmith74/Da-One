@@ -60,11 +60,22 @@ ALLOWED_MARKETS: dict[str, frozenset[str]] = {
     # picks -- this gate is still the authoritative scope definition either
     # way (both need to agree, same "belt and suspenders" reasoning as the
     # original removal).
+    # moneyline RE-ADDED to scope 2026-08-29 per explicit request, wired
+    # through a new formula (core/three_tier_formula.py, real Savant
+    # K-BB% + real bullpen pitch-count data + real platoon splits) rather
+    # than the approach that produced the 35.3%/-0.52-unit record cited
+    # above. Scope != publication -- see core/market_governance.py's
+    # PUBLICATION_MARKETS, where moneyline is deliberately still absent
+    # until there's real graded evidence the new formula clears
+    # breakeven. This entry lets candidates generate, price, and
+    # shadow-log; it does not let anything publish.
     "MLB": frozenset({
         "pitcher_strikeouts",   # Pitcher Ks prop      (Bayesian, core/player_props.py)
         "nrfi",                 # No Run 1st Inning    (Poisson closed-form, core/game_markets.py)
         "yrfi",                 # Yes Run 1st Inning   (Poisson closed-form, core/game_markets.py)
+        "moneyline",            # Full-game moneyline  (core/three_tier_formula.py, shadow-only)
     }),
+
     "WNBA": frozenset({
         "game_total",           # Full-game total     (odds_client.py fetch_todays_candidates)
         "player_assists",       # Assists prop         (Bayesian)

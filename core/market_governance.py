@@ -76,6 +76,22 @@ PUBLICATION_MARKETS: dict[str, frozenset[str]] = {
         "pitcher_strikeouts",
         "nrfi",
         "yrfi",
+        # moneyline ADDED to publication 2026-08-29 per explicit user
+        # instruction, overriding the shadow-only plan this block
+        # originally documented (see git history / conversation record
+        # for the reasoning on both sides). At the moment this was added,
+        # core/three_tier_formula.py had ZERO graded picks -- this
+        # published moneyline on the same day the formula was written,
+        # with no walk-forward validation evidence behind it, unlike
+        # every other market in this whitelist. The market this replaces
+        # graded 35.3% win / -0.52 units over n=34 (see this module's
+        # docstring above); whether the new formula does better is
+        # currently unknown and will only become knowable once real
+        # graded results accumulate. Recording this plainly so it reads
+        # as a deliberate, informed choice if anyone (including a future
+        # session) looks at this later wondering why the bar was
+        # different for this one market.
+        "moneyline",
     }),
     "WNBA": frozenset({
         "player_assists",

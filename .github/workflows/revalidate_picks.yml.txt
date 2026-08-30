@@ -1,0 +1,86 @@
+name: Revalidate Open Picks
+
+# Re-checks every open, locked pick from today against current conditions
+# (line movement, injuries, edge decay) via core/revalidation_engine.py,
+# and CONFIRMs / UPGRADEs / DOWNGRADEs / VOIDs it. Never creates new
+# picks -- the published slate from generate_daily_picks.yml is
+# immutable; this only annotates it, and sends a Telegram alert on the
+# two conditions revalidation_engine.py's own governance rules permit
+# (edge loss past 50% decay, edge reversal to negative EV) for picks that
+# were actually sent to the group.
+#
+# Runs multiple times through the games window (roughly noon-11pm ET,
+# covering both early and late MLB/WNBA start times) rather than once,
+# since a single run 30-60 minutes before EVERY game's individual start
+# time isn't possible with one fixed cron -- catching most games within
+# an hour of first pitch/tip across a few passes is the practical
+# approximation of the "30-60 min before game time" spec.
+#
+# data/results.db is gitignored (avoids binary merge conflicts -- see
+# that .gitignore entry) so it can't persist via a git commit the way
+# pick_history.jsonl does. It persists across these runs via
+# actions/cache instead (restore-keys prefix match picks up whatever
+# generate_daily_picks.yml or an earlier run of this workflow last
+# saved today; each run saves its own updated copy back under a new
+# key). This is the same mechanism added to generate_daily_picks.yml's
+# generate-picks job.
+on:
+  schedule:
+    - cron: '0 17 * * *'   # 17:00 UTC = 12:00 PM ET
+    - cron: '0 20 * * *'   # 20:00 UTC = 3:00 PM ET
+    - cron: '0 23 * * *'   # 23:00 UTC = 6:00 PM ET
+    - cron: '0 2  * * *'   # 02:00 UTC = 9:00 PM ET (previous calendar day ET)
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Evaluate and log only, do not write changes or send alerts'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  revalidate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: python3 -m pip install -r requirements.txt
+
+      - name: Restore data/results.db from cache
+        uses: actions/cache/restore@v4
+        with:
+          path: data/results.db
+          key: results-db-${{ github.run_id }}
+          restore-keys: |
+            results-db-
+
+      - name: Run revalidation
+        env:
+          BALL_DONT_LIE_KEY: ${{ secrets.BALL_DONT_LIE_KEY }}
+          THE_ODDS_API_KEY: ${{ secrets.THE_ODDS_API_KEY }}
+          PROP_LINE_API_KEY: ${{ secrets.PROP_LINE_API_KEY }}
+          RAPIDAPI_KEY: ${{ secrets.RAPIDAPI_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
+            python3 run_revalidation.py --dry-run
+          else
+            python3 run_revalidation.py
+          fi
+
+      - name: Save data/results.db to cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: data/results.db
+          key: results-db-${{ github.run_id }}

@@ -58,7 +58,7 @@ from core.bet_display import BetDisplay
 from core.composite_confidence_score import compute_ccs
 from core.conflict_guardian import check_locked_conflict
 from core.line_validator import pre_publish_verify
-from core.results_tracker import init_db, log_bet_dict
+from core.results_tracker import init_db, log_bet_dict, has_open_opposite_bet
 from core.edge_calibrator import is_game_market, calibrate_edge
 from core.market_intelligence import compute_data_reliability, tier_eligibility
 from shadow_logger import log_candidate
@@ -365,19 +365,26 @@ def _calibration_veto(sport: str, mkt: str, model_prob_pct: float, american_odds
     This runs BEFORE Game Truth Protocol / run_gatekeeper, using the same
     calibrate_probability() curve.
 
-    CHANGED 2026-08-16: this used to re-derive edge from the calibrated
-    probability against the actual offered price (model_prob * decimal_odds
-    - 1) and veto whenever that was <= 0 -- i.e. whenever the calibrated
-    curve said the price offered wasn't +EV, even for picks that were still
-    more likely than not to win (e.g. a calibrated 51% at a price needing
-    52.4% to break even got vetoed here despite being a favorite to hit).
-    Per instruction, this is no longer an EV/price gate -- the price and
-    american_odds argument are ignored for the veto decision itself (kept
-    only for the caller's signature / any future re-add) and the check is
-    now purely about the calibrated win probability: is this pick, per the
-    fitted curve, more likely to win than not. Threshold is 0.50 -- a
-    coin-flip or worse gets vetoed, anything the calibration curve believes
-    clears 50% passes regardless of what price it's offered at.
+    REVERTED 2026-08-29 (undoing the 2026-08-16 change): the 2026-08-16
+    version turned this from an EV/price check into a bare "is the
+    calibrated probability over 50%" check, on the reasoning that vetoing a
+    calibrated-51%-favorite "despite being a favorite to hit" seemed wrong.
+    That reasoning conflates two different things: being more likely to
+    win than lose, and being profitable to bet at the price actually
+    offered. A pick that calibrates to 52% but is only offered at a price
+    requiring 60% to break even (e.g. -150) is *still* a -EV bet every
+    time you make it, even though it wins more often than it loses --
+    that's exactly the "buying favorites at a premium" mistake that loses
+    money long-run regardless of raw win rate. edge_percentage elsewhere
+    in this file is computed from the RAW (uncalibrated) model_prob (see
+    `raw_edge = model_prob - implied` in _derive_bet_params below) -- the
+    exact number probability_calibrator.py's own module docstring proved
+    is miscalibrated (70-90% "confidence" picks winning at ~51%). This
+    veto was the only place the *calibrated* number ever got compared
+    against the price, so weakening it to a win-probability-only check
+    removed the one real EV safeguard in the pipeline without anything
+    else replacing it. Restored to a true EV check: calibrated probability
+    against the devigged price actually offered.
 
     Only ever REJECTS: when no fitted curve exists yet for this
     (sport, market) group, calibrate_probability() returns raw_prob
@@ -388,9 +395,16 @@ def _calibration_veto(sport: str, mkt: str, model_prob_pct: float, american_odds
     """
     raw_prob_0to1 = max(0.0, min(1.0, (model_prob_pct or 0.0) / 100.0))
     calibrated_prob_0to1 = calibrate_probability(raw_prob=raw_prob_0to1, sport=sport, market=mkt)
-    # Win-probability gate only -- american_odds is intentionally unused now
-    # (see docstring: this stopped being an EV/price check on 2026-08-16).
-    return calibrated_prob_0to1 <= 0.50, calibrated_prob_0to1
+
+    odds = american_odds
+    if odds is None:
+        # No price to check EV against -- fall back to the win-probability
+        # floor rather than silently passing everything through.
+        return calibrated_prob_0to1 <= 0.50, calibrated_prob_0to1
+
+    decimal_odds = (odds / 100.0 + 1.0) if odds > 0 else (100.0 / abs(odds) + 1.0)
+    calibrated_ev = calibrated_prob_0to1 * decimal_odds - 1.0
+    return calibrated_ev <= 0.0, calibrated_prob_0to1
 
 
 def _derive_bet_params(sim, candidate):
@@ -929,6 +943,49 @@ def run_sport_pipeline(sport, as_of_date=None):
             if action == "replace":
                 log("info", sport, f"{bet.bet_id}: CONFLICT REPLACE -- superseding "
                                     f"{details.get('existing_bet_id','?')}")
+            # FIX (2026-08-29): results_tracker.has_open_opposite_bet() is a
+            # real, fully-built cross-run guard against literally backing
+            # both sides of the same (game, team, market) -- e.g. an
+            # earlier run today already has an open MIL team_total UNDER
+            # bet locked, and this run's candidate is MIL team_total OVER.
+            # It was never called anywhere in the pipeline. This is a
+            # narrower, harder check than conflict_guardian's 5-condition
+            # replacement threshold above (which governs "is my new signal
+            # strong enough to supersede the old one") -- backing literal
+            # opposite sides isn't a "which signal is stronger" question,
+            # it should just never happen regardless of confidence/edge on
+            # either side, so it's a hard block here rather than routed
+            # through the replacement-threshold logic.
+            try:
+                _opp_conflict = has_open_opposite_bet(
+                    sport=sport,
+                    game_id=bet.game_id or "",
+                    team=bet.team or "",
+                    market=bet.market or "",
+                    direction=bet.direction or "",
+                )
+            except Exception as exc:
+                log("warn", sport, f"{bet.bet_id}: has_open_opposite_bet check failed (non-fatal): {exc}")
+                _opp_conflict = False
+
+            if _opp_conflict:
+                log("info", sport, f"{bet.bet_id}: OPPOSITE_SIDE_OPEN -- an open bet on the "
+                                    f"opposite side of this {bet.market} already exists for "
+                                    f"{bet.game_id}; dropping this candidate rather than back both sides")
+                _hold_reason = (
+                    f"has_open_opposite_bet: opposite-direction {bet.market} "
+                    f"already open for {bet.game_id}"
+                )
+                log_rejected_bet_obj(bet, sport, slate_date, "conflict_hold", reason_override=_hold_reason)
+                log_candidate(
+                    sport=sport, player=bet.player, matchup=(bet.raw_result or {}).get("matchup", bet.game_id),
+                    market_line=bet.sportsbook_line, side=bet.direction,
+                    edge_pct=bet.edge_percentage, confidence=bet.confidence_score,
+                    rejected_stage="conflict_hold", rejected_reason=_hold_reason,
+                    published=False, extra={"bet_id": bet.bet_id},
+                )
+                continue
+
             no_conflict.append(bet)
     approved = no_conflict
 
@@ -1247,12 +1304,25 @@ def run_pipeline():
     if os.getenv("ENABLE_LIVE_LINE_CHECK", "").strip().lower() in ("1", "true", "yes"):
         try:
             from core.intelligence.line_movement import fetch_current_lines
-            _live_lines = {sp: fetch_current_lines(sp) for sp in ("MLB", "WNBA")}
+            # FIX (2026-08-29): this used to fetch+compare MLB here too.
+            # fetch_current_lines("MLB") pulls the Odds API's generic
+            # "totals" market, which is the FULL-GAME total (~8.5 runs).
+            # MLB's only actual over/under-shaped picks in scope are
+            # nrfi/yrfi -- FIRST-INNING totals (~0.5 runs). Comparing a
+            # pick's real (first-inning) line against a fetched full-game
+            # line is exactly the "unrelated numbers" mistake the comment
+            # above already flags for moneyline/spread -- just missed for
+            # MLB's own totals-labeled market. Scoped to WNBA only, the
+            # one sport where "totals" means the same thing in both the
+            # pick and the fetch.
+            _live_lines = {sp: fetch_current_lines(sp) for sp in ("WNBA",)}
             _live_updates = 0
             for p in cleaned:
                 if p.get("player") or str(p.get("side", "")).lower() not in ("over", "under"):
                     continue
-                _sp_key = "MLB" if str(p.get("sport", "")).upper().startswith("MLB") else "WNBA"
+                if str(p.get("sport", "")).upper() != "WNBA":
+                    continue
+                _sp_key = "WNBA"
                 _game_key = f'{p.get("away_team", "")}||{p.get("home_team", "")}'
                 _cur_game = _live_lines.get(_sp_key, {}).get(_game_key)
                 if not _cur_game:
@@ -1373,11 +1443,40 @@ def run_pipeline():
                         "market": _p.get("market", ""),
                         "direction": _p.get("side", ""),
                         "game_id": _p.get("game_id", ""),
+                        # FIX (2026-08-29): "team" was missing from this
+                        # dict entirely -- has_open_opposite_bet() (and
+                        # conflict_guardian.check_locked_conflict()'s own
+                        # team-scoped lookups, if any are added later)
+                        # query wager_details->'$.team' via JSON_EXTRACT,
+                        # which returns NULL for every record logged
+                        # through this real, live call site, so a
+                        # team-scoped equality check against it can never
+                        # match. See _p["team"] set earlier in this
+                        # function (matches log_bet()'s "team": bet.team,
+                        # the other -- unused -- logging path, which
+                        # already included it correctly).
+                        "team": _p.get("team", ""),
                     },
                     model_probability=_p.get("model_prob", 0.0),
                     sportsbook_odds=int(_p.get("pick_time_odds", 0) or 0),
                     tier=_p.get("tier"),
                     edge_percentage=_p.get("edge_pct", 0.0),
+                    # FIX (2026-08-29): this call never passed
+                    # sent_to_group, so it silently used the default
+                    # (False) for every single pick ever logged here --
+                    # and mark_sent_to_group() (the only other place that
+                    # sets it True) is never called anywhere either.
+                    # calculate_running_roi()/calculate_group_roi()/
+                    # format_morning_recap() all filter on
+                    # `sent_to_group = 1`, so if any of them are ever
+                    # wired up, they'd silently report zero bets forever
+                    # regardless of real pick volume. Every pick reaching
+                    # this call site already cleared the gatekeeper and
+                    # line-validation gate -- it's the actual "this is a
+                    # real published pick, not a filtered candidate"
+                    # signal this flag was meant to capture, Telegram or
+                    # not.
+                    sent_to_group=True,
                 )
             except Exception as exc:
                 log("warn", "pipeline", f"{_p.get('pick_id','?')}: failed to lock pick in results.db (non-fatal): {exc}")

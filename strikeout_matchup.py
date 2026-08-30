@@ -20,25 +20,28 @@ Layer pipeline
     a form adjustment and fallback when lineup is not yet posted.
     Downweighted 50 % when Layers 2A/2B already provide matchup data.
 
-  Layer 5   Whiff% (swings-and-misses / total swings)        strength=0.40
-    Pitcher's season Whiff% from Baseball Savant leaderboard CSV. NOTE: this
-    is Whiff% (misses / swings, ~24-26% league-wide), NOT SwStr% (misses /
-    total pitches, ~11% league-wide) — Savant's public leaderboard CSV does
-    not expose true SwStr% as its own column, only whiff_percent. Labeled
-    "Whiff%" throughout (not "SwStr%") so logs match what's actually being
-    measured. See _LEAGUE_WHIFF below for the 2026-06-30 fix history.
-
-  Layer 6   CSW% (Called Strike + Whiff)                    strength=0.30
-    Supporting sustainability indicator from Savant.
+  Layers 5/6/8  Whiff%, CSW%, Zone%, F-Strike% — ONE composite   strength≤0.45
+    FIX (2026-08-29, "compounding fix"): these four Savant metrics are
+    correlated views of the same underlying "stuff/command" skill, not
+    independent evidence. Whiff% (misses/swings, NOT SwStr% — see
+    _LEAGUE_WHIFF history below) and CSW% both come from swing-decision
+    outcomes; Zone% and F-Strike% both measure ahead-in-count command.
+    Previously each was blended toward 1.0 independently and then
+    *multiplied together*, so a pitcher who grades well (or poorly) on
+    one — which, because they're correlated, is usually all four — got
+    that pull applied four times, compounding scale swings far past any
+    single layer's intended strength. Now: average the four raw ratios
+    (weighted by their old relative strengths: whiff 0.40, csw 0.30, zone
+    0.30, fstrike 0.25) into one composite ratio, then blend ONCE at a
+    combined strength that scales with how many sub-signals are present
+    (0.25 + 0.05/signal, capped at 0.45).
 
   Layer 7   Fastball velocity vs league average              strength=0.25
-    Modest adjustment for velocity above/below 93.5 mph baseline.
-
-  Layer 8   Zone% + F-Strike% (command / ahead-in-count)     strength=0.30/0.25
-    Zone% (pitches in the strike zone) and F-Strike% (first-pitch strike
-    rate) from Savant. Pitchers who get ahead early throw fewer defensive,
-    contact-friendly pitches later in counts. Each sub-metric blended
-    independently, then combined multiplicatively.
+    Modest adjustment for velocity above/below 93.5 mph baseline. Kept
+    separate from the stuff composite above — it's a raw physical
+    measurement, not a pitch-outcome rate stat, so it isn't redundant
+    with Whiff%/CSW%/Zone%/F-Strike% the way those four are with each
+    other.
 
   Layer 9   Times-Through-The-Order (TTTO) fatigue           strength=0.50
     Estimated from expected_ip (passed in from pitcher_workload.py, not
@@ -799,34 +802,66 @@ def get_k_matchup_scale(
                 f"raw={raw:.3f} strength={strength:.0%} → scale={team_k_scale:.4f} [{src}]"
             )
 
-        # ── Layers 5–8: Savant (Whiff%, CSW%, velocity, Zone%/F-Strike%) ──
-        whiff_scale   = 1.0
-        csw_scale     = 1.0
-        velo_scale    = 1.0
-        zone_scale    = 1.0
-        fstrike_scale = 1.0
+        # ── Layers 5,6,8a,8b: Savant "stuff/command" composite ────────────
+        # FIX (see module docstring "Compounding fix"): Whiff%, CSW%, Zone%,
+        # and F-Strike% are NOT independent evidence — they are four
+        # different views of the same underlying thing (does this pitcher
+        # miss bats / control the zone). Whiff% and CSW% are both swing-
+        # decision-and-contact metrics built from largely the same pitches;
+        # Zone% and F-Strike% both measure the same "gets ahead in the
+        # count" command skill. Previously each was blended toward 1.0
+        # independently (0.40/0.30/0.30/0.25 strength) and then
+        # *multiplied together* — for a pitcher who grades out well (or
+        # poorly) on one, he usually grades out the same way on all four,
+        # since they're correlated, so the four "partial" pulls compound
+        # into a swing far past what any single blend strength intended.
+        # That's a primary driver of overconfident scale values pinned
+        # near the [0.72, 1.40] clamp. Fixed by averaging the four raw
+        # ratios (weighted by their original relative strengths) into ONE
+        # composite ratio, then applying a single blend at a combined
+        # strength — still stronger than any one sub-signal alone (more
+        # evidence should count for something), but well below the
+        # ~1.25 combined pull the old multiplicative stack produced.
+        velo_scale = 1.0
+        stuff_scale = 1.0
 
         savant = _get_savant_stats(pitcher_id)
         if savant:
-            # Layer 5: Whiff% (misses/swings — NOT SwStr%, see module docstring)
+            _STUFF_WEIGHTS = {"whiff": 0.40, "csw": 0.30, "zone": 0.30, "fstrike": 0.25}
+            _stuff_parts: dict[str, float] = {}
+
             if savant["whiff_pct"] > 0:
-                raw = savant["whiff_pct"] / _LEAGUE_WHIFF
-                whiff_scale = round(_blend(raw, 0.40), 4)
-                logger.debug(
-                    f"[strikeout_matchup] 5 Whiff% {pitcher_name}: "
-                    f"{savant['whiff_pct']:.1%} vs league {_LEAGUE_WHIFF:.1%} "
-                    f"→ scale={whiff_scale:.4f}"
-                )
-            # Layer 6: CSW%
+                _stuff_parts["whiff"] = savant["whiff_pct"] / _LEAGUE_WHIFF
             if savant["csw_pct"] > 0:
-                raw = savant["csw_pct"] / _LEAGUE_CSW
-                csw_scale = round(_blend(raw, 0.30), 4)
+                _stuff_parts["csw"] = savant["csw_pct"] / _LEAGUE_CSW
+            if savant.get("zone_pct", 0) > 0:
+                _stuff_parts["zone"] = savant["zone_pct"] / _LEAGUE_ZONE
+            if savant.get("fstrike_pct", 0) > 0:
+                _stuff_parts["fstrike"] = savant["fstrike_pct"] / _LEAGUE_FSTRIKE
+
+            if _stuff_parts:
+                _w_total = sum(_STUFF_WEIGHTS[k] for k in _stuff_parts)
+                stuff_raw = sum(
+                    _STUFF_WEIGHTS[k] * v for k, v in _stuff_parts.items()
+                ) / _w_total
+                # Combined strength: stronger with more corroborating
+                # sub-signals present, capped at 0.45 (below the old
+                # single-strongest layer's un-compounded max pull of 0.40
+                # would suggest for 1 signal, since 2-4 correlated signals
+                # agreeing is more informative than 1 — but nowhere near
+                # the ~1.25 the old stack implied for 4).
+                _combined_strength = min(0.45, 0.25 + 0.05 * len(_stuff_parts))
+                stuff_scale = round(_blend(stuff_raw, _combined_strength), 4)
                 logger.debug(
-                    f"[strikeout_matchup] 6 CSW% {pitcher_name}: "
-                    f"{savant['csw_pct']:.1%} vs league {_LEAGUE_CSW:.1%} "
-                    f"→ scale={csw_scale:.4f}"
+                    f"[strikeout_matchup] 5/6/8 stuff-composite {pitcher_name}: "
+                    f"parts={ {k: round(v,3) for k,v in _stuff_parts.items()} } "
+                    f"raw={stuff_raw:.3f} strength={_combined_strength:.2f} "
+                    f"→ scale={stuff_scale:.4f}"
                 )
-            # Layer 7: velocity (skip unusually low values — probably missing data)
+
+            # Layer 7: velocity — kept separate. A raw physical measurement,
+            # not a rate stat derived from pitch-outcome counts like the
+            # four above, so it isn't folded into the composite.
             if savant["velo"] > 80:
                 velo_delta = savant["velo"] - _LEAGUE_VELO
                 # ~1.5 % K-rate change per mph deviation (empirical estimate)
@@ -836,24 +871,6 @@ def get_k_matchup_scale(
                     f"[strikeout_matchup] 7 velo {pitcher_name}: "
                     f"{savant['velo']} mph vs league {_LEAGUE_VELO} mph "
                     f"→ scale={velo_scale:.4f}"
-                )
-            # Layer 8a: Zone% — command, gets ahead in the count
-            if savant.get("zone_pct", 0) > 0:
-                raw = savant["zone_pct"] / _LEAGUE_ZONE
-                zone_scale = round(_blend(raw, 0.30), 4)
-                logger.debug(
-                    f"[strikeout_matchup] 8a Zone% {pitcher_name}: "
-                    f"{savant['zone_pct']:.1%} vs league {_LEAGUE_ZONE:.1%} "
-                    f"→ scale={zone_scale:.4f}"
-                )
-            # Layer 8b: F-Strike% — first-pitch strike rate
-            if savant.get("fstrike_pct", 0) > 0:
-                raw = savant["fstrike_pct"] / _LEAGUE_FSTRIKE
-                fstrike_scale = round(_blend(raw, 0.25), 4)
-                logger.debug(
-                    f"[strikeout_matchup] 8b F-Strike% {pitcher_name}: "
-                    f"{savant['fstrike_pct']:.1%} vs league {_LEAGUE_FSTRIKE:.1%} "
-                    f"→ scale={fstrike_scale:.4f}"
                 )
 
         # ── Layer 9: TTTO fatigue estimate (needs expected_ip) ───────────
@@ -915,11 +932,8 @@ def get_k_matchup_scale(
             splits_scale
             * batter_k_scale
             * team_k_scale
-            * whiff_scale
-            * csw_scale
+            * stuff_scale
             * velo_scale
-            * zone_scale
-            * fstrike_scale
             * ttto_scale
             * weather_scale
             * bvp_scale
@@ -929,9 +943,8 @@ def get_k_matchup_scale(
         logger.debug(
             f"[strikeout_matchup] FINAL {pitcher_name} vs {opp_abbr}: "
             f"2A={splits_scale:.4f} × 2B={batter_k_scale:.4f} × "
-            f"4={team_k_scale:.4f} × 5={whiff_scale:.4f} × "
-            f"6={csw_scale:.4f} × 7={velo_scale:.4f} × "
-            f"8a={zone_scale:.4f} × 8b={fstrike_scale:.4f} × "
+            f"4={team_k_scale:.4f} × 5/6/8={stuff_scale:.4f} × "
+            f"7={velo_scale:.4f} × "
             f"9={ttto_scale:.4f} × 10={weather_scale:.4f} × "
             f"11={bvp_scale:.4f} "
             f"= {combined:.4f} → clamped={final:.4f}"

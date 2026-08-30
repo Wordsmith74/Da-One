@@ -47,18 +47,22 @@ verify the exact roster/leaders endpoint shapes:
 
 Method (core quality/adjustment path)
 --------------------------------------
+DISABLED (2026-08-29): steps 2-3 below described a team-aggregate-based
+proration (`share = bp_ip/total_ip` off `min(total_ip, LEAGUE_AVG_IP)`)
+that, for a normal 9-inning game, reduces to a near-constant share
+applied to both numerator and denominator of every rate stat -- so the
+resulting "bullpen ERA/FIP/xFIP/WHIP/K9/BB9" was actually just tracking
+the TEAM's overall pitching performance (starter included), not the
+bullpen specifically. See `_aggregate_bullpen()`'s docstring/fix note for
+the full math. ERA/FIP/xFIP/WHIP/K9/BB9 and the fatigue signal below all
+now return None/neutral rather than this mislabeled number. The
+closer/high-leverage/setup-availability heuristics further down this
+file are unaffected -- they use real per-reliever game logs from a
+different endpoint, not this aggregate.
 1. Pull each team's last _ROLLING_DAYS of team-level pitching game logs
    from the MLB Stats API (same endpoint pitcher_workload.py uses for its
    3-day fatigue component, just a wider window).
-2. Per game log entry, approximate the bullpen's share of that game:
-       sp_ip  = min(total_ip, LEAGUE_AVG_IP) if the team started a pitcher
-       bp_ip  = total_ip - sp_ip
-       share  = bp_ip / total_ip
-   Earned runs / HR / BB / HBP / K / Hits are prorated by `share`. This is
-   an approximation (the box-score endpoint doesn't split pitcher-by-
-   pitcher), but it is the same level of approximation pitcher_workload.py
-   already relies on for bullpen fatigue, and it is far better than the
-   zero signal the full-game total model currently uses.
+2. (removed -- see DISABLED note above)
 3. Aggregate across the window into ERA / FIP / xFIP / WHIP / K9 / BB9.
 4. Also compute a short (_FATIGUE_DAYS) window of raw bullpen IP as a
    fatigue signal, and a separate 7-day performance snapshot.
@@ -115,6 +119,11 @@ _FIP_CONSTANT      = 3.10
 
 # Rolling windows
 _ROLLING_DAYS = 14   # bullpen quality sample window
+
+# Rule 2 (Bullpen Integrity) fatigue threshold -- standard real-bullpen
+# caution level for rolling 72-hour pitch load. Used by
+# get_bullpen_freshness_tags(), added 2026-08-29 for three_tier_formula.py.
+_FATIGUE_PITCH_LIMIT = 45
 _PERF_7D_DAYS = 7    # separate last-7-day performance window
 _FATIGUE_DAYS = 3    # recent-usage fatigue window
 _LEAGUE_BP_IP_PER_DAY = 3.5   # rough league-average bullpen IP/team/day
@@ -291,51 +300,31 @@ def _aggregate_bullpen(
         cached = _TEAM_BP_CACHE[cache_key]
         return cached if cached is not None else {}
 
-    splits = _fetch_team_gamelog(team_abbr, game_date.year)
-    if not splits:
-        _TEAM_BP_CACHE[cache_key] = None
-        return {}
-
-    cutoff = game_date - timedelta(days=days)
-    agg = {"ip": 0.0, "er": 0.0, "hr": 0.0, "bb": 0.0, "hbp": 0.0, "k": 0.0, "h": 0.0}
-
-    for split in splits:
-        raw_date = split.get("date", "")
-        try:
-            split_date = date.fromisoformat(raw_date[:10])
-        except ValueError:
-            continue
-        if not (cutoff <= split_date < game_date):
-            continue
-
-        if home_filter is not None:
-            is_home = split.get("isHome")
-            if is_home is None:
-                continue
-            if bool(is_home) != home_filter:
-                continue
-
-        stat     = split.get("stat", {})
-        total_ip = _parse_ip(stat.get("inningsPitched"))
-        if total_ip <= 0:
-            continue
-        gs     = int(stat.get("gamesStarted", 0) or 0)
-        sp_est = min(total_ip, LEAGUE_AVG_IP) if gs > 0 else 0.0
-        bp_ip  = max(0.0, total_ip - sp_est)
-        share  = bp_ip / total_ip if total_ip > 0 else 0.0
-        if share <= 0:
-            continue
-
-        agg["ip"]  += bp_ip
-        agg["er"]  += float(stat.get("earnedRuns", 0) or 0) * share
-        agg["hr"]  += float(stat.get("homeRuns", 0) or 0) * share
-        agg["bb"]  += float(stat.get("baseOnBalls", 0) or 0) * share
-        agg["hbp"] += float(stat.get("hitBatsmen", stat.get("hitByPitch", 0)) or 0) * share
-        agg["k"]   += float(stat.get("strikeOuts", 0) or 0) * share
-        agg["h"]   += float(stat.get("hits", 0) or 0) * share
-
-    _TEAM_BP_CACHE[cache_key] = agg
-    return agg
+    # FIX (2026-08-29): this used to prorate each game's team-aggregate
+    # stat line by `share = bp_ip / total_ip` where
+    # `bp_ip = total_ip - min(total_ip, LEAGUE_AVG_IP)` -- the same
+    # starter/reliever-split guess already found broken in
+    # pitcher_workload.py's bullpen-fatigue component (see that file's
+    # 2026-08-29 fix note). Here it's worse: for a normal 9-inning game,
+    # `share` works out to essentially the same constant (~0.39) on every
+    # game regardless of that day's real starter/bullpen split, and
+    # because share is applied to BOTH the numerator (ER, HR, BB, etc.)
+    # AND denominator (bp_ip) of every downstream rate stat, the constant
+    # cancels out in the ratio -- e.g. `era = 9*sum(ER*share)/sum(ip*share)
+    # ~= 9*sum(ER)/sum(ip)`, which is just the TEAM's overall ERA, not an
+    # isolated bullpen ERA. A team with a great rotation and mediocre
+    # bullpen (or vice versa) would get a "bullpen quality" reading that's
+    # actually reading the rotation. That's not noise, it's a mislabeled
+    # signal directly feeding MLB full-game total predictions, and the
+    # module docstring calls this the "Solid" tier (same trust level as
+    # this codebase's other real MLB models), which it isn't.
+    # This team-aggregate endpoint has no real starter/reliever split
+    # (same root cause as pitcher_workload.py) -- disabled pending a
+    # rebuild on real per-reliever game logs (iterate roster relievers'
+    # individual game logs, gamesStarted=0 appearances only) rather than
+    # ship a number that looks like bullpen data but isn't.
+    _TEAM_BP_CACHE[cache_key] = {}
+    return {}
 
 
 def _xfip(hr: float, bb: float, hbp: float, k: float, ip: float) -> float | None:
@@ -400,6 +389,14 @@ def _bullpen_fatigue(team_abbr: str, game_date: date) -> float:
     """IP delta vs league-average bullpen usage over the last _FATIGUE_DAYS."""
     agg = _aggregate_bullpen(team_abbr, game_date, _FATIGUE_DAYS)
     ip = agg.get("ip", 0.0)
+    # FIX (2026-08-29): _aggregate_bullpen() is now disabled (see its own
+    # fix note) and always returns ip=0.0. Previously that flowed straight
+    # into `0.0 - league_avg`, a large constant negative number that reads
+    # as "bullpen is extremely fresh" on every single call -- a fabricated
+    # directional signal, not an absence of one. Return neutral (0.0 delta)
+    # when there's no real aggregate to compare instead.
+    if ip <= 0.0:
+        return 0.0
     league_avg = _LEAGUE_BP_IP_PER_DAY * _FATIGUE_DAYS
     return round(ip - league_avg, 2)
 
@@ -531,6 +528,118 @@ def _leverage_availability(team_abbr: str, game_date: date) -> dict:
     if len(relievers) > 1:
         out["setup_available"] = _available(relievers[1])
     return out
+
+
+def get_bullpen_freshness_tags(team_abbr: str, game_date: date) -> dict:
+    """
+    ADDED (2026-08-29) for core/three_tier_formula.py's Rule 2 (Bullpen
+    Integrity). Real per-reliever pitch-count tracking over a rolling
+    72-hour window, for the team's top 3 highest-appearance relief arms
+    specifically -- a finer-grained sibling to _leverage_availability()
+    above (which only checks the top 2 arms' back-to-back-day status,
+    not actual pitch counts).
+
+    Returns {
+        "arms": [{"player_id", "name", "pitches_72h", "appearances_72h",
+                   "last_date", "pulled"}, ...]   (top 3 by appearance
+                                                    count in _ROLLING_DAYS,
+                                                    same ranking heuristic
+                                                    _leverage_availability
+                                                    already uses)
+        "clean": bool | None,   # True iff none of the top 3 are "pulled";
+                                 # None if fewer than 1 real arm found
+                                 # (data unavailable -- caller must NOT
+                                 # treat this as a green light)
+    }
+
+    "pulled" (fatigued) heuristic per arm, real data only:
+      - pitched on each of the last 2 consecutive calendar days (same
+        back-to-back-to-back caution as _leverage_availability), OR
+      - >= _FATIGUE_PITCH_LIMIT total pitches in the trailing 72 hours
+        (a standard real-bullpen caution threshold; conservative because
+        this is real usage, not modeled).
+    Both checks require real MLB Stats API game-log data -- no fabricated
+    fallback. An arm with no data in the window is treated as available
+    (nothing suggests fatigue), consistent with _leverage_availability's
+    same convention.
+    """
+    team_id = _MLB_TEAM_IDS.get(team_abbr.upper())
+    if not team_id:
+        return {"arms": [], "clean": None}
+
+    roster_url = f"{_BASE_URL}/teams/{team_id}/roster/active"
+    roster = _fetch(roster_url)
+    if not roster or not isinstance(roster, dict):
+        return {"arms": [], "clean": None}
+
+    window_start = game_date - timedelta(days=3)  # rolling 72 hours
+    arms: list[dict] = []
+
+    for entry in roster.get("roster", []):
+        if entry.get("position", {}).get("abbreviation", "") != "P":
+            continue
+        person = entry.get("person", {})
+        pid, name = person.get("id"), person.get("fullName", "")
+        if not pid:
+            continue
+
+        log_url = (
+            f"{_BASE_URL}/people/{pid}/stats"
+            f"?stats=gameLog&group=pitching&season={game_date.year}"
+        )
+        log_data = _fetch(log_url)
+        if not log_data or not isinstance(log_data, dict):
+            continue
+
+        pitches_72h = 0
+        appearances_72h = 0
+        is_starter = False
+        last_date: date | None = None
+        pitched_dates: set[date] = set()
+
+        for block in log_data.get("stats", []):
+            for split in block.get("splits", []):
+                raw_date = split.get("date", "")
+                try:
+                    split_date = date.fromisoformat(raw_date[:10])
+                except ValueError:
+                    continue
+                if not (window_start <= split_date < game_date):
+                    continue
+                stat = split.get("stat", {})
+                if int(stat.get("gamesStarted", 0) or 0) > 0:
+                    is_starter = True
+                appearances_72h += 1
+                pitches_72h += int(stat.get("numberOfPitches", 0) or 0)
+                pitched_dates.add(split_date)
+                if last_date is None or split_date > last_date:
+                    last_date = split_date
+
+        if is_starter or appearances_72h == 0:
+            continue
+
+        back_to_back = (
+            last_date is not None
+            and last_date == game_date - timedelta(days=1)
+            and (game_date - timedelta(days=2)) in pitched_dates
+        )
+        pulled = bool(back_to_back or pitches_72h >= _FATIGUE_PITCH_LIMIT)
+
+        arms.append({
+            "player_id": pid,
+            "name": name,
+            "pitches_72h": pitches_72h,
+            "appearances_72h": appearances_72h,
+            "last_date": last_date,
+            "pulled": pulled,
+        })
+
+    if not arms:
+        return {"arms": [], "clean": None}
+
+    arms.sort(key=lambda a: a["appearances_72h"], reverse=True)
+    top3 = arms[:3]
+    return {"arms": top3, "clean": not any(a["pulled"] for a in top3)}
 
 
 def _bullpen_handedness_split(team_abbr: str, game_date: date) -> tuple[float | None, float | None]:

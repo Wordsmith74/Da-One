@@ -10,19 +10,33 @@ forced into this file's shape. Do not import this module for WNBA processing.
 from models.sport_config import MLB
 
 
-def project_k_pct_advanced(csw_pct, swstr_pct, raw_k_pct):
+def project_k_pct_advanced(csw_pct, whiff_pct, raw_k_pct):
     """
-    Blends CSW% (called+swinging strike %) and SwStr% with the shrunk raw K%
-    to get a more stable strikeout-rate projection. CSW%/SwStr% are *process*
-    stats (how often a pitcher generates whiffs/called strikes per pitch) and
+    Blends CSW% (called+swinging strike %) and Whiff% with the shrunk raw K%
+    to get a more stable strikeout-rate projection. CSW%/Whiff% are *process*
+    stats (how often a pitcher generates whiffs/called strikes) and
     are more predictive going forward than recent K% outcomes alone, which can
     be inflated/deflated by sequencing luck.
+
+    FIX (2026-08-29): the second parameter and its multiplier below used to
+    be named/calibrated for "SwStr%" (misses / total pitches, ~11%
+    league-wide) but was actually always being fed Whiff% (misses / swings,
+    ~24-26% league-wide) by data/fetch.py's get_savant_pitcher_advanced_stats()
+    -- Savant's public leaderboard CSV doesn't publish true SwStr% at all,
+    only whiff_percent. Same mislabeling bug already found and fixed in
+    strikeout_matchup.py (see that module's _LEAGUE_WHIFF history). Renamed
+    the parameter to match what it actually receives, and rescaled the
+    multiplier below for Whiff%'s baseline instead of SwStr%'s (1.85 / 
+    (0.250/0.115) ≈ 0.85, using this codebase's own reference baselines for
+    the two metrics). This function is not currently called anywhere in the live
+    pipeline (see core/player_props.py's "CSW%/SwStr% blend — REMOVED"
+    comment) but is kept correct in case of a future re-enable.
 
     Falls back gracefully to raw_k_pct alone if advanced columns are missing
     (e.g. pybaseball lookup failed or name match was empty) -- this MUST NOT
     raise, since run_pipeline.py depends on this never crashing a live run.
     """
-    if csw_pct is None and swstr_pct is None:
+    if csw_pct is None and whiff_pct is None:
         return raw_k_pct
 
     weights = []
@@ -31,9 +45,17 @@ def project_k_pct_advanced(csw_pct, swstr_pct, raw_k_pct):
         # CSW% correlates strongly with K% league-wide; treat it as a strong signal
         values.append(csw_pct * 1.05)
         weights.append(0.45)
-    if swstr_pct is not None:
-        # SwStr% alone underestimates total K% (doesn't count called third strikes)
-        values.append(swstr_pct * 1.85)
+    if whiff_pct is not None:
+        # Whiff% alone underestimates total K% (doesn't count called third
+        # strikes, and its swings-only denominator runs higher than a
+        # pitches-based rate). Multiplier rescaled from the old 1.85 (which
+        # was calibrated for true SwStr%'s ~11.5% league baseline -- see
+        # strikeout_matchup.py's _LEAGUE_WHIFF history for that number) to
+        # Whiff%'s ~25% baseline instead: 1.85 / (0.250/0.115) ≈ 0.85, so
+        # the same pitcher produces roughly the same blended value whether
+        # this ever received true SwStr% or (as it actually always has)
+        # Whiff%.
+        values.append(whiff_pct * 0.85)
         weights.append(0.25)
 
     values.append(raw_k_pct)

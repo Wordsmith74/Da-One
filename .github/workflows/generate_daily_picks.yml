@@ -59,6 +59,33 @@ jobs:
       - name: Clear Python cache
         run: find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
 
+      # FIX (2026-08-29): data/results.db is gitignored (avoids binary
+      # merge conflicts across commits -- a real, deliberate tradeoff, see
+      # that .gitignore entry) but that also meant it never survived
+      # between separate scheduled workflow runs, since each run starts
+      # from a fresh checkout. That silently defeated two things: (1)
+      # results_tracker.has_open_opposite_bet(), which can only protect
+      # against backing both sides of a game if it can see bets logged in
+      # an EARLIER run, and (2) core/revalidation_engine.py, which is
+      # supposed to re-check already-published picks 30-60 min before
+      # game time in a LATER, separate scheduled run -- impossible if
+      # that run can't see this run's picks at all. actions/cache (not
+      # git) is the right tool here: it persists a file across runs
+      # without ever touching git history, so it can't reintroduce the
+      # binary-merge-conflict problem that got this file gitignored in
+      # the first place. Restore-keys prefix match picks up the most
+      # recent cache entry from any earlier run today; save uses a
+      # unique key per run so each run's ending state becomes the next
+      # run's starting point.
+      - name: Restore data/results.db from cache
+        id: restore_db
+        uses: actions/cache/restore@v4
+        with:
+          path: data/results.db
+          key: results-db-${{ github.run_id }}
+          restore-keys: |
+            results-db-
+
       - name: Run pipeline
         env:
           BALL_DONT_LIE_KEY: ${{ secrets.BALL_DONT_LIE_KEY }}
@@ -74,6 +101,18 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: python3 -m core.telegram_publisher
+
+      # Saved last, after every step in this job that could touch
+      # data/results.db (currently just "Run pipeline", but placed here
+      # rather than right after it so this doesn't silently miss a future
+      # step -- e.g. if telegram_publisher.py is ever extended to call
+      # mark_sent_to_group() -- that also writes to it).
+      - name: Save data/results.db to cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: data/results.db
+          key: results-db-${{ github.run_id }}
 
       - name: Upload run log as artifact (always, even on failure)
         if: always()

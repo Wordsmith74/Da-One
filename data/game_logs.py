@@ -211,9 +211,6 @@ def get_team_game_totals(
                   results are cached separately per date — this is what
                   makes the function safe to call from a replay loop over
                   historical dates instead of always describing "today".
-                  The stats.wnba.com fast path is skipped in this mode
-                  since it has no historical cutoff; ESPN's dated schedule
-                  is used instead.
 
     Returns
     -------
@@ -228,24 +225,16 @@ def get_team_game_totals(
     if cache_key in _HISTORY_CACHE:
         return _HISTORY_CACHE[cache_key]
 
-    # WNBA: try the free stats.wnba.com client first (richer free data
-    # than balldontlie's free tier; see core/wnba_stats_client.py).
-    # Skipped in replay mode — it has no historical cutoff, so it would
-    # always describe "as of right now" regardless of as_of_date.
-    if sport_up == "WNBA" and as_of_date is None:
-        try:
-            from core.wnba_stats_client import get_team_game_totals as _wnba_stats_totals
-            values = _wnba_stats_totals(team_abbr, n=n)
-            if values:
-                _HISTORY_CACHE[cache_key] = values
-                logger.debug(
-                    f"[game_logs] {sport_up}/{team_abbr}: "
-                    f"{len(values)} real game totals via stats.wnba.com"
-                )
-                return values
-        except Exception as exc:
-            logger.debug(f"[game_logs] stats.wnba.com failed for {team_abbr}: {exc}")
-        logger.debug(f"[game_logs] stats.wnba.com had no data for {team_abbr}; trying ESPN…")
+    # NOTE (2026-08-29): this used to try `core.wnba_stats_client` first
+    # for WNBA ("richer free data than balldontlie's free tier") -- that
+    # module doesn't exist anywhere in this codebase (confirmed; see the
+    # same dead-import problem already found and fixed in data/fetch.py
+    # and core/player_props.py). The import always raised ImportError,
+    # silently caught, and fell through to ESPN below every single time --
+    # so behavior is unchanged by removing it, this just stops wasting a
+    # guaranteed-failing import attempt on every call and stops the
+    # docstring/comments implying a data source that was never real.
+    # ESPN (below) is and has always been the actual data source in use.
 
     sport_path = _ESPN_SPORT_PATH.get(sport_up)
     id_map     = _TEAM_ID_MAP.get(sport_up, {})

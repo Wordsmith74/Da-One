@@ -220,10 +220,40 @@ def get_mlb_player_game_logs(player_id, season, limit=10, pitcher_name=None):
             except (TypeError, ValueError):
                 return default
 
+        def _parse_ip(val, default=0.0):
+            """
+            FIX (2026-08-29): the plain _float() above was being applied
+            to inningsPitched too, which silently produced the wrong
+            number for any partial-inning start. MLB's inningsPitched
+            notation is NOT decimal -- "5.2" means 5 innings + 2 outs
+            (5.667 innings), and "5.1" means 5 innings + 1 out (5.333),
+            not 5.2 / 5.1 as literal floats. That's the exact bug already
+            found and fixed in core/pitcher_workload.py, core/mlb.py,
+            core/intelligence/pitcher_intel.py, and
+            core/intelligence/bullpen_intel.py's own _parse_ip() helpers
+            -- this file just never got the same fix. No live consumer of
+            this field was found (backtest.py's _grade_mlb_k_prop only
+            reads strikeouts/date from this function's output), so this
+            was silently wrong rather than actively wrong -- fixing it
+            anyway since "innings_pitched" is a documented field of this
+            function's public contract and any future caller would
+            otherwise silently inherit incorrect values.
+            """
+            if val is None:
+                return default
+            try:
+                s_val = str(val)
+                if "." in s_val:
+                    whole, outs = s_val.split(".", 1)
+                    return int(whole) + int(outs) / 3.0
+                return float(s_val)
+            except (TypeError, ValueError):
+                return default
+
         out.append({
             "strikeouts": _int(stat.get("strikeOuts")),
             "batters_faced": _int(stat.get("battersFaced")),
-            "innings_pitched": _float(stat.get("inningsPitched")),
+            "innings_pitched": round(_parse_ip(stat.get("inningsPitched")), 4),
             # Added for backtest.py grading -- matches a log entry to the
             # specific game a pick was generated for. "YYYY-MM-DD", MLB
             # Stats API's own date format already, no conversion needed.
@@ -707,7 +737,7 @@ _savant_stats_cache = {}
 
 def get_savant_pitcher_advanced_stats(pitcher_name, season):
     """
-    Pulls CSW%, SwStr%, and K% for a pitcher from Baseball Savant's public
+    Pulls CSW%, Whiff%, and K% for a pitcher from Baseball Savant's public
     CSV export -- no API key, no pybaseball, no FanGraphs dependency.
 
     Savant publishes a stable CSV leaderboard URL that returns directly
@@ -719,9 +749,11 @@ def get_savant_pitcher_advanced_stats(pitcher_name, season):
     pitchers cost one HTTP call, not 30.
 
     Column names returned by Savant CSV (verified 2026):
-      player_name, k_percent, whiff_percent, csw_percent
-    These are mapped to the keys advanced_metrics.py expects:
-      K%, SwStr%, CSW%
+      player_name, k_percent, bb_percent, whiff_percent, csw_percent
+    These are mapped to the keys advanced_metrics.py / three_tier_formula.py
+    expect: K%, BB%, Whiff%, CSW%. bb_percent added 2026-08-29 for
+    core/three_tier_formula.py's Rule 1 (K-BB%) -- same real Savant
+    leaderboard endpoint, just one more column requested.
     SIERA is not available from Savant directly -- falls back to None,
     which project_k_pct_advanced() already handles gracefully.
     """
@@ -733,7 +765,7 @@ def get_savant_pitcher_advanced_stats(pitcher_name, season):
         url = (
             "https://baseballsavant.mlb.com/leaderboard/custom"
             f"?year={season}&type=pitcher&filter=&min=1&selections=k_percent,"
-            "whiff_percent,csw_percent&csv=true"
+            "bb_percent,whiff_percent,csw_percent&csv=true"
         )
         r = requests.get(url, timeout=20, headers={"User-Agent": "Mozilla/5.0"})
         r.raise_for_status()
@@ -755,11 +787,29 @@ def get_savant_pitcher_advanced_stats(pitcher_name, season):
     if match.empty:
         return None
 
-    # Map Savant column names to what advanced_metrics.py expects
+    # Map Savant column names to what advanced_metrics.py expects.
+    # FIX (2026-08-29): "whiff_percent" was mapped straight to "SwStr%" --
+    # but Savant's public leaderboard CSV does not publish true SwStr%
+    # (misses / total pitches, ~11% league-wide); whiff_percent is Whiff%
+    # (misses / swings, ~24-26% league-wide) -- a different denominator,
+    # roughly 2x the value. This is the exact same mislabeling bug already
+    # found and fixed in strikeout_matchup.py (see that module's
+    # _LEAGUE_WHIFF history, fixed 2026-06-30) -- it just hadn't been
+    # fixed here too. Currently inert (project_k_pct_advanced(), the only
+    # consumer, was disconnected from the live pipeline 2026-08-16 for an
+    # unrelated compounding-signal reason -- see core/player_props.py's
+    # "CSW%/SwStr% blend — REMOVED" comment), but that same comment marks
+    # this "available for a future single-pass rewrite" -- fixing the
+    # label now so a future re-enable doesn't silently inherit a 2x-off
+    # value. Renamed to "Whiff%" to match what this data actually is;
+    # if/when this is wired back in, project_k_pct_advanced() below needs
+    # its 1.85 multiplier (calibrated for true SwStr%'s ~11% baseline)
+    # re-derived for Whiff%'s ~25% baseline, not just relabeled.
     row = match.iloc[[0]].copy()
     rename = {
         "k_percent": "K%",
-        "whiff_percent": "SwStr%",
+        "bb_percent": "BB%",
+        "whiff_percent": "Whiff%",
         "csw_percent": "CSW%",
     }
     for savant_col, pipeline_col in rename.items():
@@ -771,7 +821,7 @@ def get_savant_pitcher_advanced_stats(pitcher_name, season):
     # Without this division, k_pct enters monte_carlo.py as ~22 instead of ~0.22,
     # pegging rng.random() < k_pct as always True and producing over_prob = 1.0
     # on every pick -- the all-overs / exaggerated-edge bug.
-    for col in ["K%", "SwStr%", "CSW%"]:
+    for col in ["K%", "BB%", "Whiff%", "CSW%"]:
         if col in row.columns:
             row[col] = row[col] / 100.0
 

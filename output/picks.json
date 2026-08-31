@@ -1,46 +1,4 @@
 {
-  "generated_at": "2026-08-30T14:45:15.551009+00:00",
-  "picks": [
-    {
-      "sport": "MLB",
-      "bet_id": "LAA_nrfi",
-      "player": null,
-      "team": "LAA",
-      "matchup": "PHI@LAA_MLB_2026-08-30",
-      "away_team": "Philadelphia Phillies",
-      "home_team": "Los Angeles Angels",
-      "bookmaker_source": "Pinnacle",
-      "market": "nrfi",
-      "market_type": "nrfi",
-      "side": "nrfi",
-      "pick": "LAA nrfi nrfi 0.5",
-      "pick_time_line": 0.5,
-      "pick_time_odds": -124.0,
-      "current_line": 0.5,
-      "current_odds": -124.0,
-      "line": 0.5,
-      "model_number": 61.8,
-      "edge_pct": 1.37,
-      "confidence": 75.0,
-      "model_prob": 61.8,
-      "tier": "Nuke",
-      "game_id": "PHI@LAA_MLB_2026-08-30",
-      "steam_move_threshold_pct": 8.0,
-      "moneyline_steam_cents": 15,
-      "side_agreement_frac": null,
-      "posterior_std": null,
-      "posterior_mean": null,
-      "relative_sigma_pct": null,
-      "model_prob_raw": 0.618,
-      "model_prob_calibrated": 0.7338,
-      "stake_pct_bankroll": 5.0,
-      "ccs_score": 44.9,
-      "robustness": "fragile",
-      "line_move_pct": 0.0,
-      "pick_id": "a1eef90089e6",
-      "actual_result": null,
-      "closing_line": null,
-      "clv_pct": null
-    }
-  ]
+  "generated_at": "2026-08-31T17:29:48.853691+00:00",
+  "picks": []
 }

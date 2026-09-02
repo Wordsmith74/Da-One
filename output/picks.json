@@ -1,4 +1,46 @@
 {
-  "generated_at": "2026-09-01T14:34:22.204218+00:00",
-  "picks": []
+  "generated_at": "2026-09-02T13:56:11.511458+00:00",
+  "picks": [
+    {
+      "sport": "MLB",
+      "bet_id": "BOS_nrfi",
+      "player": null,
+      "team": "Boston Red Sox",
+      "matchup": "SEA@BOS_MLB_2026-09-02",
+      "away_team": "Seattle Mariners",
+      "home_team": "Boston Red Sox",
+      "bookmaker_source": "Pinnacle",
+      "market": "nrfi",
+      "market_type": "nrfi",
+      "side": "nrfi",
+      "pick": "Boston Red Sox nrfi nrfi 0.5",
+      "pick_time_line": 0.5,
+      "pick_time_odds": -118.0,
+      "current_line": 0.5,
+      "current_odds": -118.0,
+      "line": 0.5,
+      "model_number": 62.0,
+      "edge_pct": 2.03,
+      "confidence": 80.0,
+      "model_prob": 62.0,
+      "tier": "Nuke",
+      "game_id": "SEA@BOS_MLB_2026-09-02",
+      "steam_move_threshold_pct": 8.0,
+      "moneyline_steam_cents": 15,
+      "side_agreement_frac": null,
+      "posterior_std": null,
+      "posterior_mean": null,
+      "relative_sigma_pct": null,
+      "model_prob_raw": 0.62,
+      "model_prob_calibrated": 0.7011,
+      "stake_pct_bankroll": 5.0,
+      "ccs_score": 45.42,
+      "robustness": "fragile",
+      "line_move_pct": 0.0,
+      "pick_id": "11a05de041bf",
+      "actual_result": null,
+      "closing_line": null,
+      "clv_pct": null
+    }
+  ]
 }

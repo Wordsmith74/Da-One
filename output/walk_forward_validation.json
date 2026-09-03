@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-02T14:48:26.970312+00:00",
+  "generated_at": "2026-09-03T14:48:20.824127+00:00",
   "method": "chronological_split walk-forward (train_frac=0.6)",
   "min_sample_size_train": 15,
   "min_sample_size_test": 8,
@@ -7,7 +7,7 @@
     {
       "sport": "MLB",
       "market_class": "first_inning",
-      "n_graded": 37,
+      "n_graded": 38,
       "status": "ok",
       "train_window": [
         "2026-08-13T21:39:16.291641+00:00",
@@ -15,10 +15,10 @@
       ],
       "test_window": [
         "2026-08-21T10:32:08.883138+00:00",
-        "2026-08-30T09:44:35.595366+00:00"
+        "2026-09-02T13:56:11.511458+00:00"
       ],
       "train_n": 22,
-      "test_n": 15,
+      "test_n": 16,
       "tiers": {
         "Gold": {
           "status": "failed_walk_forward",
@@ -38,16 +38,16 @@
             "edge_threshold": 1.04,
             "confidence_threshold": 77.1,
             "consensus_threshold": null,
-            "n": 11,
-            "wins": 3,
+            "n": 12,
+            "wins": 4,
             "losses": 8,
             "pushes": 0,
-            "win_pct": 0.2727,
-            "roi": -0.3021,
-            "profit_units": -0.1
+            "win_pct": 0.3333,
+            "roi": -0.1541,
+            "profit_units": -0.06
           },
-          "roi_drop": 0.597,
-          "note": "FAILED: train ROI +29.5% did not hold up out-of-sample (test ROI -30.2% on n=11) -- likely overfit to the training window. Do not deploy this cutoff."
+          "roi_drop": 0.449,
+          "note": "FAILED: train ROI +29.5% did not hold up out-of-sample (test ROI -15.4% on n=12) -- likely overfit to the training window. Do not deploy this cutoff."
         },
         "Diamond": {
           "status": "insufficient_test_volume",
@@ -63,8 +63,8 @@
             "roi": 0.4104,
             "profit_units": 0.17
           },
-          "test_n": 6,
-          "note": "Only 6 test-fold picks cleared this cutoff (need >= 8) -- can't validate either way."
+          "test_n": 7,
+          "note": "Only 7 test-fold picks cleared this cutoff (need >= 8) -- can't validate either way."
         },
         "Nuke": {
           "status": "insufficient_test_volume",
@@ -80,8 +80,8 @@
             "roi": 0.507,
             "profit_units": 0.17
           },
-          "test_n": 3,
-          "note": "Only 3 test-fold picks cleared this cutoff (need >= 8) -- can't validate either way."
+          "test_n": 4,
+          "note": "Only 4 test-fold picks cleared this cutoff (need >= 8) -- can't validate either way."
         }
       }
     },

@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-09-02T14:48:26.956455+00:00",
-  "n_total_picks": 394,
-  "n_graded": 362,
+  "generated_at": "2026-09-03T14:48:20.805584+00:00",
+  "n_total_picks": 395,
+  "n_graded": 363,
   "n_quarantined_pre_fix": 24,
   "edge_pct_trusted_since": "2026-07-03T00:00:00+00:00",
-  "n_usable_for_search": 362,
+  "n_usable_for_search": 363,
   "min_sample_size": 15,
   "min_sample_size_nuke": 8,
   "gold_roi_floor": 0.0,
@@ -13,7 +13,7 @@
     {
       "sport": "MLB",
       "market_class": "first_inning",
-      "n_graded": 37,
+      "n_graded": 38,
       "status": "ok",
       "consensus_evaluated": false,
       "current_thresholds": {
@@ -33,39 +33,39 @@
       "recommended": {
         "Gold": {
           "edge_threshold": 1.0,
-          "confidence_threshold": 77.6,
+          "confidence_threshold": 75.0,
           "consensus_threshold": null,
-          "n": 33,
-          "wins": 15,
-          "losses": 18,
+          "n": 38,
+          "wins": 18,
+          "losses": 20,
           "pushes": 0,
-          "win_pct": 0.4545,
-          "roi": 0.0093,
-          "profit_units": 0.01
+          "win_pct": 0.4737,
+          "roi": 0.0337,
+          "profit_units": 0.04
         },
         "Diamond": {
           "edge_threshold": 1.0,
           "confidence_threshold": 78.5,
           "consensus_threshold": null,
-          "n": 30,
-          "wins": 14,
+          "n": 31,
+          "wins": 15,
           "losses": 16,
           "pushes": 0,
-          "win_pct": 0.4667,
-          "roi": 0.0646,
-          "profit_units": 0.05
+          "win_pct": 0.4839,
+          "roi": 0.1114,
+          "profit_units": 0.09
         },
         "Nuke": {
           "edge_threshold": 1.0,
           "confidence_threshold": 78.8,
           "consensus_threshold": null,
-          "n": 21,
-          "wins": 12,
+          "n": 22,
+          "wins": 13,
           "losses": 9,
           "pushes": 0,
-          "win_pct": 0.5714,
-          "roi": 0.2949,
-          "profit_units": 0.18
+          "win_pct": 0.5909,
+          "roi": 0.3374,
+          "profit_units": 0.22
         }
       },
       "note": "consensus_not_evaluated: only 0 picks had side_agreement_frac populated (need >= 15)."

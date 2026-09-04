@@ -1,46 +1,4 @@
 {
-  "generated_at": "2026-09-03T14:11:15.189325+00:00",
-  "picks": [
-    {
-      "sport": "MLB",
-      "bet_id": "KC_nrfi",
-      "player": null,
-      "team": "KC",
-      "matchup": "MIA@KC_MLB_2026-09-03",
-      "away_team": "Miami Marlins",
-      "home_team": "Kansas City Royals",
-      "bookmaker_source": "BetRivers",
-      "market": "nrfi",
-      "market_type": "nrfi",
-      "side": "nrfi",
-      "pick": "KC nrfi nrfi 0.5",
-      "pick_time_line": 0.5,
-      "pick_time_odds": 106.0,
-      "current_line": 0.5,
-      "current_odds": 106.0,
-      "line": 0.5,
-      "model_number": 61.5,
-      "edge_pct": 4.78,
-      "confidence": 80.0,
-      "model_prob": 61.5,
-      "tier": "Nuke",
-      "game_id": "MIA@KC_MLB_2026-09-03",
-      "steam_move_threshold_pct": 8.0,
-      "moneyline_steam_cents": 15,
-      "side_agreement_frac": null,
-      "posterior_std": null,
-      "posterior_mean": null,
-      "relative_sigma_pct": null,
-      "model_prob_raw": 0.615,
-      "model_prob_calibrated": 0.6437,
-      "stake_pct_bankroll": 5.0,
-      "ccs_score": 47.41,
-      "robustness": "fragile",
-      "line_move_pct": 0.0,
-      "pick_id": "ef172c3142db",
-      "actual_result": null,
-      "closing_line": null,
-      "clv_pct": null
-    }
-  ]
+  "generated_at": "2026-09-04T14:05:39.582918+00:00",
+  "picks": []
 }

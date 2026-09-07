@@ -1,4 +1,46 @@
 {
-  "generated_at": "2026-09-06T13:27:36.238602+00:00",
-  "picks": []
+  "generated_at": "2026-09-07T15:34:35.663359+00:00",
+  "picks": [
+    {
+      "sport": "MLB",
+      "bet_id": "BAL_nrfi",
+      "player": null,
+      "team": "Baltimore Orioles",
+      "matchup": "CLE@BAL_MLB_2026-09-07",
+      "away_team": "Cleveland Guardians",
+      "home_team": "Baltimore Orioles",
+      "bookmaker_source": "Pinnacle",
+      "market": "nrfi",
+      "market_type": "nrfi",
+      "side": "nrfi",
+      "pick": "Baltimore Orioles nrfi nrfi 0.5",
+      "pick_time_line": 0.5,
+      "pick_time_odds": -124.0,
+      "current_line": 0.5,
+      "current_odds": -124.0,
+      "line": 0.5,
+      "model_number": 63.1,
+      "edge_pct": 1.88,
+      "confidence": 75.0,
+      "model_prob": 63.1,
+      "tier": "Nuke",
+      "game_id": "CLE@BAL_MLB_2026-09-07",
+      "steam_move_threshold_pct": 8.0,
+      "moneyline_steam_cents": 15,
+      "side_agreement_frac": null,
+      "posterior_std": null,
+      "posterior_mean": null,
+      "relative_sigma_pct": null,
+      "model_prob_raw": 0.631,
+      "model_prob_calibrated": 0.7059,
+      "stake_pct_bankroll": 5.0,
+      "ccs_score": 45.3,
+      "robustness": "fragile",
+      "line_move_pct": 0.0,
+      "pick_id": "c57e3cbd79b0",
+      "actual_result": null,
+      "closing_line": null,
+      "clv_pct": null
+    }
+  ]
 }

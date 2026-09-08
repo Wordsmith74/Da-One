@@ -1,5 +1,5 @@
 {
-  "run_at": "2026-09-07T15:34:35.670227+00:00",
+  "run_at": "2026-09-08T14:14:14.849781+00:00",
   "n_errors": 0,
   "n_warnings": 0,
   "n_picks_generated": 1,
@@ -42,117 +42,157 @@
     {
       "level": "info",
       "stage": "MLB",
-      "message": "22 expanded game market candidate(s) added."
+      "message": "30 expanded game market candidate(s) added."
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "22 total candidate(s) (game totals + player props)."
+      "message": "30 total candidate(s) (game totals + player props)."
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "PHI_nrfi: CALIBRATION VETO -- raw model_prob=55.5% but fitted curve for (MLB, nrfi) puts true win probability at 43.8%, which is not more likely than not to win. Rejected before Game Truth Protocol / gatekeeper."
+      "message": "BAL_nrfi: CALIBRATION VETO -- raw model_prob=58.3% but fitted curve for (MLB, nrfi) puts true win probability at 45.3%, which is not more likely than not to win. Rejected before Game Truth Protocol / gatekeeper."
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "PHI_yrfi: CALIBRATION VETO -- raw model_prob=44.5% but fitted curve for (MLB, yrfi) puts true win probability at 40.9%, which is not more likely than not to win. Rejected before Game Truth Protocol / gatekeeper."
+      "message": "BAL_yrfi: CALIBRATION VETO -- raw model_prob=41.7% but fitted curve for (MLB, yrfi) puts true win probability at 41.7%, which is not more likely than not to win. Rejected before Game Truth Protocol / gatekeeper."
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "MIA_nrfi: CALIBRATION VETO -- raw model_prob=57.1% but fitted curve for (MLB, nrfi) puts true win probability at 44.6%, which is not more likely than not to win. Rejected before Game Truth Protocol / gatekeeper."
+      "message": "DET_nrfi: CALIBRATION VETO -- raw model_prob=51.8% but fitted curve for (MLB, nrfi) puts true win probability at 41.7%, which is not more likely than not to win. Rejected before Game Truth Protocol / gatekeeper."
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "MIA_yrfi: CALIBRATION VETO -- raw model_prob=42.9% but fitted curve for (MLB, yrfi) puts true win probability at 40.9%, which is not more likely than not to win. Rejected before Game Truth Protocol / gatekeeper."
+      "message": "DET_yrfi: CALIBRATION VETO -- raw model_prob=48.2% but fitted curve for (MLB, yrfi) puts true win probability at 40.9%, which is not more likely than not to win. Rejected before Game Truth Protocol / gatekeeper."
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "BAL_yrfi: CALIBRATION VETO -- raw model_prob=36.9% but fitted curve for (MLB, yrfi) puts true win probability at 36.9%, which is not more likely than not to win. Rejected before Game Truth Protocol / gatekeeper."
+      "message": "PHI_nrfi: CALIBRATION VETO -- raw model_prob=55.0% but fitted curve for (MLB, nrfi) puts true win probability at 43.5%, which is not more likely than not to win. Rejected before Game Truth Protocol / gatekeeper."
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "BOS_nrfi: CALIBRATION VETO -- raw model_prob=46.5% but fitted curve for (MLB, nrfi) puts true win probability at 40.9%, which is not more likely than not to win. Rejected before Game Truth Protocol / gatekeeper."
+      "message": "PHI_yrfi: CALIBRATION VETO -- raw model_prob=45.0% but fitted curve for (MLB, yrfi) puts true win probability at 40.9%, which is not more likely than not to win. Rejected before Game Truth Protocol / gatekeeper."
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "BOS_yrfi: CALIBRATION VETO -- raw model_prob=53.5% but fitted curve for (MLB, yrfi) puts true win probability at 42.7%, which is not more likely than not to win. Rejected before Game Truth Protocol / gatekeeper."
+      "message": "MIA_nrfi: CALIBRATION VETO -- raw model_prob=48.7% but fitted curve for (MLB, nrfi) puts true win probability at 40.9%, which is not more likely than not to win. Rejected before Game Truth Protocol / gatekeeper."
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "KC_nrfi: CALIBRATION VETO -- raw model_prob=48.5% but fitted curve for (MLB, nrfi) puts true win probability at 40.9%, which is not more likely than not to win. Rejected before Game Truth Protocol / gatekeeper."
+      "message": "MIA_yrfi: CALIBRATION VETO -- raw model_prob=51.3% but fitted curve for (MLB, yrfi) puts true win probability at 41.5%, which is not more likely than not to win. Rejected before Game Truth Protocol / gatekeeper."
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "KC_yrfi: CALIBRATION VETO -- raw model_prob=51.5% but fitted curve for (MLB, yrfi) puts true win probability at 41.6%, which is not more likely than not to win. Rejected before Game Truth Protocol / gatekeeper."
+      "message": "BOS_yrfi: CALIBRATION VETO -- raw model_prob=35.8% but fitted curve for (MLB, yrfi) puts true win probability at 35.8%, which is not more likely than not to win. Rejected before Game Truth Protocol / gatekeeper."
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "MIL_nrfi: CALIBRATION VETO -- raw model_prob=52.4% but fitted curve for (MLB, nrfi) puts true win probability at 42.1%, which is not more likely than not to win. Rejected before Game Truth Protocol / gatekeeper."
+      "message": "NYY_nrfi: CALIBRATION VETO -- raw model_prob=53.5% but fitted curve for (MLB, nrfi) puts true win probability at 42.7%, which is not more likely than not to win. Rejected before Game Truth Protocol / gatekeeper."
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "MIL_yrfi: CALIBRATION VETO -- raw model_prob=47.6% but fitted curve for (MLB, yrfi) puts true win probability at 40.9%, which is not more likely than not to win. Rejected before Game Truth Protocol / gatekeeper."
+      "message": "NYY_yrfi: CALIBRATION VETO -- raw model_prob=46.5% but fitted curve for (MLB, yrfi) puts true win probability at 40.9%, which is not more likely than not to win. Rejected before Game Truth Protocol / gatekeeper."
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "DET_nrfi: CALIBRATION VETO -- raw model_prob=54.7% but fitted curve for (MLB, nrfi) puts true win probability at 43.3%, which is not more likely than not to win. Rejected before Game Truth Protocol / gatekeeper."
+      "message": "ATL_nrfi: CALIBRATION VETO -- raw model_prob=57.6% but fitted curve for (MLB, nrfi) puts true win probability at 44.9%, which is not more likely than not to win. Rejected before Game Truth Protocol / gatekeeper."
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "DET_yrfi: CALIBRATION VETO -- raw model_prob=45.3% but fitted curve for (MLB, yrfi) puts true win probability at 40.9%, which is not more likely than not to win. Rejected before Game Truth Protocol / gatekeeper."
+      "message": "ATL_yrfi: CALIBRATION VETO -- raw model_prob=42.4% but fitted curve for (MLB, yrfi) puts true win probability at 42.4%, which is not more likely than not to win. Rejected before Game Truth Protocol / gatekeeper."
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "SD_nrfi: CALIBRATION VETO -- raw model_prob=53.9% but fitted curve for (MLB, nrfi) puts true win probability at 42.9%, which is not more likely than not to win. Rejected before Game Truth Protocol / gatekeeper."
+      "message": "KC_nrfi: CALIBRATION VETO -- raw model_prob=55.9% but fitted curve for (MLB, nrfi) puts true win probability at 44.0%, which is not more likely than not to win. Rejected before Game Truth Protocol / gatekeeper."
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "SD_yrfi: CALIBRATION VETO -- raw model_prob=46.1% but fitted curve for (MLB, yrfi) puts true win probability at 40.9%, which is not more likely than not to win. Rejected before Game Truth Protocol / gatekeeper."
+      "message": "KC_yrfi: CALIBRATION VETO -- raw model_prob=44.1% but fitted curve for (MLB, yrfi) puts true win probability at 40.9%, which is not more likely than not to win. Rejected before Game Truth Protocol / gatekeeper."
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "SF_nrfi: CALIBRATION VETO -- raw model_prob=56.8% but fitted curve for (MLB, nrfi) puts true win probability at 44.5%, which is not more likely than not to win. Rejected before Game Truth Protocol / gatekeeper."
+      "message": "MIL_nrfi: CALIBRATION VETO -- raw model_prob=51.7% but fitted curve for (MLB, nrfi) puts true win probability at 41.7%, which is not more likely than not to win. Rejected before Game Truth Protocol / gatekeeper."
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "SF_yrfi: CALIBRATION VETO -- raw model_prob=43.2% but fitted curve for (MLB, yrfi) puts true win probability at 40.9%, which is not more likely than not to win. Rejected before Game Truth Protocol / gatekeeper."
+      "message": "MIL_yrfi: CALIBRATION VETO -- raw model_prob=48.3% but fitted curve for (MLB, yrfi) puts true win probability at 40.9%, which is not more likely than not to win. Rejected before Game Truth Protocol / gatekeeper."
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "LAD_nrfi: CALIBRATION VETO -- raw model_prob=54.7% but fitted curve for (MLB, nrfi) puts true win probability at 43.3%, which is not more likely than not to win. Rejected before Game Truth Protocol / gatekeeper."
+      "message": "CWS_nrfi: CALIBRATION VETO -- raw model_prob=54.3% but fitted curve for (MLB, nrfi) puts true win probability at 43.1%, which is not more likely than not to win. Rejected before Game Truth Protocol / gatekeeper."
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "LAD_yrfi: CALIBRATION VETO -- raw model_prob=45.3% but fitted curve for (MLB, yrfi) puts true win probability at 40.9%, which is not more likely than not to win. Rejected before Game Truth Protocol / gatekeeper."
+      "message": "CWS_yrfi: CALIBRATION VETO -- raw model_prob=45.7% but fitted curve for (MLB, yrfi) puts true win probability at 40.9%, which is not more likely than not to win. Rejected before Game Truth Protocol / gatekeeper."
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "OAK_nrfi: CALIBRATION VETO -- raw model_prob=55.5% but fitted curve for (MLB, nrfi) puts true win probability at 43.8%, which is not more likely than not to win. Rejected before Game Truth Protocol / gatekeeper."
+      "message": "OAK_nrfi: CALIBRATION VETO -- raw model_prob=54.6% but fitted curve for (MLB, nrfi) puts true win probability at 43.3%, which is not more likely than not to win. Rejected before Game Truth Protocol / gatekeeper."
     },
     {
       "level": "info",
       "stage": "MLB",
-      "message": "OAK_yrfi: CALIBRATION VETO -- raw model_prob=44.5% but fitted curve for (MLB, yrfi) puts true win probability at 40.9%, which is not more likely than not to win. Rejected before Game Truth Protocol / gatekeeper."
+      "message": "OAK_yrfi: CALIBRATION VETO -- raw model_prob=45.4% but fitted curve for (MLB, yrfi) puts true win probability at 40.9%, which is not more likely than not to win. Rejected before Game Truth Protocol / gatekeeper."
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "SD_nrfi: CALIBRATION VETO -- raw model_prob=58.0% but fitted curve for (MLB, nrfi) puts true win probability at 45.1%, which is not more likely than not to win. Rejected before Game Truth Protocol / gatekeeper."
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "SD_yrfi: CALIBRATION VETO -- raw model_prob=42.0% but fitted curve for (MLB, yrfi) puts true win probability at 42.0%, which is not more likely than not to win. Rejected before Game Truth Protocol / gatekeeper."
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "SEA_nrfi: CALIBRATION VETO -- raw model_prob=55.2% but fitted curve for (MLB, nrfi) puts true win probability at 43.6%, which is not more likely than not to win. Rejected before Game Truth Protocol / gatekeeper."
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "SEA_yrfi: CALIBRATION VETO -- raw model_prob=44.8% but fitted curve for (MLB, yrfi) puts true win probability at 40.9%, which is not more likely than not to win. Rejected before Game Truth Protocol / gatekeeper."
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "SF_nrfi: CALIBRATION VETO -- raw model_prob=55.4% but fitted curve for (MLB, nrfi) puts true win probability at 43.7%, which is not more likely than not to win. Rejected before Game Truth Protocol / gatekeeper."
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "SF_yrfi: CALIBRATION VETO -- raw model_prob=44.6% but fitted curve for (MLB, yrfi) puts true win probability at 40.9%, which is not more likely than not to win. Rejected before Game Truth Protocol / gatekeeper."
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "LAD_nrfi: CALIBRATION VETO -- raw model_prob=60.5% but fitted curve for (MLB, nrfi) puts true win probability at 47.3%, which is not more likely than not to win. Rejected before Game Truth Protocol / gatekeeper."
+    },
+    {
+      "level": "info",
+      "stage": "MLB",
+      "message": "LAD_yrfi: CALIBRATION VETO -- raw model_prob=39.5% but fitted curve for (MLB, yrfi) puts true win probability at 39.5%, which is not more likely than not to win. Rejected before Game Truth Protocol / gatekeeper."
     },
     {
       "level": "info",

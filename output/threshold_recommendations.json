@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-09-08T14:49:48.256393+00:00",
+  "generated_at": "2026-09-09T14:54:01.836085+00:00",
   "n_total_picks": 397,
-  "n_graded": 365,
+  "n_graded": 366,
   "n_quarantined_pre_fix": 24,
   "edge_pct_trusted_since": "2026-07-03T00:00:00+00:00",
-  "n_usable_for_search": 365,
+  "n_usable_for_search": 366,
   "min_sample_size": 15,
   "min_sample_size_nuke": 8,
   "gold_roi_floor": 0.0,
@@ -13,7 +13,7 @@
     {
       "sport": "MLB",
       "market_class": "first_inning",
-      "n_graded": 40,
+      "n_graded": 41,
       "status": "ok",
       "consensus_evaluated": false,
       "current_thresholds": {
@@ -35,37 +35,37 @@
           "edge_threshold": 1.0,
           "confidence_threshold": 75.0,
           "consensus_threshold": null,
-          "n": 40,
-          "wins": 19,
+          "n": 41,
+          "wins": 20,
           "losses": 21,
           "pushes": 0,
-          "win_pct": 0.475,
-          "roi": 0.0223,
-          "profit_units": 0.03
+          "win_pct": 0.4878,
+          "roi": 0.0542,
+          "profit_units": 0.07
         },
         "Diamond": {
           "edge_threshold": 1.0,
           "confidence_threshold": 78.8,
           "consensus_threshold": null,
-          "n": 23,
-          "wins": 13,
+          "n": 24,
+          "wins": 14,
           "losses": 10,
           "pushes": 0,
-          "win_pct": 0.5652,
-          "roi": 0.2421,
-          "profit_units": 0.17
+          "win_pct": 0.5833,
+          "roi": 0.2784,
+          "profit_units": 0.21
         },
         "Nuke": {
           "edge_threshold": 1.0,
           "confidence_threshold": 79.9,
           "consensus_threshold": null,
-          "n": 18,
-          "wins": 11,
+          "n": 19,
+          "wins": 12,
           "losses": 7,
           "pushes": 0,
-          "win_pct": 0.6111,
-          "roi": 0.4111,
-          "profit_units": 0.22
+          "win_pct": 0.6316,
+          "roi": 0.4438,
+          "profit_units": 0.26
         }
       },
       "note": "consensus_not_evaluated: only 0 picks had side_agreement_frac populated (need >= 15)."

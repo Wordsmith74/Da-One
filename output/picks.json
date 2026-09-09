@@ -1,46 +1,4 @@
 {
-  "generated_at": "2026-09-08T14:14:14.843069+00:00",
-  "picks": [
-    {
-      "sport": "MLB",
-      "bet_id": "BOS_nrfi",
-      "player": null,
-      "team": "Boston Red Sox",
-      "matchup": "LAA@BOS_MLB_2026-09-08",
-      "away_team": "Los Angeles Angels",
-      "home_team": "Boston Red Sox",
-      "bookmaker_source": "Pinnacle",
-      "market": "nrfi",
-      "market_type": "nrfi",
-      "side": "nrfi",
-      "pick": "Boston Red Sox nrfi nrfi 0.5",
-      "pick_time_line": 0.5,
-      "pick_time_odds": -127.0,
-      "current_line": 0.5,
-      "current_odds": -127.0,
-      "line": 0.5,
-      "model_number": 64.2,
-      "edge_pct": 2.05,
-      "confidence": 80.0,
-      "model_prob": 64.2,
-      "tier": "Nuke",
-      "game_id": "LAA@BOS_MLB_2026-09-08",
-      "steam_move_threshold_pct": 8.0,
-      "moneyline_steam_cents": 15,
-      "side_agreement_frac": null,
-      "posterior_std": null,
-      "posterior_mean": null,
-      "relative_sigma_pct": null,
-      "model_prob_raw": 0.642,
-      "model_prob_calibrated": 1.0,
-      "stake_pct_bankroll": 5.0,
-      "ccs_score": 45.44,
-      "robustness": "fragile",
-      "line_move_pct": 0.0,
-      "pick_id": "c467c2ae2e1d",
-      "actual_result": null,
-      "closing_line": null,
-      "clv_pct": null
-    }
-  ]
+  "generated_at": "2026-09-09T14:15:02.666381+00:00",
+  "picks": []
 }

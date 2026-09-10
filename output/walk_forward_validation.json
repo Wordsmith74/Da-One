@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-09T14:54:01.855548+00:00",
+  "generated_at": "2026-09-10T14:42:08.994364+00:00",
   "method": "chronological_split walk-forward (train_frac=0.6)",
   "min_sample_size_train": 15,
   "min_sample_size_test": 8,
@@ -7,7 +7,7 @@
     {
       "sport": "MLB",
       "market_class": "first_inning",
-      "n_graded": 41,
+      "n_graded": 42,
       "status": "ok",
       "train_window": [
         "2026-08-13T21:39:16.291641+00:00",
@@ -15,9 +15,9 @@
       ],
       "test_window": [
         "2026-08-22T10:29:55.153879+00:00",
-        "2026-09-08T14:14:14.843069+00:00"
+        "2026-09-10T14:08:39.962131+00:00"
       ],
-      "train_n": 24,
+      "train_n": 25,
       "test_n": 17,
       "tiers": {
         "Gold": {
@@ -26,28 +26,28 @@
             "edge_threshold": 1.04,
             "confidence_threshold": 77.1,
             "consensus_threshold": null,
-            "n": 24,
+            "n": 25,
             "wins": 14,
-            "losses": 10,
+            "losses": 11,
             "pushes": 0,
-            "win_pct": 0.5833,
-            "roi": 0.2922,
-            "profit_units": 0.18
+            "win_pct": 0.56,
+            "roi": 0.2263,
+            "profit_units": 0.15
           },
           "test": {
             "edge_threshold": 1.04,
             "confidence_threshold": 77.1,
             "consensus_threshold": null,
             "n": 12,
-            "wins": 4,
-            "losses": 8,
+            "wins": 5,
+            "losses": 7,
             "pushes": 0,
-            "win_pct": 0.3333,
-            "roi": -0.2094,
-            "profit_units": -0.09
+            "win_pct": 0.4167,
+            "roi": -0.0232,
+            "profit_units": -0.01
           },
-          "roi_drop": 0.5016,
-          "note": "FAILED: train ROI +29.2% did not hold up out-of-sample (test ROI -20.9% on n=12) -- likely overfit to the training window. Do not deploy this cutoff."
+          "roi_drop": 0.2495,
+          "note": "FAILED: train ROI +22.6% did not hold up out-of-sample (test ROI -2.3% on n=12) -- likely overfit to the training window. Do not deploy this cutoff."
         },
         "Diamond": {
           "status": "insufficient_test_volume",
@@ -55,13 +55,13 @@
             "edge_threshold": 1.04,
             "confidence_threshold": 78.6,
             "consensus_threshold": null,
-            "n": 18,
+            "n": 19,
             "wins": 11,
-            "losses": 7,
+            "losses": 8,
             "pushes": 0,
-            "win_pct": 0.6111,
-            "roi": 0.407,
-            "profit_units": 0.2
+            "win_pct": 0.5789,
+            "roi": 0.3192,
+            "profit_units": 0.17
           },
           "test_n": 7,
           "note": "Only 7 test-fold picks cleared this cutoff (need >= 8) -- can't validate either way."
@@ -80,8 +80,8 @@
             "roi": 0.496,
             "profit_units": 0.22
           },
-          "test_n": 6,
-          "note": "Only 6 test-fold picks cleared this cutoff (need >= 8) -- can't validate either way."
+          "test_n": 7,
+          "note": "Only 7 test-fold picks cleared this cutoff (need >= 8) -- can't validate either way."
         }
       }
     },

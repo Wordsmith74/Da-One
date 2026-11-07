@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-06T17:44:54.815292+00:00",
+  "generated_at": "2026-11-07T16:40:57.556829+00:00",
   "method": "chronological_split walk-forward (train_frac=0.6)",
   "min_sample_size_train": 15,
   "min_sample_size_test": 8,
